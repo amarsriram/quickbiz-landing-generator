@@ -133,39 +133,45 @@ font-family:Arial;
   📍 View Location
   </a>
 
-  <p style="font-size:13px;opacity:0.7;">
-    ✔ Loved by local customers
-  </p>
+ <p style="margin-top:15px;font-weight:bold;">
+  Contact us directly
+</p>
 
-  <p style="margin-top:15px;font-weight:bold;">
-    Tap below to contact instantly
-  </p>
+<a href="tel:${phone}" 
+style="
+display:block;
+width:100%;
+padding:14px;
+background:#1f1f1f;
+color:white;
+margin-top:15px;
+border-radius:10px;
+text-decoration:none;
+font-weight:500;
+font-size:15px;
+text-align:center;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+">
+📞 Call Now
+</a>
 
-  <a href="tel:${phone}" 
-  style="
-  display:block;
-  padding:14px;
-  background:#2b2b2b;
-  color:white;
-  margin:10px;
-  border-radius:8px;
-  text-decoration:none;
-  ">
-  📞 Call Now
-  </a>
-
-  <a href="https://wa.me/${phone}" 
-  style="
-  display:block;
-  padding:14px;
-  background:#4f772d;
-  color:white;
-  margin:10px;
-  border-radius:8px;
-  text-decoration:none;
-  ">
-  💬 WhatsApp
-  </a>
+<a href="https://wa.me/${phone}" 
+style="
+display:block;
+width:100%;
+padding:14px;
+background:#25D366;
+color:white;
+margin-top:10px;
+border-radius:10px;
+text-decoration:none;
+font-weight:500;
+font-size:15px;
+text-align:center;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+">
+💬 WhatsApp
+</a> 
 
 </div>
   `;
