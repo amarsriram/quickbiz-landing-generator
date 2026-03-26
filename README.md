@@ -1,35 +1,51 @@
-# quickbiz-landing-generator
-Generate simple landing pages for small businesses
-QuickBiz Landing Generator
+QuickBiz Cafe Page Generator (V2)
 
-A simple tool that helps small businesses create basic landing pages instantly.
+A simple tool to create aesthetic, mobile-friendly mini business pages for cafes and small businesses.
 
-🚀 Problem
+🚀 What it Does
 
-Many small businesses cannot afford websites or developers, which limits their online presence and customer reach.
+QuickBiz helps businesses create a clean online presence with:
 
-💡 Solution
+- Cover image
+- Brand name with custom fonts
+- Description
+- Menu section
+- Location link
+- Call & WhatsApp buttons
+- Subtle aesthetic color themes
 
-QuickBiz generates a simple landing page using:
+💡 Problem
 
-- Business name
-- Service description
-- Contact buttons (Call & WhatsApp)
+Many small businesses rely only on Instagram, where:
 
-⚙️ Features
+- Contact details are hard to access
+- Information is scattered
+- Customers lose interest due to extra steps
 
-- Instant landing page generation
-- Mobile-friendly basic UI
-- Click-to-call and WhatsApp integration
+✅ Solution
 
-🧪 How to Use
+QuickBiz creates a single clean page where customers can:
 
-1. Open "index.html"
-2. Enter business details
-3. Click "Generate"
-4. Copy or use the generated output
+- View key information instantly
+- Contact the business in one click
 
-🛠 Tech Stack
+🎯 Use Case
+
+Perfect for:
+
+- Cafes ☕
+- Bakeries 🧁
+- Small shops 🏪
+- Local services
+
+🎨 Features
+
+- 5 subtle aesthetic themes (Peach, Mint, White, Beige, Black)
+- 3 font styles (Elegant, Cute, Modern)
+- Mobile-first design
+- Simple and fast generation
+
+⚙️ Tech Stack
 
 - HTML
 - CSS
@@ -37,8 +53,12 @@ QuickBiz generates a simple landing page using:
 
 📌 Status
 
-Early-stage project. Actively improving and adding features.
+Version 2 — Built for real-world testing and iteration.
 
-🎯 Vision
+🔮 Vision
 
-To build simple, affordable digital tools that help small businesses grow online.
+To create simple, affordable tools that help small businesses get customers without needing complex websites.
+
+---
+
+Built by Amar Sriram 🚀
