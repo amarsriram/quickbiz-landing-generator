@@ -36,3 +36,6 @@ button {
 #output {
   margin-top: 30px;
 }
+a:hover {
+  opacity: 0.9;
+}
