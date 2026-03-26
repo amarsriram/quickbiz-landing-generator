@@ -8,6 +8,11 @@ body {
   margin-top: 40px;
 }
 
+.tagline {
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
 .card {
   background: white;
   padding: 20px;
@@ -33,9 +38,10 @@ button {
   margin-top: 10px;
 }
 
-#output {
-  margin-top: 30px;
-}
 a:hover {
   opacity: 0.9;
+}
+
+#output {
+  margin-top: 30px;
 }
