@@ -15,84 +15,79 @@ function generate() {
   }
 
   // THEMES
-  let bgColor, textColor;
+  let bgColor = "#ffffff", textColor = "#222";
 
   if (theme === "peach") {
     bgColor = "#fff1eb"; textColor = "#3a3a3a";
-  }
-  if (theme === "mint") {
+  } else if (theme === "mint") {
     bgColor = "#edf6f3"; textColor = "#2f3e46";
-  }
-  if (theme === "white") {
+  } else if (theme === "white") {
     bgColor = "#ffffff"; textColor = "#1a1a1a";
-  }
-  if (theme === "beige") {
+  } else if (theme === "beige") {
     bgColor = "#f8f1e9"; textColor = "#3e3e3e";
-  }
-  if (theme === "black") {
+  } else if (theme === "black") {
     bgColor = "#1c1c1c"; textColor = "#f5f5f5";
   }
 
   // FONTS
-  let fontFamily;
-  if (font === "elegant") fontFamily = "'Playfair Display', serif";
-  if (font === "cute") fontFamily = "'Pacifico', cursive";
-  if (font === "modern") fontFamily = "'Poppins', sans-serif";
+  let fontFamily = "Arial";
 
-  // MENU LOGIC (SECTIONED + PRICING)
+  if (font === "elegant") fontFamily = "'Playfair Display', serif";
+  else if (font === "cute") fontFamily = "'Pacifico', cursive";
+  else if (font === "modern") fontFamily = "'Poppins', sans-serif";
+
+  // MENU (SAFE + CLEAN)
   let formattedMenu = "";
 
-const sections = menu.split(";");
+  try {
+    const sections = menu.split(";");
 
-sections.forEach(section => {
+    sections.forEach(section => {
 
-  const parts = section.split(":");
-  const title = parts[0];
-  const items = parts[1] ? parts[1].split(",") : [];
+      const parts = section.split(":");
+      const title = parts[0] || "";
+      const items = parts[1] ? parts[1].split(",") : [];
 
-  formattedMenu += `
-  <div style="
-    margin-top:20px;
-    padding:12px;
-    border-radius:10px;
-    background:rgba(0,0,0,0.03);
-  ">
-    
-    <div style="
-      font-weight:700;
-      font-size:15px;
-      margin-bottom:8px;
-      letter-spacing:0.3px;
-    ">
-      ${title}
-    </div>
-  `;
-
-  items.forEach(item => {
-    const [name, price] = item.split("-");
-
-    formattedMenu += `
-    <div style="
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:6px 0;
-      font-size:14px;
-    ">
-      <span>${name}</span>
-      <span style="
-        opacity:0.7;
-        font-size:13px;
+      formattedMenu += `
+      <div style="
+        margin-top:20px;
+        padding:12px;
+        border-radius:10px;
+        background:rgba(0,0,0,0.03);
       ">
-        ${price || ""}
-      </span>
-    </div>`;
-  });
+        
+        <div style="
+          font-weight:700;
+          font-size:15px;
+          margin-bottom:8px;
+        ">
+          ${title}
+        </div>
+      `;
 
-  formattedMenu += `</div>`;
-});
+      items.forEach(item => {
+        const parts = item.split("-");
+        const itemName = parts[0] || "";
+        const price = parts[1] || "";
 
-  });
+        formattedMenu += `
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          padding:6px 0;
+          font-size:14px;
+        ">
+          <span>${itemName}</span>
+          <span style="opacity:0.7;">${price}</span>
+        </div>`;
+      });
+
+      formattedMenu += `</div>`;
+    });
+
+  } catch (e) {
+    formattedMenu = "<p>Menu format error</p>";
+  }
 
   // FINAL PAGE
   const result = `
@@ -107,24 +102,17 @@ text-align:center;
 font-family:Arial;
 ">
 
-  <div style="margin-bottom:15px;">
-    <img src="${image}" style="width:100%;border-radius:12px;">
-  </div>
+  <img src="${image}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;">
 
   <h1 style="font-size:28px;font-family:${fontFamily};margin:10px 0;">
     ${name}
   </h1>
-<p style="opacity:0.8;">
-  ${desc}
-</p>
 
-<div style="margin-top:20px;text-align:left;">
-  ${formattedMenu}
-</div>
-  
+  <p style="opacity:0.8;">
+    ${desc}
+  </p>
 
-  <div style="margin-top:15px;text-align:left;">
-    <b>Menu</b>
+  <div style="margin-top:20px;text-align:left;">
     ${formattedMenu}
   </div>
 
@@ -133,45 +121,41 @@ font-family:Arial;
   📍 View Location
   </a>
 
- <p style="margin-top:15px;font-weight:bold;">
-  Contact us directly
-</p>
+  <p style="font-size:13px;opacity:0.7;">
+    ✔ Loved by local customers
+  </p>
 
-<a href="tel:${phone}" 
-style="
-display:block;
-width:100%;
-padding:14px;
-background:#1f1f1f;
-color:white;
-margin-top:15px;
-border-radius:10px;
-text-decoration:none;
-font-weight:500;
-font-size:15px;
-text-align:center;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-">
-📞 Call Now
-</a>
+  <p style="margin-top:15px;font-weight:500;">
+    Contact us directly
+  </p>
 
-<a href="https://wa.me/${phone}" 
-style="
-display:block;
-width:100%;
-padding:14px;
-background:#25D366;
-color:white;
-margin-top:10px;
-border-radius:10px;
-text-decoration:none;
-font-weight:500;
-font-size:15px;
-text-align:center;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-">
-💬 WhatsApp
-</a> 
+  <a href="tel:${phone}" 
+  style="
+  display:block;
+  width:100%;
+  padding:14px;
+  background:#1f1f1f;
+  color:white;
+  margin-top:10px;
+  border-radius:10px;
+  text-decoration:none;
+  ">
+  📞 Call Now
+  </a>
+
+  <a href="https://wa.me/${phone}" 
+  style="
+  display:block;
+  width:100%;
+  padding:14px;
+  background:#25D366;
+  color:white;
+  margin-top:10px;
+  border-radius:10px;
+  text-decoration:none;
+  ">
+  💬 WhatsApp
+  </a>
 
 </div>
   `;
@@ -183,7 +167,6 @@ box-shadow:0 2px 6px rgba(0,0,0,0.1);
 
 // COPY FUNCTION
 function copyCode() {
-
   if (!window.generatedCode) {
     alert("Generate first!");
     return;
