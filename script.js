@@ -21,6 +21,10 @@ function generate() {
   Contact us now to get started!
 </p>
 
+<p style="color:green; font-weight:bold;">
+  ✔ Trusted by local businesses
+</p>
+
   <div style="margin-top:20px;">
     <a href="tel:${phone}" 
        style="display:block; padding:12px; background:black; color:white; margin:10px; text-decoration:none; border-radius:6px;">
