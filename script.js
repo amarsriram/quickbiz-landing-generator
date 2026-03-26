@@ -41,43 +41,56 @@ function generate() {
 
   // MENU LOGIC (SECTIONED + PRICING)
   let formattedMenu = "";
-  const sections = menu.split(";");
 
-  sections.forEach(section => {
+const sections = menu.split(";");
 
-    const parts = section.split(":");
-    const title = parts[0];
-    const items = parts[1] ? parts[1].split(",") : [];
+sections.forEach(section => {
 
-    // Heading
-    formattedMenu += `
+  const parts = section.split(":");
+  const title = parts[0];
+  const items = parts[1] ? parts[1].split(",") : [];
+
+  formattedMenu += `
+  <div style="
+    margin-top:20px;
+    padding:12px;
+    border-radius:10px;
+    background:rgba(0,0,0,0.03);
+  ">
+    
     <div style="
-      margin-top:15px;
       font-weight:700;
-      font-size:16px;
+      font-size:15px;
+      margin-bottom:8px;
+      letter-spacing:0.3px;
     ">
       ${title}
     </div>
+  `;
 
+  items.forEach(item => {
+    const [name, price] = item.split("-");
+
+    formattedMenu += `
     <div style="
-      width:30px;
-      height:2px;
-      background:${textColor};
-      margin:5px 0 8px 0;
-      opacity:0.3;
-    "></div>
-    `;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:6px 0;
+      font-size:14px;
+    ">
+      <span>${name}</span>
+      <span style="
+        opacity:0.7;
+        font-size:13px;
+      ">
+        ${price || ""}
+      </span>
+    </div>`;
+  });
 
-    // Items
-    items.forEach(item => {
-      const [itemName, price] = item.split("-");
-
-      formattedMenu += `
-      <div style="display:flex;justify-content:space-between;padding:4px 0;">
-        <span>${itemName}</span>
-        <span>${price || ""}</span>
-      </div>`;
-    });
+  formattedMenu += `</div>`;
+});
 
   });
 
@@ -101,10 +114,14 @@ font-family:Arial;
   <h1 style="font-size:28px;font-family:${fontFamily};margin:10px 0;">
     ${name}
   </h1>
+<p style="opacity:0.8;">
+  ${desc}
+</p>
 
-  <p style="opacity:0.8;">
-    ${desc}
-  </p>
+<div style="margin-top:20px;text-align:left;">
+  ${formattedMenu}
+</div>
+  
 
   <div style="margin-top:15px;text-align:left;">
     <b>Menu</b>
