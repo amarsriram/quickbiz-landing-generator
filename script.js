@@ -26,15 +26,16 @@ function generate() {
 </p>
 
   <div style="margin-top:20px;">
-    <a href="tel:${phone}" 
-       style="display:block; padding:12px; background:black; color:white; margin:10px; text-decoration:none; border-radius:6px;">
-       📞 Call Now
-    </a>
 
-    <a href="https://wa.me/${phone}" 
-       style="display:block; padding:12px; background:green; color:white; margin:10px; text-decoration:none; border-radius:6px;">
-       💬 WhatsApp
-    </a>
+    <a href="tel:${phone}" 
+   style="display:block; padding:14px; background:#111; color:white; margin:12px; text-decoration:none; border-radius:8px; font-size:16px;">
+   📞 Call Now
+</a>
+
+<a href="https://wa.me/${phone}" 
+   style="display:block; padding:14px; background:#25D366; color:white; margin:12px; text-decoration:none; border-radius:8px; font-size:16px;">
+   💬 WhatsApp
+</a>
   </div>
 
 </div>
