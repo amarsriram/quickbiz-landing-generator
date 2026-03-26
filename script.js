@@ -1,19 +1,41 @@
 function generate() {
-  const name = document.getElementById("name").value;
-  const service = document.getElementById("service").value;
-  const phone = document.getElementById("phone").value;
+  const name = document.getElementById("name").value.trim();
+  const service = document.getElementById("service").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  if (!name || !service || !phone) {
+    alert("Please fill all fields");
+    return;
+  }
 
   const result = `
-<h2>${name}</h2>
-<p>${service}</p>
-<a href="tel:${phone}">Call Now</a><br>
-<a href="https://wa.me/${phone}">WhatsApp</a>
+<div style="text-align:center; font-family: Arial, sans-serif; padding:20px;">
+  
+  <h1 style="color:#222;">${name}</h1>
+  
+  <p style="font-size:18px; color:#555;">
+    ${service}
+  </p>
+
+  <div style="margin-top:20px;">
+    <a href="tel:${phone}" 
+       style="display:block; padding:12px; background:black; color:white; margin:10px; text-decoration:none; border-radius:6px;">
+       📞 Call Now
+    </a>
+
+    <a href="https://wa.me/${phone}" 
+       style="display:block; padding:12px; background:green; color:white; margin:10px; text-decoration:none; border-radius:6px;">
+       💬 WhatsApp
+    </a>
+  </div>
+
+</div>
   `;
 
   document.getElementById("output").innerHTML = `
+    <h3>Your Landing Page Preview</h3>
     ${result}
-    <br><br>
-    <button onclick="copyText()">Copy Code</button>
+    <button onclick="copyText()" style="margin-top:15px;">Copy Code</button>
   `;
 
   window.generatedCode = result;
@@ -21,5 +43,5 @@ function generate() {
 
 function copyText() {
   navigator.clipboard.writeText(window.generatedCode);
-  alert("Copied!");
+  alert("Code copied!");
 }
