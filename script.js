@@ -50,10 +50,12 @@ function generate() {
 
       formattedMenu += `
       <div style="
-        margin-top:20px;
+        margin-top:25px;
         padding:12px;
         border-radius:10px;
-        background:rgba(0,0,0,0.03);
+        background:rgba(255,255,255,0.6);
+        backdrop-filter:blur(4px);
+        box-shadow:0 2px 8px rgba(0,0,0,0.05); 
       ">
         
         <div style="
@@ -102,13 +104,38 @@ text-align:center;
 font-family:Arial;
 ">
 
-  <img src="${image}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;">
+  <div style="position:relative;margin-bottom:10px;">
+  <img src="${image}" style="
+    width:100%;
+    height:190px;
+    object-fit:cover;
+    border-radius:14px;
+  ">
+  <div style="
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border-radius:14px;
+    background:linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+  "></div>
+</div> 
 
-  <h1 style="font-size:28px;font-family:${fontFamily};margin:10px 0;">
+  <h1 style="
+font-size:30px;
+font-family:${fontFamily};
+margin:12px 0 6px 0;
+letter-spacing:0.5px;
+"> 
     ${name}
   </h1>
 
-  <p style="opacity:0.8;">
+  <p style="
+opacity:0.75;
+font-size:14px;
+margin-bottom:10px;
+"> 
     ${desc}
   </p>
 
@@ -117,16 +144,29 @@ font-family:Arial;
   </div>
 
   <a href="${location}" target="_blank" 
-  style="display:block;margin:12px 0;color:${textColor};text-decoration:none;font-weight:500;">
-  📍 View Location
+  style="
+display:block;
+margin:14px 0;
+color:${textColor};
+text-decoration:none;
+font-size:14px;
+opacity:0.8;
+">
+  📍 Find us on Maps 
   </a>
 
-  <p style="font-size:13px;opacity:0.7;">
-    ✔ Loved by local customers
+  
   </p>
+
+<div style="
+margin:15px 0;
+height:1px;
+background:rgba(0,0,0,0.08);
+"></div>
 
   <p style="margin-top:15px;font-weight:500;">
     Contact us directly
+  
   </p>
 
   <a href="tel:${phone}" 
@@ -140,7 +180,7 @@ font-family:Arial;
   border-radius:10px;
   text-decoration:none;
   ">
-  📞 Call Now
+  📞 Call
   </a>
 
   <a href="https://wa.me/${phone}" 
@@ -150,11 +190,11 @@ font-family:Arial;
   padding:14px;
   background:#25D366;
   color:white;
-  margin-top:10px;
+  margin-top:15px;
   border-radius:10px;
   text-decoration:none;
   ">
-  💬 WhatsApp
+  💬 Chat on WhatsApp
   </a>
 
 </div>
