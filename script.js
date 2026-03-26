@@ -1,56 +1,80 @@
 function generate() {
   const name = document.getElementById("name").value.trim();
-  const service = document.getElementById("service").value.trim();
+  const desc = document.getElementById("desc").value.trim();
   const phone = document.getElementById("phone").value.trim();
+  const image = document.getElementById("image").value.trim();
+  const menu = document.getElementById("menu").value.trim();
+  const location = document.getElementById("location").value.trim();
+  const theme = document.getElementById("theme").value;
+  const font = document.getElementById("font").value;
 
-  if (!name || !service || !phone) {
-    alert("Please fill all fields");
+  if (!name || !desc || !phone) {
+    alert("Fill required fields");
     return;
   }
 
+  // Themes
+  let bgColor, textColor, btnColor;
+
+  if (theme === "peach") {
+    bgColor = "#fff1eb"; textColor = "#3a3a3a"; btnColor = "#e5989b";
+  }
+  if (theme === "mint") {
+    bgColor = "#edf6f3"; textColor = "#2f3e46"; btnColor = "#84a98c";
+  }
+  if (theme === "white") {
+    bgColor = "#ffffff"; textColor = "#1a1a1a"; btnColor = "#6c757d";
+  }
+  if (theme === "beige") {
+    bgColor = "#f8f1e9"; textColor = "#3e3e3e"; btnColor = "#a98467";
+  }
+  if (theme === "black") {
+    bgColor = "#1c1c1c"; textColor = "#f5f5f5"; btnColor = "#4f772d";
+  }
+
+  // Fonts
+  let fontFamily;
+  if (font === "elegant") fontFamily = "'Playfair Display', serif";
+  if (font === "cute") fontFamily = "'Pacifico', cursive";
+  if (font === "modern") fontFamily = "'Poppins', sans-serif";
+
   const result = `
-<div style="text-align:center; font-family: Arial, sans-serif; padding:20px;">
-  
-  <h1 style="color:#222;">${name}</h1>
-  
-  <p style="font-size:18px; color:#555;">
-  ${service}
-</p>
+<div style="max-width:350px;margin:auto;background:${bgColor};color:${textColor};padding:20px;border-radius:12px;font-family:Arial;text-align:center">
 
-<p style="margin-top:15px; font-weight:bold;">
-  Contact us now to get started!
-</p>
-
-<p style="color:green; font-weight:bold;">
-  ✔ Trusted by local businesses
-</p>
-
-  <div style="margin-top:20px;">
-
-    <a href="tel:${phone}" 
-   style="display:block; padding:14px; background:#111; color:white; margin:12px; text-decoration:none; border-radius:8px; font-size:16px;">
-   📞 Call Now
-</a>
-
-<a href="https://wa.me/${phone}" 
-   style="display:block; padding:14px; background:#25D366; color:white; margin:12px; text-decoration:none; border-radius:8px; font-size:16px;">
-   💬 WhatsApp
-</a>
+  <div style="margin-bottom:15px;">
+    <img src="${image}" style="width:100%;border-radius:12px;">
   </div>
+
+  <h1 style="font-size:28px;font-family:${fontFamily};margin:10px 0;">
+    ${name}
+  </h1>
+
+  <p style="opacity:0.8;">
+    ${desc}
+  </p>
+
+  <p style="margin-top:15px;">
+    <b>Menu:</b> ${menu}
+  </p>
+
+  <a href="${location}" target="_blank" style="display:block;margin:10px 0;">
+    📍 View Location
+  </a>
+
+  <p style="margin-top:15px;font-weight:bold;">
+    Tap below to contact instantly
+  </p>
+
+  <a href="tel:${phone}" 
+  style="display:block;padding:14px;background:${btnColor};color:white;margin:10px;border-radius:8px;text-decoration:none;">
+  📞 Call Now</a>
+
+  <a href="https://wa.me/${phone}" 
+  style="display:block;padding:14px;background:#25D366;color:white;margin:10px;border-radius:8px;text-decoration:none;">
+  💬 WhatsApp</a>
 
 </div>
   `;
 
-  document.getElementById("output").innerHTML = `
-    <h3>Your Landing Page Preview</h3>
-    ${result}
-    <button onclick="copyText()" style="margin-top:15px;">Copy Code</button>
-  `;
-
-  window.generatedCode = result;
-}
-
-function copyText() {
-  navigator.clipboard.writeText(window.generatedCode);
-  alert("Code copied!");
+  document.getElementById("output").innerHTML = result;
 }
