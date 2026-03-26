@@ -1,4 +1,5 @@
 function generate() {
+
   const name = document.getElementById("name").value.trim();
   const desc = document.getElementById("desc").value.trim();
   const phone = document.getElementById("phone").value.trim();
@@ -13,33 +14,85 @@ function generate() {
     return;
   }
 
-  // Themes
-  let bgColor, textColor, btnColor;
+  // THEMES
+  let bgColor, textColor;
 
   if (theme === "peach") {
-    bgColor = "#fff1eb"; textColor = "#3a3a3a"; btnColor = "#e5989b";
+    bgColor = "#fff1eb"; textColor = "#3a3a3a";
   }
   if (theme === "mint") {
-    bgColor = "#edf6f3"; textColor = "#2f3e46"; btnColor = "#84a98c";
+    bgColor = "#edf6f3"; textColor = "#2f3e46";
   }
   if (theme === "white") {
-    bgColor = "#ffffff"; textColor = "#1a1a1a"; btnColor = "#6c757d";
+    bgColor = "#ffffff"; textColor = "#1a1a1a";
   }
   if (theme === "beige") {
-    bgColor = "#f8f1e9"; textColor = "#3e3e3e"; btnColor = "#a98467";
+    bgColor = "#f8f1e9"; textColor = "#3e3e3e";
   }
   if (theme === "black") {
-    bgColor = "#1c1c1c"; textColor = "#f5f5f5"; btnColor = "#4f772d";
+    bgColor = "#1c1c1c"; textColor = "#f5f5f5";
   }
 
-  // Fonts
+  // FONTS
   let fontFamily;
   if (font === "elegant") fontFamily = "'Playfair Display', serif";
   if (font === "cute") fontFamily = "'Pacifico', cursive";
   if (font === "modern") fontFamily = "'Poppins', sans-serif";
 
+  // MENU LOGIC (SECTIONED + PRICING)
+  let formattedMenu = "";
+  const sections = menu.split(";");
+
+  sections.forEach(section => {
+
+    const parts = section.split(":");
+    const title = parts[0];
+    const items = parts[1] ? parts[1].split(",") : [];
+
+    // Heading
+    formattedMenu += `
+    <div style="
+      margin-top:15px;
+      font-weight:700;
+      font-size:16px;
+    ">
+      ${title}
+    </div>
+
+    <div style="
+      width:30px;
+      height:2px;
+      background:${textColor};
+      margin:5px 0 8px 0;
+      opacity:0.3;
+    "></div>
+    `;
+
+    // Items
+    items.forEach(item => {
+      const [itemName, price] = item.split("-");
+
+      formattedMenu += `
+      <div style="display:flex;justify-content:space-between;padding:4px 0;">
+        <span>${itemName}</span>
+        <span>${price || ""}</span>
+      </div>`;
+    });
+
+  });
+
+  // FINAL PAGE
   const result = `
-<div style="max-width:350px;margin:auto;background:${bgColor};color:${textColor};padding:20px;border-radius:12px;font-family:Arial;text-align:center">
+<div style="
+max-width:350px;
+margin:auto;
+background:${bgColor};
+color:${textColor};
+padding:20px;
+border-radius:12px;
+text-align:center;
+font-family:Arial;
+">
 
   <div style="margin-bottom:15px;">
     <img src="${image}" style="width:100%;border-radius:12px;">
@@ -53,28 +106,66 @@ function generate() {
     ${desc}
   </p>
 
-  <p style="margin-top:15px;">
-    <b>Menu:</b> ${menu}
-  </p>
+  <div style="margin-top:15px;text-align:left;">
+    <b>Menu</b>
+    ${formattedMenu}
+  </div>
 
-  <a href="${location}" target="_blank" style="display:block;margin:10px 0;">
-    📍 View Location
+  <a href="${location}" target="_blank" 
+  style="display:block;margin:12px 0;color:${textColor};text-decoration:none;font-weight:500;">
+  📍 View Location
   </a>
+
+  <p style="font-size:13px;opacity:0.7;">
+    ✔ Loved by local customers
+  </p>
 
   <p style="margin-top:15px;font-weight:bold;">
     Tap below to contact instantly
   </p>
 
   <a href="tel:${phone}" 
-  style="display:block;padding:14px;background:${btnColor};color:white;margin:10px;border-radius:8px;text-decoration:none;">
-  📞 Call Now</a>
+  style="
+  display:block;
+  padding:14px;
+  background:#2b2b2b;
+  color:white;
+  margin:10px;
+  border-radius:8px;
+  text-decoration:none;
+  ">
+  📞 Call Now
+  </a>
 
   <a href="https://wa.me/${phone}" 
-  style="display:block;padding:14px;background:#25D366;color:white;margin:10px;border-radius:8px;text-decoration:none;">
-  💬 WhatsApp</a>
+  style="
+  display:block;
+  padding:14px;
+  background:#4f772d;
+  color:white;
+  margin:10px;
+  border-radius:8px;
+  text-decoration:none;
+  ">
+  💬 WhatsApp
+  </a>
 
 </div>
   `;
 
   document.getElementById("output").innerHTML = result;
+  window.generatedCode = result;
+}
+
+
+// COPY FUNCTION
+function copyCode() {
+
+  if (!window.generatedCode) {
+    alert("Generate first!");
+    return;
+  }
+
+  navigator.clipboard.writeText(window.generatedCode);
+  alert("Code copied!");
 }
