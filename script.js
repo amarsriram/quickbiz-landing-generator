@@ -14,8 +14,12 @@ function generate() {
   <h1 style="color:#222;">${name}</h1>
   
   <p style="font-size:18px; color:#555;">
-    ${service}
-  </p>
+  ${service}
+</p>
+
+<p style="margin-top:15px; font-weight:bold;">
+  Contact us now to get started!
+</p>
 
   <div style="margin-top:20px;">
     <a href="tel:${phone}" 
