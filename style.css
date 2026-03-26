@@ -8,6 +8,14 @@ body {
   margin-top: 40px;
 }
 
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  display: inline-block;
+}
+
 input, select {
   display: block;
   margin: 10px auto;
@@ -16,11 +24,13 @@ input, select {
 }
 
 button {
-  padding: 10px 20px;
+  padding: 12px 20px;
   background: black;
   color: white;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
+  margin-top: 10px;
 }
 
 #output {
