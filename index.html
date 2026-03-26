@@ -1,23 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QuickBiz Generator</title>
+  <title>QuickBiz V2</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Pacifico&family=Poppins&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <h1>QuickBiz Landing Generator</h1>
-  <p>Create a simple landing page for your business instantly</p>
+<div class="container">
 
-  <input id="name" placeholder="Business Name"><br>
-  <input id="service" placeholder="Service"><br>
-  <input id="phone" placeholder="Phone Number"><br>
+  <h1>QuickBiz Cafe Page Generator</h1>
+
+  <input id="name" placeholder="Cafe Name">
+  <input id="desc" placeholder="Short Description">
+  <input id="phone" placeholder="Phone Number">
+  <input id="image" placeholder="Cover Image URL">
+  <input id="menu" placeholder="Menu (Coffee, Sandwich...)">
+  <input id="location" placeholder="Google Maps Link">
+
+  <!-- Theme -->
+  <select id="theme">
+    <option value="peach">Peach 🍑</option>
+    <option value="mint">Mint 🌿</option>
+    <option value="white">White ⚪</option>
+    <option value="beige">Beige 🟤</option>
+    <option value="black">Black ⚫</option>
+  </select>
+
+  <!-- Font -->
+  <select id="font">
+    <option value="elegant">Elegant</option>
+    <option value="cute">Cute</option>
+    <option value="modern">Modern</option>
+  </select>
 
   <button onclick="generate()">Generate</button>
 
   <div id="output"></div>
 
-  <script src="script.js"></script>
+</div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
