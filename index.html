@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QuickBiz Cafe Page Generator</title>
+  <title>QuickBiz Cafe Generator</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Pacifico&family=Poppins&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -15,27 +13,27 @@
 
   <h1>QuickBiz Cafe Page Generator</h1>
 
-  <p class="tagline">
-    Create a beautiful mini page for your café in seconds
-  </p>
-
   <div class="card">
 
-    <h3>Enter Business Details</h3>
-
     <input id="name" placeholder="Cafe Name">
-    <input id="desc" placeholder="Short Description">
+    <input id="desc" placeholder="Description">
     <input id="phone" placeholder="Phone Number">
+
     <input id="image" placeholder="Cover Image URL">
-    <input id="menu" placeholder="Coffee: Cappuccino - ₹120; Snacks: Sandwich - ₹150">
+    <input id="gallery" placeholder="Gallery URLs (comma separated)">
+
+    <input id="timings" placeholder="Timings (Mon-Fri: 9AM-10PM; Sat-Sun: 10AM-11PM)">
+    <input id="menu" placeholder="Coffee: Cappuccino - ₹120, Latte - ₹140; Snacks: Sandwich - ₹150">
+
     <input id="location" placeholder="Google Maps Link">
+    <input id="instagram" placeholder="Instagram Link (optional)">
 
     <select id="theme">
-      <option value="peach">Peach </option>
-      <option value="mint">Mint </option>
-      <option value="white">White </option>
-      <option value="beige">Beige </option>
-      <option value="black">Black </option>
+      <option value="beige">Beige</option>
+      <option value="peach">Peach</option>
+      <option value="mint">Mint</option>
+      <option value="white">White</option>
+      <option value="black">Black</option>
     </select>
 
     <select id="font">
@@ -49,7 +47,6 @@
   </div>
 
   <div id="output"></div>
-
   <button onclick="copyCode()">Copy Code</button>
 
 </div>
