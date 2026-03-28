@@ -5,20 +5,15 @@ body {
 
 .container {
   text-align: center;
-  margin-top: 40px;
-}
-
-.tagline {
-  opacity: 0.7;
-  margin-bottom: 20px;
+  margin-top: 30px;
 }
 
 .card {
   background: white;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   display: inline-block;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 input, select {
