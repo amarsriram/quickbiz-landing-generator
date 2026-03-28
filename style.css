@@ -10,7 +10,6 @@ body {
 
 h1 {
   font-size: 22px;
-  margin-bottom: 15px;
 }
 
 .card {
@@ -44,9 +43,6 @@ button:hover {
   opacity: 0.9;
 }
 
-/* PHONE PREVIEW */
-
-
 #output {
-  margin-top: 20px;
+  margin-top: 30px;
 }
