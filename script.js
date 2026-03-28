@@ -13,11 +13,11 @@ function generate() {
   const font = document.getElementById("font").value;
 
   if (!name || !phone) {
-    alert("Fill required fields");
+    alert("Enter at least Name and Phone");
     return;
   }
 
-  // THEME
+  // THEMES
   let bg = "#ffffff", text = "#222";
 
   if (theme === "beige") bg = "#f8f1e9";
@@ -26,7 +26,7 @@ function generate() {
   if (theme === "black") { bg = "#1c1c1c"; text = "#f5f5f5"; }
 
   // FONT
-  let fontFamily = "Poppins";
+  let fontFamily = "'Poppins', sans-serif";
   if (font === "elegant") fontFamily = "'Playfair Display', serif";
   if (font === "cute") fontFamily = "'Pacifico', cursive";
 
@@ -36,7 +36,9 @@ function generate() {
     const imgs = gallery.split(",");
     galleryHTML = `<div style="display:flex;overflow-x:auto;gap:10px;margin:10px 0;">`;
     imgs.forEach(img => {
-      galleryHTML += `<img src="${img.trim()}" style="width:140px;height:100px;border-radius:12px;object-fit:cover;">`;
+      if (img.trim()) {
+        galleryHTML += `<img src="${img.trim()}" style="width:140px;height:100px;border-radius:12px;object-fit:cover;">`;
+      }
     });
     galleryHTML += `</div>`;
   }
@@ -45,34 +47,44 @@ function generate() {
   let timingsHTML = "";
   if (timings) {
     timingsHTML = `<div style="margin-top:10px;text-align:left;">
-      <div style="font-weight:700;">⏲️ Timings</div>`;
+      <div style="font-weight:700;">⏰ Timings</div>`;
     timings.split(";").forEach(t => {
-      timingsHTML += `<div style="font-size:14px;">${t}</div>`;
+      if (t.trim()) {
+        timingsHTML += `<div style="font-size:14px;">${t}</div>`;
+      }
     });
     timingsHTML += `</div>`;
   }
 
-  // MENU
+  // MENU (SAFE)
   let menuHTML = "";
-  const sections = menu.split(";");
-  sections.forEach(sec => {
-    const [title, items] = sec.split(":");
-    if (!items) return;
+  if (menu) {
+    const sections = menu.split(";");
+    sections.forEach(sec => {
+      const parts = sec.split(":");
+      const title = parts[0];
+      const items = parts[1];
 
-    menuHTML += `<div style="margin-top:15px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.6);">
-      <div style="font-weight:700;margin-bottom:6px;">${title}</div>`;
+      if (!title || !items) return;
 
-    items.split(",").forEach(i => {
-      const [n, p] = i.split("-");
-      menuHTML += `
-      <div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;">
-        <span>${n}</span>
-        <span>${p}</span>
-      </div>`;
+      menuHTML += `<div style="margin-top:15px;padding:12px;border-radius:12px;background:#fff;">
+        <div style="font-weight:700;margin-bottom:6px;">${title}</div>`;
+
+      items.split(",").forEach(i => {
+        const p = i.split("-");
+        const n = p[0] || "";
+        const price = p[1] || "";
+
+        menuHTML += `
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;">
+          <span>${n}</span>
+          <span>${price}</span>
+        </div>`;
+      });
+
+      menuHTML += `</div>`;
     });
-
-    menuHTML += `</div>`;
-  });
+  }
 
   // INSTAGRAM
   let instaHTML = "";
@@ -81,24 +93,21 @@ function generate() {
   }
 
   const result = `
-<div style="width:100%;padding:18px 15px 30px 15px;background:${bg};color:${text};font-family:${fontFamily};">
+<div style="width:100%;padding:20px;background:${bg};color:${text};font-family:${fontFamily};">
 
-<div style="height:10px;"></div>
-
-  <img src="${image}" style="width:100%;height:200px;border-radius:12px;object-fit:cover;">
+  ${image ? `<img src="${image}" style="width:100%;height:200px;border-radius:12px;object-fit:cover;">` : ""}
 
   ${galleryHTML}
 
   <h2 style="margin:10px 0;">${name}</h2>
-  <p style="font-size:14px;opacity:0.8;">${desc}</p>
+
+  ${desc ? `<p style="font-size:14px;opacity:0.8;">${desc}</p>` : ""}
 
   ${timingsHTML}
 
   ${menuHTML}
 
-  <a href="${location}" target="_blank" style="display:block;text-align:center;margin:15px 0;font-weight:600;">
-    📍 View Location
-  </a>
+  ${location ? `<a href="${location}" target="_blank" style="display:block;text-align:center;margin:15px 0;font-weight:600;">📍 View Location</a>` : ""}
 
   ${instaHTML}
 
@@ -117,10 +126,7 @@ function generate() {
 </div>
 `;
 
-  document.getElementById("output").innerHTML = `
-    
-document.getElementById("output").innerHTML = result;
-  
+  document.getElementById("output").innerHTML = result;
   window.generatedCode = result;
 }
 
