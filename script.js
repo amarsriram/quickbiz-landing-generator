@@ -81,9 +81,11 @@ function generate() {
   }
 
   const result = `
-<div style="width:100%;padding:15px;background:${bg};color:${text};font-family:${fontFamily};">
+<div style="width:100%;padding:18px 15px 30px 15px;background:${bg};color:${text};font-family:${fontFamily};">
 
-  <img src="${image}" style="width:100%;height:180px;border-radius:12px;object-fit:cover;">
+<div style="height:10px;"></div>
+
+  <img src="${image}" style="width:100%;height:200px;border-radius:12px;object-fit:cover;">
 
   ${galleryHTML}
 
