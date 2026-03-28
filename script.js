@@ -118,13 +118,9 @@ function generate() {
 `;
 
   document.getElementById("output").innerHTML = `
-    <div class="phone-frame">
-      <div class="phone-screen">
-        ${result}
-      </div>
-    </div>
-  `;
-
+    
+document.getElementById("output").innerHTML = result;
+  
   window.generatedCode = result;
 }
 
