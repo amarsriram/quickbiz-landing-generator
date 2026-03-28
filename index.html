@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QuickBiz Cafe Generator</title>
+  <title>QuickBiz Generator</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Pacifico&family=Poppins&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -16,7 +16,7 @@
   <div class="card">
 
     <input id="name" placeholder="Cafe Name">
-    <input id="desc" placeholder="Short Description">
+    <input id="desc" placeholder="Description">
     <input id="phone" placeholder="Phone Number">
 
     <input id="image" placeholder="Cover Image URL">
@@ -26,7 +26,7 @@
     <input id="menu" placeholder="Coffee: Cappuccino - ₹120, Latte - ₹140; Snacks: Sandwich - ₹150">
 
     <input id="location" placeholder="Google Maps Link">
-    <input id="instagram" placeholder="Instagram Link (optional)">
+    <input id="instagram" placeholder="Instagram Link">
 
     <select id="theme">
       <option value="beige">Beige</option>
@@ -37,9 +37,9 @@
     </select>
 
     <select id="font">
+      <option value="modern">Modern</option>
       <option value="elegant">Elegant</option>
       <option value="cute">Cute</option>
-      <option value="modern">Modern</option>
     </select>
 
     <button onclick="generate()">Create Page</button>
