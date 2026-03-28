@@ -17,31 +17,26 @@ function generate() {
     return;
   }
 
-  // THEMES
+  // THEME
   let bg = "#ffffff", text = "#222";
 
-  if (theme === "beige") { bg = "#f8f1e9"; text = "#3e3e3e"; }
-  if (theme === "peach") { bg = "#fff1eb"; text = "#3a3a3a"; }
-  if (theme === "mint") { bg = "#edf6f3"; text = "#2f3e46"; }
-  if (theme === "white") { bg = "#ffffff"; text = "#1a1a1a"; }
+  if (theme === "beige") bg = "#f8f1e9";
+  if (theme === "peach") bg = "#fff1eb";
+  if (theme === "mint") bg = "#edf6f3";
   if (theme === "black") { bg = "#1c1c1c"; text = "#f5f5f5"; }
 
-  // FONTS
-  let fontFamily = "Arial";
+  // FONT
+  let fontFamily = "Poppins";
   if (font === "elegant") fontFamily = "'Playfair Display', serif";
   if (font === "cute") fontFamily = "'Pacifico', cursive";
-  if (font === "modern") fontFamily = "'Poppins', sans-serif";
-
-  // FORMAT NAME
-  const formattedName = name.replace(/\b\w/g, c => c.toUpperCase());
 
   // GALLERY
   let galleryHTML = "";
   if (gallery) {
     const imgs = gallery.split(",");
-    galleryHTML = `<div style="display:flex;overflow-x:auto;gap:10px;margin-top:10px;">`;
+    galleryHTML = `<div style="display:flex;overflow-x:auto;gap:10px;margin:10px 0;">`;
     imgs.forEach(img => {
-      galleryHTML += `<img src="${img.trim()}" style="width:120px;height:90px;border-radius:10px;object-fit:cover;">`;
+      galleryHTML += `<img src="${img.trim()}" style="width:140px;height:100px;border-radius:12px;object-fit:cover;">`;
     });
     galleryHTML += `</div>`;
   }
@@ -49,10 +44,9 @@ function generate() {
   // TIMINGS
   let timingsHTML = "";
   if (timings) {
-    const parts = timings.split(";");
-    timingsHTML = `<div style="margin-top:15px;text-align:left;">
-      <b>⏰ Timings</b>`;
-    parts.forEach(t => {
+    timingsHTML = `<div style="margin-top:10px;text-align:left;">
+      <div style="font-weight:700;">⏲️ Timings</div>`;
+    timings.split(";").forEach(t => {
       timingsHTML += `<div style="font-size:14px;">${t}</div>`;
     });
     timingsHTML += `</div>`;
@@ -60,76 +54,75 @@ function generate() {
 
   // MENU
   let menuHTML = "";
-  try {
-    const sections = menu.split(";");
-    sections.forEach(sec => {
-      const parts = sec.split(":");
-      const title = parts[0];
-      const items = parts[1] ? parts[1].split(",") : [];
+  const sections = menu.split(";");
+  sections.forEach(sec => {
+    const [title, items] = sec.split(":");
+    if (!items) return;
 
-      menuHTML += `<div style="margin-top:15px;padding:10px;border-radius:10px;background:#fff;">`;
-      menuHTML += `<div style="font-weight:600;">${title}</div>`;
+    menuHTML += `<div style="margin-top:15px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.6);">
+      <div style="font-weight:700;margin-bottom:6px;">${title}</div>`;
 
-      items.forEach(i => {
-        const [n, p] = i.split("-");
-        menuHTML += `
-        <div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;">
-          <span>${n}</span>
-          <span>${p || ""}</span>
-        </div>`;
-      });
-
-      menuHTML += `</div>`;
+    items.split(",").forEach(i => {
+      const [n, p] = i.split("-");
+      menuHTML += `
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;">
+        <span>${n}</span>
+        <span>${p}</span>
+      </div>`;
     });
-  } catch {
-    menuHTML = "<p>Menu error</p>";
-  }
+
+    menuHTML += `</div>`;
+  });
 
   // INSTAGRAM
   let instaHTML = "";
   if (instagram) {
-    instaHTML = `
-    <a href="${instagram}" target="_blank" style="display:block;margin:10px 0;color:${text};">
-      📸 Instagram
-    </a>`;
+    instaHTML = `<a href="${instagram}" target="_blank" style="display:block;margin:10px 0;">📸 Instagram</a>`;
   }
 
-  // FINAL PAGE
   const result = `
-<div style="max-width:350px;margin:auto;background:${bg};color:${text};padding:20px;border-radius:12px;font-family:${fontFamily};">
+<div style="width:100%;padding:15px;background:${bg};color:${text};font-family:${fontFamily};">
 
-  <img src="${image}" style="width:100%;height:190px;object-fit:cover;border-radius:12px;">
+  <img src="${image}" style="width:100%;height:180px;border-radius:12px;object-fit:cover;">
 
   ${galleryHTML}
 
-  <h1 style="font-size:28px;margin:10px 0;">${formattedName}</h1>
-
-  <p style="opacity:0.85;font-size:14px;">${desc}</p>
+  <h2 style="margin:10px 0;">${name}</h2>
+  <p style="font-size:14px;opacity:0.8;">${desc}</p>
 
   ${timingsHTML}
 
-  <div style="margin-top:20px;">${menuHTML}</div>
+  ${menuHTML}
 
-  <a href="${location}" target="_blank" style="display:block;margin:12px 0;color:${text};">
-    📍 Find us on Maps
+  <a href="${location}" target="_blank" style="display:block;text-align:center;margin:15px 0;font-weight:600;">
+    📍 View Location
   </a>
 
   ${instaHTML}
 
-  <div style="margin:15px 0;height:1px;background:rgba(0,0,0,0.1);"></div>
+  <div style="font-size:13px;opacity:0.7;margin:10px 0;text-align:center;">
+    ✔ Loved by local customers
+  </div>
 
   <a href="tel:${phone}" style="display:block;padding:14px;background:#1f1f1f;color:white;text-align:center;border-radius:10px;">
-    📞 Call
+    📞 Call Now
   </a>
 
   <a href="https://wa.me/${phone}" style="display:block;padding:14px;background:#25D366;color:white;text-align:center;border-radius:10px;margin-top:10px;">
-    💬 WhatsApp
+    💬 Chat on WhatsApp
   </a>
 
 </div>
 `;
 
-  document.getElementById("output").innerHTML = result;
+  document.getElementById("output").innerHTML = `
+    <div class="phone-frame">
+      <div class="phone-screen">
+        ${result}
+      </div>
+    </div>
+  `;
+
   window.generatedCode = result;
 }
 
