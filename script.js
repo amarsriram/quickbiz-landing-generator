@@ -52,6 +52,7 @@ function generatePage() {
 }
 
 
+/* 🔥 BULLETPROOF MENU FORMATTER */
 function formatMenu(menuText) {
   let html = "";
 
@@ -60,23 +61,23 @@ function formatMenu(menuText) {
   sections.forEach(section => {
     if (!section.trim()) return;
 
-    const [titlePart, itemsPart] = section.split(":");
+    const parts = section.split(":");
 
-    if (!itemsPart) return;
+    if (parts.length < 2) return;
 
-    const title = titlePart.trim();
-    const items = itemsPart.split(",");
+    const title = parts[0].trim();
+    const items = parts[1].split(",");
 
     let itemsHTML = "";
 
     items.forEach(item => {
-      const parts = item.split("-");
+      const itemParts = item.split("-");
 
-      if (parts.length === 2) {
+      if (itemParts.length === 2) {
         itemsHTML += `
           <div class="menu-item">
-            <span>${parts[0].trim()}</span>
-            <span>${parts[1].trim()}</span>
+            <span>${itemParts[0].trim()}</span>
+            <span>${itemParts[1].trim()}</span>
           </div>
         `;
       }
@@ -89,21 +90,6 @@ function formatMenu(menuText) {
       </div>
     `;
   });
-
-  return html;
-}* 🔥 FINAL MENU FORMATTER (NO BUGS) */
-
-  });
-
-  // Last section push
-  if (currentSection !== "") {
-    html += `
-      <div class="menu-card">
-        <h3>${currentSection}</h3>
-        ${itemsHTML}
-      </div>
-    `;
-  }
 
   return html;
 }
