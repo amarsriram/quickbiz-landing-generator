@@ -2,148 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QuickBiz — Cafe Page Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickBiz V4 — Cafe Page Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
-  <!-- ====== APP SHELL ====== -->
-  <div class="app-shell">
-
-    <!-- LEFT: FORM PANEL -->
-    <aside class="form-panel" id="formPanel">
-      <div class="form-panel__inner">
-
-        <div class="form-header">
-          <span class="form-logo">☕</span>
-          <div>
-            <h1 class="form-title">QuickBiz</h1>
-            <p class="form-subtitle">Cafe Page Generator</p>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Cafe Name <span class="req">*</span></label>
-          <input class="form-input" id="cafeName" type="text" placeholder="e.g. The Brew Society" />
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Tagline / Description</label>
-          <textarea class="form-input form-textarea" id="cafeDesc" placeholder="Where every sip tells a story..."></textarea>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Cover Image URL</label>
-          <input class="form-input" id="coverImage" type="url" placeholder="https://..." />
-          <p class="form-hint">Use a direct image URL (e.g. unsplash, raw.githubusercontent.com)</p>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Gallery Images <span class="form-hint-inline">(one URL per line, max 4)</span></label>
-          <textarea class="form-input form-textarea form-textarea--sm" id="galleryImages" placeholder="https://image1.jpg&#10;https://image2.jpg&#10;https://image3.jpg"></textarea>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Menu <span class="req">*</span></label>
-          <textarea class="form-input form-textarea form-textarea--lg" id="menuInput" placeholder="Coffee: Espresso - ₹59, Latte - ₹69;&#10;Tea: Lemon Tea - ₹20, Ginger Tea - ₹25;&#10;Snacks: Toast - ₹40, Sandwich - ₹60;"></textarea>
-          <p class="form-hint">Format: <code>Category: Item - Price, Item - Price;</code></p>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Google Maps URL</label>
-          <input class="form-input" id="mapsUrl" type="url" placeholder="https://maps.google.com/..." />
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">CTA Text</label>
-          <input class="form-input" id="ctaText" type="text" placeholder="Visit us today and enjoy your perfect cup!" />
-        </div>
-
-        <div class="form-row">
-          <div class="form-section form-section--half">
-            <label class="form-label">Phone Number</label>
-            <input class="form-input" id="phoneNumber" type="tel" placeholder="+91 98765 43210" />
-          </div>
-          <div class="form-section form-section--half">
-            <label class="form-label">WhatsApp Number</label>
-            <input class="form-input" id="whatsappNumber" type="tel" placeholder="+91 98765 43210" />
-          </div>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Theme</label>
-          <div class="theme-picker" id="themePicker">
-            <button class="theme-btn active" data-theme="beige" style="--c:#f5f0e8">Beige</button>
-            <button class="theme-btn" data-theme="peach" style="--c:#fde8d8">Peach</button>
-            <button class="theme-btn" data-theme="mint" style="--c:#dff2ec">Mint</button>
-            <button class="theme-btn" data-theme="white" style="--c:#ffffff">White</button>
-            <button class="theme-btn" data-theme="black" style="--c:#1a1a1a">Dark</button>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Font Style</label>
-          <div class="font-picker" id="fontPicker">
-            <button class="font-btn active" data-font="modern">Modern</button>
-            <button class="font-btn" data-font="elegant">Elegant</button>
-            <button class="font-btn" data-font="cute">Cute</button>
-          </div>
-        </div>
-
-        <button class="generate-btn" id="generateBtn">
-          <span>✨ Generate Page</span>
-        </button>
-
-      </div>
-    </aside>
-
-    <!-- RIGHT: PREVIEW PANEL -->
-    <main class="preview-panel" id="previewPanel">
-
-      <!-- Toolbar -->
-      <div class="preview-toolbar">
-        <div class="preview-toolbar__left">
-          <button class="toolbar-btn active" id="viewDesktop" title="Desktop view">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          </button>
-          <button class="toolbar-btn" id="viewMobile" title="Mobile view">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
-          </button>
-        </div>
-        <div class="preview-toolbar__right">
-          <button class="toolbar-btn toolbar-btn--export" id="exportBtn" title="Export HTML">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export HTML
-          </button>
-        </div>
-      </div>
-
-      <!-- Preview Frame -->
-      <div class="preview-frame-wrapper" id="previewFrameWrapper">
-        <div class="preview-frame" id="previewFrame">
-
-          <!-- Empty State -->
-          <div class="empty-state" id="emptyState">
-            <div class="empty-state__icon">☕</div>
-            <h2 class="empty-state__title">Your cafe page lives here</h2>
-            <p class="empty-state__desc">Fill in the form and hit <strong>Generate Page</strong> to see a live preview of your professional cafe landing page.</p>
-          </div>
-
-          <!-- Generated Preview (hidden until generated) -->
-          <div class="cafe-page" id="cafePage" style="display:none"></div>
-
-        </div>
-      </div>
-
-    </main>
-
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <span class="topbar-logo">QuickBiz</span>
+    <span class="topbar-badge">V4</span>
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toast"></div>
+  <!-- WORKSPACE -->
+  <div class="workspace">
+
+    <!-- FORM PANEL -->
+    <div class="form-panel">
+
+      <div class="section-label">☕ Cafe Details</div>
+
+      <div class="field-group">
+        <label>Cafe Name *</label>
+        <input type="text" id="cafeName" placeholder="e.g. The Golden Cup" />
+      </div>
+      <div class="field-group">
+        <label>Description</label>
+        <textarea id="description" placeholder="A warm cafe nestled in the heart of the city..."></textarea>
+      </div>
+      <div class="field-group">
+        <label>Timings</label>
+        <input type="text" id="timings" placeholder="Mon–Sun: 8 AM – 10 PM" />
+      </div>
+
+      <div class="section-label">🖼 Images</div>
+
+      <div class="field-group">
+        <label>Cover Image URL</label>
+        <input type="url" id="coverImg" placeholder="https://..." />
+      </div>
+      <div class="field-group">
+        <label>Gallery Images (comma-separated URLs)</label>
+        <textarea id="galleryImgs" placeholder="https://img1.jpg, https://img2.jpg, ..."></textarea>
+      </div>
+
+      <div class="section-label">🧾 Menu</div>
+
+      <div class="field-group">
+        <label>Menu Text</label>
+        <textarea id="menuText" rows="8" placeholder="Hot Drinks
+Espresso - ₹80
+Cappuccino - ₹120
+
+Cold Drinks
+Iced Latte - ₹150
+Cold Brew - ₹130"></textarea>
+        <div class="menu-hint">Format: Category on first line, then Item - ₹Price. Separate categories with a blank line.</div>
+      </div>
+
+      <div class="section-label">📍 Contact & Location</div>
+
+      <div class="field-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="9876543210" />
+      </div>
+      <div class="field-group">
+        <label>Google Maps Link</label>
+        <input type="url" id="mapsLink" placeholder="https://maps.google.com/..." />
+      </div>
+
+      <div class="section-label">🎨 Theme</div>
+      <div class="theme-row">
+        <div class="theme-swatch active" data-theme="beige"  title="Beige"></div>
+        <div class="theme-swatch"        data-theme="peach"  title="Peach"></div>
+        <div class="theme-swatch"        data-theme="mint"   title="Mint"></div>
+        <div class="theme-swatch"        data-theme="white"  title="White"></div>
+        <div class="theme-swatch"        data-theme="black"  title="Black"></div>
+        <div class="theme-swatch"        data-theme="pink"   title="Pink"></div>
+      </div>
+
+      <button class="btn-generate" onclick="generatePage()">✨ Generate Page</button>
+      <button class="btn-copy"     onclick="copyCode()">⎘ Copy HTML Code</button>
+
+    </div>
+    <!-- /FORM PANEL -->
+
+    <!-- PREVIEW PANEL -->
+    <div class="preview-panel">
+      <div class="preview-toolbar">
+        <span class="preview-label">Live Preview</span>
+        <span class="preview-pill">📱 Mobile View</span>
+      </div>
+      <div class="phone-frame">
+        <div class="phone-notch">
+          <div class="phone-notch-pill"></div>
+        </div>
+        <div id="previewContent">
+          <div class="empty-state">
+            <div class="empty-state-icon">☕</div>
+            <div class="empty-state-title">Your page lives here</div>
+            <div class="empty-state-sub">Fill in the details and hit Generate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /PREVIEW PANEL -->
+
+  </div>
+  <!-- /WORKSPACE -->
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">✓ HTML copied!</div>
 
   <script src="script.js"></script>
 </body>
 </html>
+
