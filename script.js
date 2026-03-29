@@ -52,42 +52,47 @@ function generatePage() {
 }
 
 
-/* 🔥 FINAL MENU FORMATTER (NO BUGS) */
 function formatMenu(menuText) {
-  const lines = menuText.split("\n");
   let html = "";
-  let currentSection = "";
-  let itemsHTML = "";
 
-  lines.forEach(line => {
-    line = line.trim();
+  const sections = menuText.split(";");
 
-    // Section detection
-    if (line.endsWith(":")) {
+  sections.forEach(section => {
+    if (!section.trim()) return;
 
-      if (currentSection !== "") {
-        html += `
-          <div class="menu-card">
-            <h3>${currentSection}</h3>
-            ${itemsHTML}
+    const [titlePart, itemsPart] = section.split(":");
+
+    if (!itemsPart) return;
+
+    const title = titlePart.trim();
+    const items = itemsPart.split(",");
+
+    let itemsHTML = "";
+
+    items.forEach(item => {
+      const parts = item.split("-");
+
+      if (parts.length === 2) {
+        itemsHTML += `
+          <div class="menu-item">
+            <span>${parts[0].trim()}</span>
+            <span>${parts[1].trim()}</span>
           </div>
         `;
       }
+    });
 
-      currentSection = line.replace(":", "");
-      itemsHTML = "";
+    html += `
+      <div class="menu-card">
+        <h3>${title}</h3>
+        ${itemsHTML}
+      </div>
+    `;
+  });
 
-    } 
-    else if (line.includes(" - ")) {
-      const parts = line.split(" - ");
+  return html;
+}* 🔥 FINAL MENU FORMATTER (NO BUGS) */
 
-      itemsHTML += `
-        <div class="menu-item">
-          <span>${parts[0]}</span>
-          <span>${parts[1]}</span>
-        </div>
-      `;
-    }
   });
 
   // Last section push
