@@ -1,356 +1,507 @@
-/* =============================================
-   QuickBiz V4 — script.js
-   Generator Logic
-   ============================================= */
+/* ══════════════════════════════════════════════════
+   QUICKBIZ V5 — GENERATOR LOGIC
+   script.js
+══════════════════════════════════════════════════ */
 
 'use strict';
 
-/* ===== STATE ===== */
-let selectedTheme = 'beige';
-let generatedHTML = '';
-
-/* ===== THEME CONFIG ===== */
-const themes = {
-  beige: {
-    bg:         '#f5f0e8',
-    card:       'rgba(255,255,255,0.65)',
-    text:       '#2a2218',
-    sub:        '#6b5f4e',
-    border:     'rgba(0,0,0,0.08)',
-    timingsBg:  'rgba(0,0,0,0.06)',
-    menuBg:     'rgba(255,255,255,0.7)',
-    accent:     '#b5831f'
-  },
-  peach: {
-    bg:         '#ffe5d9',
-    card:       'rgba(255,255,255,0.65)',
-    text:       '#3b1f14',
-    sub:        '#7a4030',
-    border:     'rgba(0,0,0,0.08)',
-    timingsBg:  'rgba(0,0,0,0.06)',
-    menuBg:     'rgba(255,255,255,0.7)',
-    accent:     '#c0522a'
-  },
-  mint: {
-    bg:         '#d4f0e4',
-    card:       'rgba(255,255,255,0.65)',
-    text:       '#142b20',
-    sub:        '#3a6b50',
-    border:     'rgba(0,0,0,0.08)',
-    timingsBg:  'rgba(0,0,0,0.06)',
-    menuBg:     'rgba(255,255,255,0.7)',
-    accent:     '#217a4a'
-  },
-  white: {
-    bg:         '#ffffff',
-    card:       'rgba(245,245,245,0.8)',
-    text:       '#111111',
-    sub:        '#555555',
-    border:     'rgba(0,0,0,0.1)',
-    timingsBg:  'rgba(0,0,0,0.04)',
-    menuBg:     '#f8f8f8',
-    accent:     '#222222'
-  },
-  black: {
-    bg:         '#111111',
-    card:       'rgba(255,255,255,0.06)',
-    text:       '#f0ece4',
-    sub:        '#aaaaaa',
-    border:     'rgba(255,255,255,0.08)',
-    timingsBg:  'rgba(255,255,255,0.06)',
-    menuBg:     'rgba(255,255,255,0.07)',
-    accent:     '#e8c97a'
-  },
-  pink: {
-    bg:         '#ffd6e7',
-    card:       'rgba(255,255,255,0.65)',
-    text:       '#3b0f24',
-    sub:        '#7a2045',
-    border:     'rgba(0,0,0,0.08)',
-    timingsBg:  'rgba(0,0,0,0.06)',
-    menuBg:     'rgba(255,255,255,0.7)',
-    accent:     '#b0175c'
-  }
+// ── State ──────────────────────────────────────────
+const state = {
+  theme:   'beige',
+  font:    'poppins',
+  texture: 'plain',
 };
 
-/* ===== THEME SWATCH SELECTOR ===== */
-document.querySelectorAll('.theme-swatch').forEach(function (sw) {
-  sw.addEventListener('click', function () {
-    document.querySelectorAll('.theme-swatch').forEach(function (s) {
-      s.classList.remove('active');
-    });
-    sw.classList.add('active');
-    selectedTheme = sw.dataset.theme;
-  });
-});
+// ── DEMO DATA (default preview) ────────────────────
+const DEMO = {
+  name:    'Bloom & Brew',
+  desc:    'A cozy corner for specialty coffee, warm pastries & good vibes. Crafted with love, served with soul.',
+  phone:   '+919876543210',
+  map:     'https://maps.google.com',
+  timing:  'Mon–Sat: 8 AM – 9 PM  |  Sun: 10 AM – 6 PM',
+  heroImg: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80',
+  gallery: [
+    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80',
+    'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&q=80',
+    'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80',
+    'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=80',
+    'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&q=80',
+  ],
+  menu: `Coffee
+Espresso - ₹120
+Cappuccino - ₹150
+Cold Brew - ₹180
+Matcha Latte - ₹200
 
-/* ===== HELPERS ===== */
+Food
+Croissant - ₹90
+Avocado Toast - ₹220
+Banana Bread - ₹110
+Acai Bowl - ₹280`,
+  reviews: `Priya S | 5 | Best cappuccino in town. The ambiance is absolutely dreamy!
+Rohan M | 5 | Came for the cold brew, stayed for the vibes. 10/10 would return.
+Anya K | 4 | Lovely pastries, great music. Such a peaceful spot to work from.
+Dev P | 5 | Honestly one of the best cafes I have been to. The avocado toast is elite.
+Meera T | 5 | Hidden gem! Staff is warm and the coffee is perfection.`,
+};
 
-/**
- * Escape HTML special characters to prevent XSS / broken layout.
- * @param {string} str
- * @returns {string}
- */
-function escHtml(str) {
-  return (str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+// ── THEME CONFIG ───────────────────────────────────
+const THEMES = {
+  beige: {
+    bg:      '#f5f0e8',
+    surface: '#ede7d9',
+    card:    '#faf6ef',
+    text:    '#2c2416',
+    muted:   '#7a6a52',
+    border:  '#e0d5c0',
+    badge:   '#d9c49a',
+  },
+  peach: {
+    bg:      '#fdf0ea',
+    surface: '#fae5d8',
+    card:    '#fff8f5',
+    text:    '#3b1f14',
+    muted:   '#9a6654',
+    border:  '#f0d5c8',
+    badge:   '#f0b49a',
+  },
+  mint: {
+    bg:      '#eaf5f0',
+    surface: '#d8eee5',
+    card:    '#f5fbf8',
+    text:    '#142b22',
+    muted:   '#4a7a65',
+    border:  '#c5e2d5',
+    badge:   '#9ad4ba',
+  },
+  white: {
+    bg:      '#ffffff',
+    surface: '#f6f6f6',
+    card:    '#ffffff',
+    text:    '#1a1a1a',
+    muted:   '#6b6b6b',
+    border:  '#e5e5e5',
+    badge:   '#d4d4d4',
+  },
+  dark: {
+    bg:      '#0f0e0d',
+    surface: '#1a1916',
+    card:    '#211f1c',
+    text:    '#ede8e0',
+    muted:   '#9a9085',
+    border:  '#2e2b26',
+    badge:   '#3a3630',
+  },
+};
 
-/**
- * Parse and render menu text into HTML.
- * Expected format:
- *   Category Name
- *   Item - ₹Price
- *   Item - ₹Price
- *
- *   Next Category
- *   Item - ₹Price
- *
- * @param {string} menuText
- * @returns {string} HTML string
- */
-function formatMenu(menuText) {
-  if (!menuText || !menuText.trim()) {
-    return '<p style="color:#999;font-size:13px;text-align:center;padding:10px 0;">Menu not available</p>';
-  }
+// ── FONT CONFIG ────────────────────────────────────
+const FONTS = {
+  poppins:  { heading: "'Poppins', sans-serif",       body: "'Poppins', sans-serif",     weight: 600 },
+  playfair: { heading: "'Playfair Display', serif",   body: "'Poppins', sans-serif",     weight: 700 },
+  nunito:   { heading: "'Nunito', sans-serif",        body: "'Nunito', sans-serif",      weight: 700 },
+  inter:    { heading: "'Inter', sans-serif",         body: "'Inter', sans-serif",       weight: 600 },
+  dmsans:   { heading: "'DM Sans', sans-serif",       body: "'DM Sans', sans-serif",     weight: 600 },
+};
 
-  var categories = menuText.split(/\n\s*\n/);
+// ── TEXTURE CSS ────────────────────────────────────
+const TEXTURES = {
+  plain: '',
+  grain: `
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.045;
+    }`,
+  soft: `
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255,255,255,0.04) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,0,0,0.03) 0%, transparent 60%);
+    }`,
+};
 
-  return categories.map(function (cat) {
-    var lines = cat.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
-    if (!lines.length) return '';
+// ── PARSE MENU ─────────────────────────────────────
+function parseMenu(raw) {
+  if (!raw || !raw.trim()) return null;
+  const lines = raw.trim().split('\n');
+  const categories = [];
+  let current = null;
 
-    var title = lines[0];
-    var items = lines.slice(1);
-
-    var itemsHTML = items.map(function (item) {
-      var dashIdx = item.lastIndexOf(' - ');
-      var itemName  = dashIdx !== -1 ? item.slice(0, dashIdx).trim() : item.trim();
-      var itemPrice = dashIdx !== -1 ? item.slice(dashIdx + 3).trim() : '';
-      return (
-        '<div class="menu-item">' +
-          '<span class="item-name">'  + escHtml(itemName)  + '</span>' +
-          '<span class="item-price">' + escHtml(itemPrice) + '</span>' +
-        '</div>'
-      );
-    }).join('');
-
-    return (
-      '<div class="menu-category">' +
-        '<h3>' + escHtml(title) + '</h3>' +
-        itemsHTML +
-      '</div>'
-    );
-  }).join('');
-}
-
-/* ===== HTML BUILDER ===== */
-
-/**
- * Build the complete cafe landing page HTML string.
- * @param {Object} data   - Form field values
- * @param {Object} t      - Theme config object
- * @returns {string}      - Full standalone HTML document
- */
-function buildHTML(data, t) {
-  var name        = data.name;
-  var description = data.description;
-  var timings     = data.timings;
-  var cover       = data.cover;
-  var gallery     = data.gallery;
-  var menuText    = data.menuText;
-  var phone       = data.phone;
-  var mapsLink    = data.mapsLink;
-
-  /* --- Gallery --- */
-  var galleryArray = gallery
-    ? gallery.split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s && s.startsWith('http'); })
-    : [];
-
-  var gallerySection = galleryArray.length > 0
-    ? '<div class="cafe-gallery">' +
-        galleryArray.map(function (img) {
-          return '<img src="' + img + '" alt="gallery" onerror="this.remove()" />';
-        }).join('') +
-      '</div>'
-    : '';
-
-  /* --- Cover --- */
-  var coverSection = (cover && cover.startsWith('http'))
-    ? '<div class="cafe-cover"><img src="' + cover + '" alt="Cafe cover" onerror="this.style.display=\'none\'" /></div>'
-    : '';
-
-  /* --- Timings --- */
-  var timingsSection = timings
-    ? '<div class="timings-bar">⏰ ' + escHtml(timings) + '</div>'
-    : '';
-
-  /* --- Contact --- */
-  var cleanPhone = (phone || '').replace(/\D/g, '');
-  var callBtn    = cleanPhone ? '<a href="tel:' + cleanPhone + '" class="call-btn">📞 Call Now</a>' : '';
-  var waBtn      = cleanPhone ? '<a href="https://wa.me/' + cleanPhone + '" class="wa-btn">💬 WhatsApp Us</a>' : '';
-
-  /* --- Maps --- */
-  var mapsBtn = (mapsLink && mapsLink.startsWith('http'))
-    ? '<a href="' + mapsLink + '" target="_blank" class="maps-btn">📍 View Location on Maps</a>'
-    : '';
-
-  /* --- Dark mode flag --- */
-  var isDark = selectedTheme === 'black';
-  var mapsBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
-
-  return '<!DOCTYPE html>\n' +
-'<html lang="en">\n' +
-'<head>\n' +
-'<meta charset="UTF-8" />\n' +
-'<meta name="viewport" content="width=device-width, initial-scale=1.0" />\n' +
-'<title>' + escHtml(name || 'Cafe') + '</title>\n' +
-'<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />\n' +
-'<style>\n' +
-'  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }\n' +
-'  html, body { overflow-x: hidden; }\n' +
-'  body {\n' +
-'    font-family: \'DM Sans\', sans-serif;\n' +
-'    background: ' + t.bg + ';\n' +
-'    color: ' + t.text + ';\n' +
-'    max-width: 480px;\n' +
-'    margin: 0 auto;\n' +
-'    padding: 0 0 40px 0;\n' +
-'  }\n' +
-'  .cafe-cover { width: 100%; overflow: hidden; border-radius: 0 0 18px 18px; }\n' +
-'  .cafe-cover img { width: 100%; height: auto; display: block; }\n' +
-'  .cafe-gallery { display: flex; gap: 10px; padding: 14px 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }\n' +
-'  .cafe-gallery::-webkit-scrollbar { display: none; }\n' +
-'  .cafe-gallery img { width: 120px; height: 90px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }\n' +
-'  .cafe-body { padding: 18px 16px; }\n' +
-'  .cafe-name { font-family: \'Playfair Display\', serif; font-size: 26px; font-weight: 700; line-height: 1.2; margin-bottom: 8px; color: ' + t.text + '; }\n' +
-'  .cafe-desc { font-size: 14px; line-height: 1.6; color: ' + t.sub + '; margin-bottom: 14px; }\n' +
-'  .timings-bar { margin: 10px 0 18px; padding: 11px 14px; background: ' + t.timingsBg + '; border-radius: 10px; font-size: 13px; font-weight: 500; color: ' + t.sub + '; border: 1px solid ' + t.border + '; }\n' +
-'  .section-title { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: ' + t.accent + '; margin-bottom: 12px; margin-top: 24px; }\n' +
-'  .menu-category { background: ' + t.menuBg + '; padding: 14px; border-radius: 14px; margin-bottom: 14px; border: 1px solid ' + t.border + '; backdrop-filter: blur(8px); }\n' +
-'  .menu-category h3 { margin-bottom: 10px; font-size: 15px; font-weight: 700; color: ' + t.text + '; }\n' +
-'  .menu-item { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; font-size: 14px; border-bottom: 1px dashed ' + t.border + '; gap: 10px; }\n' +
-'  .menu-item:last-child { border-bottom: none; }\n' +
-'  .item-name { flex: 1; max-width: 70%; word-break: break-word; color: ' + t.text + '; }\n' +
-'  .item-price { font-weight: 700; white-space: nowrap; color: ' + t.accent + '; }\n' +
-'  .cta-box { background: ' + t.menuBg + '; border: 1px solid ' + t.border + '; border-radius: 14px; padding: 16px; font-size: 13px; line-height: 1.6; color: ' + t.sub + '; text-align: center; margin-bottom: 20px; }\n' +
-'  .maps-btn { display: block; width: 100%; padding: 13px; background: ' + mapsBg + '; color: ' + t.text + '; border: 1px solid ' + t.border + '; border-radius: 10px; text-align: center; text-decoration: none; font-size: 14px; font-weight: 500; margin-bottom: 12px; }\n' +
-'  .call-btn { background: ' + t.text + '; color: ' + t.bg + '; padding: 14px; border-radius: 10px; display: block; text-align: center; text-decoration: none; font-size: 14px; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.02em; }\n' +
-'  .wa-btn { background: #25D366; color: #fff; padding: 14px; border-radius: 10px; display: block; text-align: center; text-decoration: none; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; }\n' +
-'</style>\n' +
-'</head>\n' +
-'<body>\n\n' +
-coverSection + '\n\n' +
-gallerySection + '\n\n' +
-'<div class="cafe-body">\n\n' +
-(name        ? '  <h1 class="cafe-name">' + escHtml(name) + '</h1>\n'        : '') +
-(description ? '  <p class="cafe-desc">'  + escHtml(description) + '</p>\n'  : '') +
-(timingsSection ? '  ' + timingsSection + '\n' : '') +
-'\n  <div class="section-title">Our Menu</div>\n' +
-formatMenu(menuText) + '\n' +
-(mapsBtn ? '  ' + mapsBtn + '\n' : '') +
-'\n  <div class="cta-box">\n' +
-'    We accept online orders 🍽️ and pre-bookings 🎉 for birthdays, celebrations, and special occasions. Reach out below to order or reserve your spot.\n' +
-'  </div>\n\n' +
-(callBtn ? '  ' + callBtn + '\n' : '') +
-(waBtn   ? '  ' + waBtn   + '\n' : '') +
-'\n</div>\n' +
-'</body>\n</html>';
-}
-
-/* ===== GENERATE ===== */
-
-/**
- * Read form values, build HTML, and inject into the preview iframe.
- */
-function generatePage() {
-  var data = {
-    name:        (document.getElementById('cafeName').value    || '').trim(),
-    description: (document.getElementById('description').value || '').trim(),
-    timings:     (document.getElementById('timings').value     || '').trim(),
-    cover:       (document.getElementById('coverImg').value    || '').trim(),
-    gallery:     (document.getElementById('galleryImgs').value || '').trim(),
-    menuText:    (document.getElementById('menuText').value    || '').trim(),
-    phone:       (document.getElementById('phone').value       || '').trim(),
-    mapsLink:    (document.getElementById('mapsLink').value    || '').trim()
-  };
-
-  var t = themes[selectedTheme];
-  generatedHTML = buildHTML(data, t);
-
-  /* Render in sandboxed iframe */
-  var previewContent = document.getElementById('previewContent');
-  previewContent.innerHTML = '';
-
-  var iframe = document.createElement('iframe');
-  iframe.style.cssText = 'width:100%;border:none;display:block;min-height:600px;';
-  iframe.setAttribute('scrolling', 'no');
-  previewContent.appendChild(iframe);
-
-  iframe.contentDocument.open();
-  iframe.contentDocument.write(generatedHTML);
-  iframe.contentDocument.close();
-
-  /* Auto-resize iframe to content height */
-  setTimeout(function () {
-    try {
-      iframe.style.height = iframe.contentDocument.body.scrollHeight + 'px';
-    } catch (e) {
-      /* cross-origin guard — safe to ignore */
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    const dashIdx = trimmed.lastIndexOf(' - ');
+    if (dashIdx !== -1) {
+      const name  = trimmed.slice(0, dashIdx).trim();
+      const price = trimmed.slice(dashIdx + 3).trim();
+      if (current) current.items.push({ name, price });
+    } else {
+      current = { cat: trimmed, items: [] };
+      categories.push(current);
     }
-  }, 400);
+  });
+
+  return categories.filter(c => c.items.length > 0);
 }
 
-/* ===== COPY ===== */
+// ── PARSE REVIEWS ──────────────────────────────────
+function parseReviews(raw) {
+  if (!raw || !raw.trim()) return [];
+  return raw.trim().split('\n').map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      name:  parts[0] || 'Guest',
+      stars: Math.min(5, Math.max(1, parseInt(parts[1]) || 5)),
+      text:  parts[2] || '',
+    };
+  }).filter(r => r.text).slice(0, 5);
+}
 
-/**
- * Copy the generated HTML to clipboard.
- */
-function copyCode() {
-  if (!generatedHTML) {
-    showToast('⚠️ Generate first!');
-    return;
-  }
+// ── PARSE GALLERY ──────────────────────────────────
+function parseGallery(raw) {
+  if (!raw || !raw.trim()) return [];
+  return raw.trim().split('\n').map(l => l.trim()).filter(Boolean).slice(0, 6);
+}
+
+// ── STAR SVG ───────────────────────────────────────
+function stars(n) {
+  return Array.from({ length: 5 }, (_, i) =>
+    `<span style="color:${i < n ? '#f5a623' : '#d0c8b8'}">★</span>`
+  ).join('');
+}
+
+// ── BUTTON STYLES (fixed, theme-independent) ───────
+const BTN = {
+  primary:  'display:block;width:100%;padding:14px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#2c2c2c,#1a1a1a);color:#fff;font-size:15px;font-weight:600;letter-spacing:0.2px;cursor:pointer;text-align:center;text-decoration:none;',
+  call:     'flex:1;padding:13px 10px;border-radius:10px;border:none;background:#2c2c2c;color:#fff;font-size:14px;font-weight:600;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;',
+  whatsapp: 'flex:1;padding:13px 10px;border-radius:10px;border:none;background:#25d366;color:#fff;font-size:14px;font-weight:600;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;',
+};
+
+// ── GENERATE HTML ──────────────────────────────────
+function buildHTML(data, theme, font, texture) {
+  const T = THEMES[theme]  || THEMES.beige;
+  const F = FONTS[font]    || FONTS.poppins;
+  const TX = TEXTURES[texture] || '';
+
+  const cleanPhone = (data.phone || '').replace(/\D/g, '');
+  const hasPhone   = cleanPhone.length >= 7;
+  const hasMap     = !!(data.map || '').trim();
+  const hasTiming  = !!(data.timing || '').trim();
+  const menuParsed = parseMenu(data.menu);
+  const reviews    = parseReviews(data.reviews);
+  const gallery    = parseGallery(data.gallery);
+  const hasGallery = gallery.length > 0;
+  const hasReviews = reviews.length > 0;
+  const hasMenu    = menuParsed && menuParsed.length > 0;
+
+  /* ── Gallery HTML ── */
+  const galleryHTML = !hasGallery ? '' : `
+  <!-- Gallery -->
+  <section style="padding:0 0 4px;">
+    <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};padding:0 18px;margin-bottom:12px;">Our Space</h2>
+    <div style="display:flex;gap:10px;overflow-x:auto;padding:0 18px 10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      ${gallery.map(url => `
+      <div style="flex:0 0 220px;height:160px;border-radius:12px;overflow:hidden;scroll-snap-align:start;flex-shrink:0;">
+        <img src="${url}" alt="Gallery" onerror="this.parentElement.remove()"
+             style="width:100%;height:100%;object-fit:cover;display:block;" />
+      </div>`).join('')}
+    </div>
+  </section>`;
+
+  /* ── Reviews HTML ── */
+  const reviewsHTML = !hasReviews ? '' : `
+  <!-- Reviews -->
+  <section style="padding:0 0 4px;">
+    <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};padding:0 18px;margin-bottom:12px;">What Guests Say</h2>
+    <div style="display:flex;gap:12px;overflow-x:auto;padding:0 18px 10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      ${reviews.map(r => `
+      <div style="flex:0 0 85%;background:${T.card};border-radius:14px;padding:14px;border:1px solid ${T.border};scroll-snap-align:start;flex-shrink:0;">
+        <div style="margin-bottom:6px;font-size:15px;">${stars(r.stars)}</div>
+        <p style="font-family:${F.body};font-size:13.5px;color:${T.text};line-height:1.55;margin-bottom:8px;">"${r.text}"</p>
+        <p style="font-family:${F.body};font-size:12px;color:${T.muted};font-weight:600;">— ${r.name}</p>
+      </div>`).join('')}
+    </div>
+  </section>`;
+
+  /* ── Menu HTML ── */
+  const menuHTML = !hasMenu
+    ? `<section style="padding:0 18px;">
+        <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};margin-bottom:12px;">Menu</h2>
+        <p style="font-family:${F.body};font-size:14px;color:${T.muted};">Menu coming soon. Visit us to explore!</p>
+       </section>`
+    : `<section style="padding:0 18px;">
+        <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};margin-bottom:16px;">Menu</h2>
+        ${menuParsed.map(cat => `
+        <div style="margin-bottom:20px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span style="font-family:${F.heading};font-size:13px;font-weight:700;color:${T.text};text-transform:uppercase;letter-spacing:1px;">${cat.cat}</span>
+            <div style="flex:1;height:1px;background:${T.border};"></div>
+          </div>
+          <div style="background:${T.card};border-radius:14px;padding:4px 0;border:1px solid ${T.border};">
+            ${cat.items.map((item, idx) => `
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 14px;${idx < cat.items.length - 1 ? `border-bottom:1px solid ${T.border};` : ''}">
+              <span style="font-family:${F.body};font-size:14px;color:${T.text};flex:1;line-height:1.4;">${item.name}</span>
+              <span style="font-family:${F.body};font-size:14px;font-weight:600;color:${T.text};white-space:nowrap;flex-shrink:0;">${item.price}</span>
+            </div>`).join('')}
+          </div>
+        </div>`).join('')}
+       </section>`;
+
+  /* ── Timings HTML ── */
+  const timingsHTML = !hasTiming ? '' : `
+  <section style="padding:0 18px;">
+    <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};margin-bottom:12px;">Opening Hours</h2>
+    <div style="background:${T.card};border-radius:14px;padding:14px 16px;border:1px solid ${T.border};display:flex;align-items:flex-start;gap:12px;">
+      <span style="font-size:20px;flex-shrink:0;margin-top:1px;">🕐</span>
+      <p style="font-family:${F.body};font-size:14px;color:${T.text};line-height:1.6;word-break:break-word;">${data.timing}</p>
+    </div>
+  </section>`;
+
+  /* ── Map HTML ── */
+  const mapHTML = !hasMap ? '' : `
+  <section style="padding:0 18px;">
+    <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};margin-bottom:12px;">Find Us</h2>
+    <a href="${data.map}" target="_blank" rel="noopener"
+       style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:${T.card};border:1px solid ${T.border};border-radius:14px;text-decoration:none;">
+      <span style="font-size:20px;">📍</span>
+      <span style="font-family:${F.body};font-size:14px;font-weight:600;color:${T.text};">Open in Google Maps</span>
+      <span style="font-size:13px;color:${T.muted};">↗</span>
+    </a>
+  </section>`;
+
+  /* ── CTA Card ── */
+  const ctaCard = (label) => `
+  <section style="padding:0 18px;">
+    <div style="background:${T.card};border-radius:14px;padding:18px;border:1px solid ${T.border};text-align:center;">
+      <p style="font-family:${F.body};font-size:13px;color:${T.muted};margin-bottom:12px;">${label}</p>
+      ${hasPhone ? `<a href="tel:+${cleanPhone}" style="${BTN.primary}">Reserve a Table ☕</a>` : `<p style="font-family:${F.body};font-size:14px;color:${T.muted};">Visit us today!</p>`}
+    </div>
+  </section>`;
+
+  /* ── Contact Buttons ── */
+  const contactHTML = !hasPhone ? '' : `
+  <div style="padding:0 18px 8px;display:flex;gap:10px;">
+    <a href="tel:+${cleanPhone}" style="${BTN.call}">📞 Call Us</a>
+    <a href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener" style="${BTN.whatsapp}">💬 WhatsApp</a>
+  </div>`;
+
+  /* ── Full Page HTML ── */
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>${data.name || 'Cafe'}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Nunito:wght@300;400;600;700&family=Inter:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;-webkit-font-smoothing:antialiased;}
+body{
+  background:${T.bg};
+  color:${T.text};
+  font-family:${F.body};
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background 0.3s ease,color 0.3s ease;
+}
+::-webkit-scrollbar{display:none;}
+img{max-width:100%;height:auto;}
+${TX}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section style="position:relative;background:#000;margin-bottom:20px;">
+  ${data.heroImg
+    ? `<img src="${data.heroImg}" alt="${data.name}" onerror="this.style.display='none'"
+           style="width:100%;height:auto;display:block;object-fit:cover;max-height:420px;min-height:240px;" />`
+    : `<div style="height:280px;background:linear-gradient(135deg,${T.surface},${T.bg});display:flex;align-items:center;justify-content:center;font-size:48px;">☕</div>`}
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.55) 100%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:24px 20px 22px;">
+    <h1 style="font-family:${F.heading};font-size:28px;font-weight:${F.weight};color:#fff;line-height:1.2;text-shadow:0 2px 12px rgba(0,0,0,0.4);">${data.name || 'Your Cafe'}</h1>
+    ${data.desc ? `<p style="font-family:${F.body};font-size:13.5px;color:rgba(255,255,255,0.88);margin-top:6px;line-height:1.5;text-shadow:0 1px 6px rgba(0,0,0,0.3);">${data.desc}</p>` : ''}
+  </div>
+</section>
+
+<!-- CTA TOP -->
+${ctaCard('Perfect for work dates, weekend hangouts & everything in between.')}
+
+<!-- SPACER -->
+<div style="height:20px;"></div>
+
+<!-- GALLERY -->
+${galleryHTML}
+${hasGallery ? '<div style="height:20px;"></div>' : ''}
+
+<!-- REVIEWS -->
+${reviewsHTML}
+${hasReviews ? '<div style="height:20px;"></div>' : ''}
+
+<!-- MENU -->
+${menuHTML}
+
+<div style="height:20px;"></div>
+
+<!-- TIMINGS -->
+${timingsHTML}
+${hasTiming ? '<div style="height:20px;"></div>' : ''}
+
+<!-- MAP -->
+${mapHTML}
+${hasMap ? '<div style="height:20px;"></div>' : ''}
+
+<!-- CTA BOTTOM -->
+${ctaCard('Come in, sit down, and let us take care of the rest.')}
+
+<div style="height:16px;"></div>
+
+<!-- CONTACT BUTTONS -->
+${contactHTML}
+
+<div style="height:32px;"></div>
+
+<!-- FOOTER -->
+<footer style="padding:16px 18px 20px;text-align:center;border-top:1px solid ${T.border};">
+  <p style="font-family:${F.body};font-size:12px;color:${T.muted};">Made with ☕ · ${data.name || 'Cafe'}</p>
+</footer>
+
+</body>
+</html>`;
+}
+
+// ── RENDER PREVIEW ─────────────────────────────────
+function getFormData() {
+  const val = id => document.getElementById(id)?.value || '';
+  return {
+    name:    val('cafeName'),
+    desc:    val('cafeDesc'),
+    phone:   val('cafePhone'),
+    map:     val('cafeMap'),
+    timing:  val('cafeTiming'),
+    heroImg: val('heroImg'),
+    gallery: val('galleryImgs'),
+    menu:    val('cafeMenu'),
+    reviews: val('cafeReviews'),
+  };
+}
+
+function isFormEmpty(data) {
+  return !data.name && !data.desc && !data.phone && !data.heroImg && !data.menu && !data.reviews;
+}
+
+function renderPreview(useDemo = false) {
+  const raw  = getFormData();
+  const data = useDemo || isFormEmpty(raw) ? DEMO : raw;
+
+  const html = buildHTML(data, state.theme, state.font, state.texture);
+  const frame = document.getElementById('previewFrame');
+
+  frame.srcdoc = html;
+}
+
+// ── CHIP SELECTION ─────────────────────────────────
+function bindChips(groupId, stateKey, callback) {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+  group.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state[stateKey] = chip.dataset.val;
+      callback && callback();
+    });
+  });
+}
+
+// ── DEVICE PILLS ───────────────────────────────────
+function bindDevicePills() {
+  document.querySelectorAll('.device-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.device-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const w = parseInt(pill.dataset.width);
+      const frame = document.getElementById('phoneFrame');
+      if (frame) {
+        frame.style.width = w + 'px';
+        frame.style.borderRadius = w <= 420 ? '40px' : '24px';
+      }
+    });
+  });
+}
+
+// ── COPY HTML ──────────────────────────────────────
+function copyHTML() {
+  const raw  = getFormData();
+  const data = isFormEmpty(raw) ? DEMO : raw;
+  const html = buildHTML(data, state.theme, state.font, state.texture);
+
+  const feedback = document.getElementById('copyFeedback');
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(generatedHTML)
-      .then(function () { showToast('✓ HTML copied!'); })
-      .catch(function () { fallbackCopy(); });
+    navigator.clipboard.writeText(html).then(() => {
+      feedback.textContent = '✓ HTML copied to clipboard!';
+      setTimeout(() => feedback.textContent = '', 3000);
+    }).catch(() => fallbackCopy(html, feedback));
   } else {
-    fallbackCopy();
+    fallbackCopy(html, feedback);
   }
 }
 
-function fallbackCopy() {
-  var ta = document.createElement('textarea');
-  ta.value = generatedHTML;
-  ta.style.position = 'fixed';
-  ta.style.opacity  = '0';
+function fallbackCopy(text, feedback) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;';
   document.body.appendChild(ta);
+  ta.focus();
   ta.select();
   try {
     document.execCommand('copy');
-    showToast('✓ HTML copied!');
+    feedback.textContent = '✓ HTML copied!';
   } catch (e) {
-    showToast('❌ Copy failed');
+    feedback.textContent = '⚠ Copy failed — please copy manually.';
   }
   document.body.removeChild(ta);
+  setTimeout(() => feedback.textContent = '', 3000);
 }
 
-/* ===== TOAST ===== */
+// ── INIT ────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
 
-/**
- * Show a brief toast notification.
- * @param {string} msg
- */
-function showToast(msg) {
-  var toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(function () {
-    toast.classList.remove('show');
-  }, 2500);
-}
+  // Chip groups
+  bindChips('themeChips',   'theme',   renderPreview);
+  bindChips('fontChips',    'font',    renderPreview);
+  bindChips('textureChips', 'texture', renderPreview);
+
+  // Device pills
+  bindDevicePills();
+
+  // Generate button
+  document.getElementById('generateBtn')?.addEventListener('click', () => renderPreview());
+
+  // Copy button
+  document.getElementById('copyBtn')?.addEventListener('click', copyHTML);
+
+  // Live update on typing (debounced)
+  let debounceTimer;
+  const inputs = document.querySelectorAll('.field-input');
+  inputs.forEach(input => {
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => renderPreview(), 450);
+    });
+  });
+
+  // Initial render with demo
+  renderPreview(true);
+});
