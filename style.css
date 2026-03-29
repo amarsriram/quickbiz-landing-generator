@@ -387,7 +387,6 @@ html, body {
 /* Cover Image */
 .cafe-cover {
   width: 100%;
-  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--border);
   position: relative;
@@ -395,8 +394,7 @@ html, body {
 
 .cafe-cover img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height:auto;
   display: block;
 }
 
