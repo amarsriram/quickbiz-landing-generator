@@ -1,57 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>QuickBiz Generator</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Pacifico&family=Poppins&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickBiz V3 — Cafe Page Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
-<div class="container">
+<header class="app-header">
+  <h1>Quick<span>Biz</span> V3</h1>
+  <p>Cafe Landing Page Generator</p>
+</header>
 
-  <h1>QuickBiz Cafe Page Generator</h1>
+<div class="app-body">
 
-  <div class="card">
+  <!-- ── FORM PANEL ── -->
+  <aside class="form-panel">
+    <div class="form-inner">
 
-    <input id="name" placeholder="Cafe Name">
-    <input id="desc" placeholder="Description">
-    <input id="phone" placeholder="Phone Number">
+      <div class="section-label">☕ Business Info</div>
+      <label>Cafe Name <span>*</span></label>
+      <input type="text" id="cafeName" placeholder="e.g. The Cozy Mug" />
 
-    <input id="image" placeholder="Cover Image URL">
-    <input id="gallery" placeholder="Gallery URLs (comma separated)">
+      <label>Description</label>
+      <textarea id="cafeDesc" placeholder="A brief tagline or description..."></textarea>
 
-    <input id="timings" placeholder="Timings (Mon-Fri: 9AM-10PM; Sat-Sun: 10AM-11PM)">
-    <input id="menu" placeholder="Coffee: Cappuccino - ₹120, Latte - ₹140; Snacks: Sandwich - ₹150">
+      <label>Phone Number <span>*</span></label>
+      <input type="tel" id="cafePhone" placeholder="+91 98765 43210" />
 
-    <input id="location" placeholder="Google Maps Link">
-    <input id="instagram" placeholder="Instagram Link">
+      <div class="section-label">🖼 Media</div>
+      <label>Cover Image URL</label>
+      <input type="url" id="coverImg" placeholder="https://..." />
 
-    <select id="theme">
-      <option value="beige">Beige</option>
-      <option value="peach">Peach</option>
-      <option value="mint">Mint</option>
-      <option value="white">White</option>
-      <option value="black">Black</option>
-    </select>
+      <label>Gallery Images</label>
+      <input type="text" id="galleryImgs" placeholder="url1, url2, url3" />
+      <p class="hint">Comma-separated image URLs</p>
 
-    <select id="font">
-      <option value="modern">Modern</option>
-      <option value="elegant">Elegant</option>
-      <option value="cute">Cute</option>
-    </select>
+      <div class="section-label">📋 Details</div>
+      <label>Timings</label>
+      <input type="text" id="timings" placeholder="Mon-Fri 8am-8pm; Sat-Sun 9am-6pm" />
+      <p class="hint">Separate entries with semicolons ( ; )</p>
 
-    <button onclick="generate()">Create Page</button>
+      <label>Menu</label>
+      <textarea id="menuInput" placeholder="Coffee: Cappuccino - ₹120, Latte - ₹140; Desserts: Brownie - ₹90"></textarea>
+      <p class="hint">Format: Category: Item - Price; Category: Item - Price</p>
 
-  </div>
+      <div class="section-label">🔗 Links</div>
+      <label>Google Maps Link</label>
+      <input type="url" id="mapsLink" placeholder="https://maps.google.com/..." />
 
-  <div id="output"></div>
-  <button onclick="copyCode()">Copy Code</button>
+      <label>Instagram Link</label>
+      <input type="url" id="instaLink" placeholder="https://instagram.com/yourcafe" />
+
+      <div class="section-label">🎨 Customization</div>
+      <div class="form-row">
+        <div>
+          <label>Theme</label>
+          <select id="themeSelect">
+            <option value="beige">☕ Beige</option>
+            <option value="peach">🍑 Peach</option>
+            <option value="mint">🌿 Mint</option>
+            <option value="white">🤍 White</option>
+            <option value="black">🖤 Black</option>
+          </select>
+        </div>
+        <div>
+          <label>Font Style</label>
+          <select id="fontSelect">
+            <option value="modern">Modern</option>
+            <option value="elegant">Elegant</option>
+            <option value="cute">Cute</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-generate" onclick="generatePage()">🚀 Create Page</button>
+      <button class="btn-copy" onclick="copyCode()">📋 Copy Code</button>
+
+    </div>
+  </aside>
+
+  <!-- ── PREVIEW PANEL ── -->
+  <main class="preview-panel" id="previewPanel">
+    <div class="preview-placeholder" id="placeholder">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <rect x="8" y="4" width="32" height="56" rx="6" stroke="#888" stroke-width="2"/>
+        <rect x="14" y="12" width="20" height="12" rx="3" fill="#ddd"/>
+        <rect x="14" y="28" width="20" height="3" rx="1.5" fill="#ddd"/>
+        <rect x="14" y="34" width="14" height="3" rx="1.5" fill="#ddd"/>
+        <rect x="14" y="40" width="18" height="3" rx="1.5" fill="#ddd"/>
+      </svg>
+      <p>Fill in the form and click<br/><strong>Create Page</strong> to see your preview</p>
+    </div>
+  </main>
 
 </div>
 
-<script src="script.js"></script>
+<div class="toast" id="toast"></div>
 
+<script src="script.js"></script>
 </body>
 </html>
