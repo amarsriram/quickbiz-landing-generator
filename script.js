@@ -17,23 +17,31 @@ function generatePage() {
   const html = `
     <div class="preview-card">
 
+      <!-- COVER -->
       <img src="${cover}" class="cover-img">
 
+      <!-- GALLERY -->
       <div class="gallery">
         ${galleryHTML}
       </div>
 
+      <!-- NAME -->
       <h2 style="margin-top:10px;">${name}</h2>
+
+      <!-- DESC -->
       <p>${desc}</p>
 
+      <!-- MENU -->
       ${formattedMenu}
 
+      <!-- LOCATION -->
       <p style="margin-top:10px;">
         📍 <a href="${maps}" target="_blank">View Location</a>
       </p>
 
-      <p>Contact us directly</p>
+      <p style="margin-top:10px;">Contact us directly</p>
 
+      <!-- BUTTONS -->
       <a href="tel:${phone}" class="call-btn">📞 Call</a>
       <a href="https://wa.me/${phone}" class="whatsapp-btn">💬 WhatsApp</a>
 
@@ -43,40 +51,58 @@ function generatePage() {
   document.getElementById("previewPanel").innerHTML = html;
 }
 
-/* 🔥 PERFECT MENU FORMATTER */
+
+/* 🔥 FINAL MENU FORMATTER (NO BUGS) */
 function formatMenu(menuText) {
-  const sections = menuText.split("\n\n");
+  const lines = menuText.split("\n");
   let html = "";
+  let currentSection = "";
+  let itemsHTML = "";
 
-  sections.forEach(section => {
-    const lines = section.split("\n");
-    const title = lines[0];
-    const items = lines.slice(1);
+  lines.forEach(line => {
+    line = line.trim();
 
-    let itemsHTML = "";
+    // Section detection
+    if (line.endsWith(":")) {
 
-    items.forEach(item => {
-      const parts = item.split(" - ");
-      if (parts.length === 2) {
-        itemsHTML += `
-          <div class="menu-item">
-            <span>${parts[0]}</span>
-            <span>${parts[1]}</span>
+      if (currentSection !== "") {
+        html += `
+          <div class="menu-card">
+            <h3>${currentSection}</h3>
+            ${itemsHTML}
           </div>
         `;
       }
-    });
 
+      currentSection = line.replace(":", "");
+      itemsHTML = "";
+
+    } 
+    else if (line.includes(" - ")) {
+      const parts = line.split(" - ");
+
+      itemsHTML += `
+        <div class="menu-item">
+          <span>${parts[0]}</span>
+          <span>${parts[1]}</span>
+        </div>
+      `;
+    }
+  });
+
+  // Last section push
+  if (currentSection !== "") {
     html += `
       <div class="menu-card">
-        <h3>${title}</h3>
+        <h3>${currentSection}</h3>
         ${itemsHTML}
       </div>
     `;
-  });
+  }
 
   return html;
 }
+
 
 /* COPY CODE */
 function copyCode() {
