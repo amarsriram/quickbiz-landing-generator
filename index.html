@@ -3,119 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuickBiz V4 — Cafe Page Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <title>QuickBiz V5 — Cafe Landing Generator</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Nunito:wght@300;400;600;700&family=Inter:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <span class="topbar-logo">QuickBiz</span>
-    <span class="topbar-badge">V4</span>
-  </div>
+<!-- ════════════════════════════════════════════
+     GENERATOR PANEL
+════════════════════════════════════════════ -->
+<div class="generator-wrap">
 
-  <!-- WORKSPACE -->
-  <div class="workspace">
-
-    <!-- FORM PANEL -->
-    <div class="form-panel">
-
-      <div class="section-label">☕ Cafe Details</div>
-
-      <div class="field-group">
-        <label>Cafe Name *</label>
-        <input type="text" id="cafeName" placeholder="e.g. The Golden Cup" />
-      </div>
-      <div class="field-group">
-        <label>Description</label>
-        <textarea id="description" placeholder="A warm cafe nestled in the heart of the city..."></textarea>
-      </div>
-      <div class="field-group">
-        <label>Timings</label>
-        <input type="text" id="timings" placeholder="Mon–Sun: 8 AM – 10 PM" />
-      </div>
-
-      <div class="section-label">🖼 Images</div>
-
-      <div class="field-group">
-        <label>Cover Image URL</label>
-        <input type="url" id="coverImg" placeholder="https://..." />
-      </div>
-      <div class="field-group">
-        <label>Gallery Images (comma-separated URLs)</label>
-        <textarea id="galleryImgs" placeholder="https://img1.jpg, https://img2.jpg, ..."></textarea>
-      </div>
-
-      <div class="section-label">🧾 Menu</div>
-
-      <div class="field-group">
-        <label>Menu Text</label>
-        <textarea id="menuText" rows="8" placeholder="Hot Drinks
-Espresso - ₹80
-Cappuccino - ₹120
-
-Cold Drinks
-Iced Latte - ₹150
-Cold Brew - ₹130"></textarea>
-        <div class="menu-hint">Format: Category on first line, then Item - ₹Price. Separate categories with a blank line.</div>
-      </div>
-
-      <div class="section-label">📍 Contact & Location</div>
-
-      <div class="field-group">
-        <label>Phone Number</label>
-        <input type="tel" id="phone" placeholder="9876543210" />
-      </div>
-      <div class="field-group">
-        <label>Google Maps Link</label>
-        <input type="url" id="mapsLink" placeholder="https://maps.google.com/..." />
-      </div>
-
-      <div class="section-label">🎨 Theme</div>
-      <div class="theme-row">
-        <div class="theme-swatch active" data-theme="beige"  title="Beige"></div>
-        <div class="theme-swatch"        data-theme="peach"  title="Peach"></div>
-        <div class="theme-swatch"        data-theme="mint"   title="Mint"></div>
-        <div class="theme-swatch"        data-theme="white"  title="White"></div>
-        <div class="theme-swatch"        data-theme="black"  title="Black"></div>
-        <div class="theme-swatch"        data-theme="pink"   title="Pink"></div>
-      </div>
-
-      <button class="btn-generate" onclick="generatePage()">✨ Generate Page</button>
-      <button class="btn-copy"     onclick="copyCode()">⎘ Copy HTML Code</button>
-
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-mark">QB<span>5</span></div>
+      <h1 class="sidebar-title">QuickBiz <span>V5</span></h1>
+      <p class="sidebar-sub">Cafe Landing Generator</p>
     </div>
-    <!-- /FORM PANEL -->
 
-    <!-- PREVIEW PANEL -->
-    <div class="preview-panel">
-      <div class="preview-toolbar">
-        <span class="preview-label">Live Preview</span>
-        <span class="preview-pill">📱 Mobile View</span>
-      </div>
-      <div class="phone-frame">
-        <div class="phone-notch">
-          <div class="phone-notch-pill"></div>
+    <div class="sidebar-body">
+
+      <!-- ── CAFE INFO ── -->
+      <section class="form-section">
+        <h2 class="section-label"><span class="label-icon">☕</span> Cafe Info</h2>
+
+        <div class="field-group">
+          <label class="field-label">Cafe Name</label>
+          <input class="field-input" id="cafeName" type="text" placeholder="e.g. Bloom & Brew" maxlength="60" />
         </div>
-        <div id="previewContent">
-          <div class="empty-state">
-            <div class="empty-state-icon">☕</div>
-            <div class="empty-state-title">Your page lives here</div>
-            <div class="empty-state-sub">Fill in the details and hit Generate</div>
+
+        <div class="field-group">
+          <label class="field-label">Tagline / Description</label>
+          <textarea class="field-input field-textarea" id="cafeDesc" placeholder="A cozy corner for specialty coffee, warm pastries & good vibes." rows="3"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Phone Number</label>
+          <input class="field-input" id="cafePhone" type="tel" placeholder="+91 98765 43210" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Google Maps Link</label>
+          <input class="field-input" id="cafeMap" type="url" placeholder="https://maps.google.com/..." />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Opening Hours</label>
+          <input class="field-input" id="cafeTiming" type="text" placeholder="Mon–Sat: 8 AM – 9 PM  |  Sun: 10 AM – 6 PM" />
+        </div>
+      </section>
+
+      <!-- ── IMAGES ── -->
+      <section class="form-section">
+        <h2 class="section-label"><span class="label-icon">🖼</span> Images</h2>
+
+        <div class="field-group">
+          <label class="field-label">Cover / Hero Image URL</label>
+          <input class="field-input" id="heroImg" type="url" placeholder="https://..." />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Gallery Images <span class="field-hint">(one URL per line, max 6)</span></label>
+          <textarea class="field-input field-textarea" id="galleryImgs" placeholder="https://image1.jpg&#10;https://image2.jpg&#10;https://image3.jpg" rows="4"></textarea>
+        </div>
+      </section>
+
+      <!-- ── MENU ── -->
+      <section class="form-section">
+        <h2 class="section-label"><span class="label-icon">🍽</span> Menu</h2>
+        <p class="field-hint-block">Format: Category on its own line, then Item - ₹Price</p>
+        <div class="field-group">
+          <textarea class="field-input field-textarea field-mono" id="cafeMenu" rows="10" placeholder="Coffee
+Espresso - ₹120
+Cappuccino - ₹150
+Cold Brew - ₹180
+
+Snacks
+Croissant - ₹90
+Avocado Toast - ₹220
+Banana Bread - ₹110"></textarea>
+        </div>
+      </section>
+
+      <!-- ── REVIEWS ── -->
+      <section class="form-section">
+        <h2 class="section-label"><span class="label-icon">⭐</span> Reviews</h2>
+        <p class="field-hint-block">Format: Name | Stars (1–5) | Review text (one per line)</p>
+        <div class="field-group">
+          <textarea class="field-input field-textarea" id="cafeReviews" rows="6" placeholder="Priya S | 5 | Best cappuccino in town. The ambiance is absolutely dreamy!
+Rohan M | 5 | Came for the cold brew, stayed for the vibes. 10/10.
+Anya K | 4 | Lovely pastries, great music. Will be back for sure."></textarea>
+        </div>
+      </section>
+
+      <!-- ── STYLE ── -->
+      <section class="form-section">
+        <h2 class="section-label"><span class="label-icon">🎨</span> Visual Style</h2>
+
+        <div class="field-group">
+          <label class="field-label">Theme</label>
+          <div class="chip-row" id="themeChips">
+            <button class="chip chip-theme active" data-val="beige">🟤 Beige</button>
+            <button class="chip chip-theme" data-val="peach">🍑 Peach</button>
+            <button class="chip chip-theme" data-val="mint">🌿 Mint</button>
+            <button class="chip chip-theme" data-val="white">⬜ White</button>
+            <button class="chip chip-theme" data-val="dark">🌑 Dark</button>
           </div>
         </div>
+
+        <div class="field-group">
+          <label class="field-label">Font</label>
+          <div class="chip-row" id="fontChips">
+            <button class="chip chip-font active" data-val="poppins">Modern</button>
+            <button class="chip chip-font" data-val="playfair">Elegant</button>
+            <button class="chip chip-font" data-val="nunito">Friendly</button>
+            <button class="chip chip-font" data-val="inter">Minimal</button>
+            <button class="chip chip-font" data-val="dmsans">Stylish</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Texture</label>
+          <div class="chip-row" id="textureChips">
+            <button class="chip chip-texture active" data-val="plain">Plain</button>
+            <button class="chip chip-texture" data-val="grain">Grain</button>
+            <button class="chip chip-texture" data-val="soft">Soft</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── ACTIONS ── -->
+      <section class="form-section actions-section">
+        <button class="btn-primary" id="generateBtn">
+          <span class="btn-icon">✦</span> Generate Preview
+        </button>
+        <button class="btn-secondary" id="copyBtn">
+          <span class="btn-icon">⎘</span> Copy HTML
+        </button>
+        <p class="copy-feedback" id="copyFeedback"></p>
+      </section>
+
+    </div><!-- /sidebar-body -->
+  </aside><!-- /sidebar -->
+
+  <!-- ════════════════════════════════════════
+       PREVIEW PANEL
+  ════════════════════════════════════════ -->
+  <main class="preview-panel">
+    <div class="preview-topbar">
+      <div class="preview-label">
+        <span class="preview-dot"></span>
+        Live Preview
+      </div>
+      <div class="preview-device-pills">
+        <button class="device-pill active" data-width="390">📱 Mobile</button>
+        <button class="device-pill" data-width="768">📟 Tablet</button>
       </div>
     </div>
-    <!-- /PREVIEW PANEL -->
 
-  </div>
-  <!-- /WORKSPACE -->
+    <div class="preview-stage" id="previewStage">
+      <div class="phone-frame" id="phoneFrame">
+        <iframe id="previewFrame" title="Cafe Preview" scrolling="yes"></iframe>
+      </div>
+    </div>
+  </main>
 
-  <!-- TOAST NOTIFICATION -->
-  <div class="toast" id="toast">✓ HTML copied!</div>
+</div><!-- /generator-wrap -->
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
-
