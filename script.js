@@ -139,7 +139,8 @@ function buildCoverHTML(url) {
     return `<div class="cafe-cover"><div class="cafe-cover__fallback">☕</div></div>`;
   }
   return `<div class="cafe-cover">
-    <img src="${escAttr(url)}" alt="Cafe cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=cafe-cover__fallback>☕</div>'" />
+    <img src="${escAttr(url)}" alt="Cafe cover" loading="lazy"
+style="width:100%; height:auto; display:block;"> 
   </div>`;
 }
 
