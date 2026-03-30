@@ -587,12 +587,14 @@ body {
   border-radius: 14px;
   object-fit: cover;
   scroll-snap-align: start;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0.85; 
   display: block;
 }
 
 .cafe-gallery img:active {
   transform: scale(0.97);
+  opacity: 1; 
 }
 
 /* ── REVIEWS ── */
