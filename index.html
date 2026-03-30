@@ -3,178 +3,208 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuickBiz v5.1 — Cafe Page Generator</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=Lato:wght@300;400;700&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+  <title>QuickBiz V5.1 — Cafe Landing Page Generator</title>
+
+  <!-- Google Fonts — EXACT as specified -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@400;600&family=Nunito:wght@300;400;600&family=Inter:wght@300;400;600&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="app-shell">
+  <!-- ══════════════════════════════════════════
+       BUILDER PANEL (LEFT)
+  ══════════════════════════════════════════ -->
+  <div class="builder-panel" id="builderPanel">
 
-  <!-- ── TOP HEADER ── -->
-  <header class="app-header">
-    <div class="app-header-left">
-      <div class="logo-mark">QB</div>
-      <div>
-        <h1 class="app-title">QuickBiz</h1>
-        <p class="app-sub">Cafe Generator · v5.1</p>
+    <div class="panel-header">
+      <div class="panel-logo">
+        <span class="logo-icon">☕</span>
+        <span class="logo-text">QuickBiz <em>V5.1</em></span>
       </div>
-    </div>
-    <button class="btn-copy-header" onclick="copyOutput()">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-      Copy HTML
-    </button>
-  </header>
-
-  <!-- ── TAB BAR ── -->
-  <nav class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('edit', this)">✏️ Edit</button>
-    <button class="tab-btn" onclick="switchTab('preview', this)">👁 Preview</button>
-  </nav>
-
-  <!-- ── COPY STATUS ── -->
-  <p class="copy-status" id="copyStatus"></p>
-
-  <!-- ══════════════════════════
-       EDIT TAB
-  ══════════════════════════ -->
-  <div class="tab-panel" id="tab-edit">
-
-    <section class="ctrl-section">
-      <h2 class="ctrl-section-title">Basic Info</h2>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Cafe Name <span class="req">*</span></label>
-        <input class="ctrl-input" type="text" id="cafeName" placeholder="e.g. The Roasted Bean" />
-      </div>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Short Description</label>
-        <textarea class="ctrl-input ctrl-textarea" id="cafeDesc" placeholder="A cozy corner for coffee lovers..." rows="3"></textarea>
-      </div>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Hero Image URL</label>
-        <input class="ctrl-input" type="text" id="heroImage" placeholder="https://..." autocorrect="off" autocapitalize="off" />
-      </div>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Phone Number</label>
-        <input class="ctrl-input" type="tel" id="phoneNumber" placeholder="+91 98765 43210" />
-      </div>
-    </section>
-
-    <section class="ctrl-section">
-      <h2 class="ctrl-section-title">Call to Action</h2>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Top CTA Text</label>
-        <input class="ctrl-input" type="text" id="ctaTop" placeholder="🍽 Order your favorites online" />
-      </div>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Bottom CTA Text</label>
-        <input class="ctrl-input" type="text" id="ctaBottom" placeholder="🎉 Book your celebrations" />
-      </div>
-    </section>
-
-    <section class="ctrl-section">
-      <h2 class="ctrl-section-title">Gallery</h2>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Image URLs <span class="hint">(comma-separated, max 6)</span></label>
-        <textarea class="ctrl-input ctrl-textarea" id="galleryUrls" placeholder="https://img1.jpg, https://img2.jpg" rows="3"></textarea>
-      </div>
-    </section>
-
-    <section class="ctrl-section">
-      <h2 class="ctrl-section-title">Reviews</h2>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Reviews <span class="hint">(one per line: Name: Review text)</span></label>
-        <textarea class="ctrl-input ctrl-textarea" id="reviewsInput" placeholder="Priya: Best coffee in town!&#10;Rohan: Love the ambience here" rows="5"></textarea>
-      </div>
-    </section>
-
-    <section class="ctrl-section">
-      <h2 class="ctrl-section-title">Menu</h2>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Menu <span class="hint">(Category, then Item - ₹Price, blank line between categories)</span></label>
-        <textarea class="ctrl-input ctrl-textarea" id="menuInput" placeholder="Hot Drinks&#10;Espresso - ₹120&#10;Cappuccino - ₹150&#10;&#10;Snacks&#10;Croissant - ₹90" rows="10"></textarea>
-      </div>
-    </section>
-
-    <section class="ctrl-section">
-      <h2 class="ctrl-section-title">Timings</h2>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Opening Hours</label>
-        <textarea class="ctrl-input ctrl-textarea" id="timingsInput" placeholder="Mon–Fri: 8am – 9pm&#10;Sat–Sun: 9am – 10pm" rows="3"></textarea>
-      </div>
-    </section>
-
-    <section class="ctrl-section">
-      <h2 class="ctrl-section-title">Location</h2>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Google Maps URL</label>
-        <input class="ctrl-input" type="text" id="mapUrl" placeholder="https://maps.google.com/..." autocorrect="off" autocapitalize="off" />
-      </div>
-    </section>
-
-    <section class="ctrl-section">
-      <h2 class="ctrl-section-title">Style</h2>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Theme</label>
-        <select class="ctrl-input ctrl-select" id="themeSelect">
-          <option value="theme-warm">☕ Warm Latte</option>
-          <option value="theme-dark">🌑 Midnight Roast</option>
-          <option value="theme-sage">🌿 Sage Garden</option>
-          <option value="theme-cream">🍦 Vanilla Cream</option>
-        </select>
-      </div>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Font</label>
-        <select class="ctrl-input ctrl-select" id="fontSelect">
-          <option value="font-cormorant">Cormorant (Elegant)</option>
-          <option value="font-playfair">Playfair (Classic)</option>
-          <option value="font-josefin">Josefin (Modern)</option>
-        </select>
-      </div>
-      <div class="ctrl-group">
-        <label class="ctrl-label">Texture</label>
-        <select class="ctrl-input ctrl-select" id="textureSelect">
-          <option value="">None</option>
-          <option value="texture-noise">Subtle Noise</option>
-          <option value="texture-linen">Linen Weave</option>
-          <option value="texture-dots">Dot Grid</option>
-        </select>
-      </div>
-    </section>
-
-    <div class="ctrl-actions">
-      <button class="btn-copy" onclick="copyOutput()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        Copy Full HTML
-      </button>
+      <p class="panel-sub">Cafe Landing Page Generator</p>
     </div>
 
-  </div><!-- /tab-edit -->
+    <div class="panel-scroll">
 
-  <!-- ══════════════════════════
-       PREVIEW TAB
-  ══════════════════════════ -->
-  <div class="tab-panel hidden" id="tab-preview">
-    <div class="preview-device-bar">
-      <button class="dev-btn active" onclick="setPreviewWidth(this, '390px')">📱 Mobile</button>
-      <button class="dev-btn" onclick="setPreviewWidth(this, '768px')">📟 Tablet</button>
-      <button class="dev-btn" onclick="setPreviewWidth(this, '100%')">🖥 Full</button>
+      <!-- ── BASIC INFO ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">🏪</span> Basic Info
+        </div>
+
+        <div class="field-group">
+          <label for="cafeName">Cafe Name</label>
+          <input type="text" id="cafeName" placeholder="e.g. Brew & Bloom" />
+        </div>
+
+        <div class="field-group">
+          <label for="description">Description</label>
+          <textarea id="description" rows="3" placeholder="A short tagline or description of your cafe..."></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="phone">Phone Number</label>
+          <input type="text" id="phone" placeholder="e.g. +91 98765 43210" />
+        </div>
+      </div>
+
+      <!-- ── COVER IMAGE ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">🖼</span> Cover Image
+        </div>
+        <div class="field-group">
+          <label for="coverImage">Cover Image URL</label>
+          <input type="text" id="coverImage" placeholder="https://example.com/hero.jpg" />
+        </div>
+      </div>
+
+      <!-- ── CTA ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">📣</span> Call To Action
+        </div>
+        <div class="field-group">
+          <label for="ctaTop">Top CTA Text</label>
+          <input type="text" id="ctaTop" placeholder="🍽 Order your favorites online" />
+        </div>
+        <div class="field-group">
+          <label for="ctaBottom">Bottom CTA Text</label>
+          <input type="text" id="ctaBottom" placeholder="🎉 Book your celebrations" />
+        </div>
+      </div>
+
+      <!-- ── GALLERY ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">📸</span> Gallery
+        </div>
+        <div class="field-group">
+          <label for="gallery">Image URLs <span class="hint">(comma-separated, max 6)</span></label>
+          <textarea id="gallery" rows="3" placeholder="https://url1.jpg, https://url2.jpg, ..."></textarea>
+        </div>
+      </div>
+
+      <!-- ── REVIEWS ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">⭐</span> Reviews
+        </div>
+        <div class="field-group">
+          <label for="reviews">Reviews <span class="hint">(Name: Review text, one per line, max 5)</span></label>
+          <textarea id="reviews" rows="4" placeholder="Priya: Best coffee in town!&#10;Rahul: Loved the ambiance."></textarea>
+        </div>
+      </div>
+
+      <!-- ── MENU ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">🍽</span> Menu
+        </div>
+        <div class="field-group">
+          <label for="menu">Menu <span class="hint">(Category on its own line, then Item - ₹Price)</span></label>
+          <textarea id="menu" rows="7" placeholder="Hot Drinks&#10;Espresso - ₹120&#10;Cappuccino - ₹150&#10;&#10;Snacks&#10;Croissant - ₹90&#10;Muffin - ₹80"></textarea>
+        </div>
+      </div>
+
+      <!-- ── TIMINGS ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">⏰</span> Timings
+        </div>
+        <div class="field-group">
+          <label for="timings">Opening Hours</label>
+          <input type="text" id="timings" placeholder="Mon–Sat: 8 AM – 10 PM | Sun: 9 AM – 8 PM" />
+        </div>
+      </div>
+
+      <!-- ── MAP ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">📍</span> Map
+        </div>
+        <div class="field-group">
+          <label for="mapLink">Google Maps URL</label>
+          <input type="text" id="mapLink" placeholder="https://maps.google.com/..." />
+        </div>
+      </div>
+
+      <!-- ── APPEARANCE ── -->
+      <div class="section-block">
+        <div class="section-label">
+          <span class="section-icon">🎨</span> Appearance
+        </div>
+
+        <div class="field-group">
+          <label>Theme</label>
+          <div class="pill-group" id="themeGroup">
+            <button class="pill active" data-value="theme-beige">☕ Beige</button>
+            <button class="pill" data-value="theme-peach">🍑 Peach</button>
+            <button class="pill" data-value="theme-mint">🌿 Mint</button>
+            <button class="pill" data-value="theme-white">🤍 White</button>
+            <button class="pill" data-value="theme-dark">🖤 Dark</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Font Style</label>
+          <div class="pill-group" id="fontGroup">
+            <button class="pill active" data-value="font-modern">Modern</button>
+            <button class="pill" data-value="font-elegant">Elegant</button>
+            <button class="pill" data-value="font-friendly">Friendly</button>
+            <button class="pill" data-value="font-minimal">Minimal</button>
+            <button class="pill" data-value="font-stylish">Stylish</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Texture</label>
+          <div class="pill-group" id="textureGroup">
+            <button class="pill active" data-value="texture-plain">Plain</button>
+            <button class="pill" data-value="texture-grain">Grain</button>
+            <button class="pill" data-value="texture-soft">Soft</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── EXPORT ── -->
+      <div class="section-block">
+        <button class="export-btn" id="exportBtn">
+          ⬇ Download Landing Page
+        </button>
+      </div>
+
+    </div><!-- /panel-scroll -->
+  </div>
+  <!-- END BUILDER PANEL -->
+
+
+  <!-- ══════════════════════════════════════════
+       PREVIEW PANEL (RIGHT)
+  ══════════════════════════════════════════ -->
+  <div class="preview-wrapper">
+
+    <div class="preview-topbar">
+      <div class="preview-label">Live Preview</div>
+      <div class="preview-device-icons">
+        <button class="dev-btn active" id="devMobile" title="Mobile view">📱</button>
+        <button class="dev-btn" id="devDesktop" title="Desktop view">🖥</button>
+      </div>
+      <!-- Mobile toggle for panel -->
+      <button class="panel-toggle-btn" id="panelToggleBtn">✏️ Edit</button>
     </div>
+
     <div class="preview-stage" id="previewStage">
-      <!-- srcdoc avoids document.write CSP issues on GitHub Pages -->
-      <div class="preview-frame-wrap" id="previewFrameWrap">
-        <iframe id="previewIframe"
-                title="Cafe Page Preview"
-                sandbox="allow-same-origin allow-popups"
-                srcdoc=""></iframe>
+      <div class="preview-frame mobile" id="previewFrame">
+        <!-- Live preview renders here -->
+        <div class="preview" id="preview"></div>
       </div>
     </div>
-  </div><!-- /tab-preview -->
 
-</div>
+  </div>
+  <!-- END PREVIEW PANEL -->
 
-<script src="app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
