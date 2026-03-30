@@ -1,507 +1,927 @@
-/* ══════════════════════════════════════════════════
-   QUICKBIZ V5 — GENERATOR LOGIC
-   script.js
-══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   QUICKBIZ v5.1 — app.js
+   Single source of truth for all builder logic
+   ═══════════════════════════════════════════════════ */
 
-'use strict';
+"use strict";
 
-// ── State ──────────────────────────────────────────
-const state = {
-  theme:   'beige',
-  font:    'poppins',
-  texture: 'plain',
+/* ────────────────────────────────────────────
+   UTILITIES
+──────────────────────────────────────────── */
+
+// Safe string — always returns trimmed string, never null/undefined
+const safe = (val) => (val == null ? "" : String(val)).trim();
+
+// Normalize line endings (handles Windows \r\n and Mac \r)
+const normalizeLines = (str) => safe(str).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+// URL validator
+const isValidUrl = (url) => {
+  try {
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
 };
 
-// ── DEMO DATA (default preview) ────────────────────
-const DEMO = {
-  name:    'Bloom & Brew',
-  desc:    'A cozy corner for specialty coffee, warm pastries & good vibes. Crafted with love, served with soul.',
-  phone:   '+919876543210',
-  map:     'https://maps.google.com',
-  timing:  'Mon–Sat: 8 AM – 9 PM  |  Sun: 10 AM – 6 PM',
-  heroImg: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80',
-  gallery: [
-    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80',
-    'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&q=80',
-    'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80',
-    'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=80',
-    'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&q=80',
-  ],
-  menu: `Coffee
-Espresso - ₹120
-Cappuccino - ₹150
-Cold Brew - ₹180
-Matcha Latte - ₹200
+// Clean phone — digits only, then validate length
+const cleanPhone = (phone) => safe(phone).replace(/\D/g, "");
 
-Food
-Croissant - ₹90
-Avocado Toast - ₹220
-Banana Bread - ₹110
-Acai Bowl - ₹280`,
-  reviews: `Priya S | 5 | Best cappuccino in town. The ambiance is absolutely dreamy!
-Rohan M | 5 | Came for the cold brew, stayed for the vibes. 10/10 would return.
-Anya K | 4 | Lovely pastries, great music. Such a peaceful spot to work from.
-Dev P | 5 | Honestly one of the best cafes I have been to. The avocado toast is elite.
-Meera T | 5 | Hidden gem! Staff is warm and the coffee is perfection.`,
-};
+/* ────────────────────────────────────────────
+   PARSERS
+──────────────────────────────────────────── */
 
-// ── THEME CONFIG ───────────────────────────────────
-const THEMES = {
-  beige: {
-    bg:      '#f5f0e8',
-    surface: '#ede7d9',
-    card:    '#faf6ef',
-    text:    '#2c2416',
-    muted:   '#7a6a52',
-    border:  '#e0d5c0',
-    badge:   '#d9c49a',
-  },
-  peach: {
-    bg:      '#fdf0ea',
-    surface: '#fae5d8',
-    card:    '#fff8f5',
-    text:    '#3b1f14',
-    muted:   '#9a6654',
-    border:  '#f0d5c8',
-    badge:   '#f0b49a',
-  },
-  mint: {
-    bg:      '#eaf5f0',
-    surface: '#d8eee5',
-    card:    '#f5fbf8',
-    text:    '#142b22',
-    muted:   '#4a7a65',
-    border:  '#c5e2d5',
-    badge:   '#9ad4ba',
-  },
-  white: {
-    bg:      '#ffffff',
-    surface: '#f6f6f6',
-    card:    '#ffffff',
-    text:    '#1a1a1a',
-    muted:   '#6b6b6b',
-    border:  '#e5e5e5',
-    badge:   '#d4d4d4',
-  },
-  dark: {
-    bg:      '#0f0e0d',
-    surface: '#1a1916',
-    card:    '#211f1c',
-    text:    '#ede8e0',
-    muted:   '#9a9085',
-    border:  '#2e2b26',
-    badge:   '#3a3630',
-  },
-};
-
-// ── FONT CONFIG ────────────────────────────────────
-const FONTS = {
-  poppins:  { heading: "'Poppins', sans-serif",       body: "'Poppins', sans-serif",     weight: 600 },
-  playfair: { heading: "'Playfair Display', serif",   body: "'Poppins', sans-serif",     weight: 700 },
-  nunito:   { heading: "'Nunito', sans-serif",        body: "'Nunito', sans-serif",      weight: 700 },
-  inter:    { heading: "'Inter', sans-serif",         body: "'Inter', sans-serif",       weight: 600 },
-  dmsans:   { heading: "'DM Sans', sans-serif",       body: "'DM Sans', sans-serif",     weight: 600 },
-};
-
-// ── TEXTURE CSS ────────────────────────────────────
-const TEXTURES = {
-  plain: '',
-  grain: `
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 9999;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.045;
-    }`,
-  soft: `
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255,255,255,0.04) 0%, transparent 70%),
-                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,0,0,0.03) 0%, transparent 60%);
-    }`,
-};
-
-// ── PARSE MENU ─────────────────────────────────────
-function parseMenu(raw) {
-  if (!raw || !raw.trim()) return null;
-  const lines = raw.trim().split('\n');
-  const categories = [];
-  let current = null;
-
-  lines.forEach(line => {
-    const trimmed = line.trim();
-    if (!trimmed) return;
-    const dashIdx = trimmed.lastIndexOf(' - ');
-    if (dashIdx !== -1) {
-      const name  = trimmed.slice(0, dashIdx).trim();
-      const price = trimmed.slice(dashIdx + 3).trim();
-      if (current) current.items.push({ name, price });
-    } else {
-      current = { cat: trimmed, items: [] };
-      categories.push(current);
-    }
-  });
-
-  return categories.filter(c => c.items.length > 0);
+function parseGallery(input) {
+  return safe(input)
+    .split(",")
+    .map((u) => u.trim())
+    .filter((u) => isValidUrl(u))
+    .slice(0, 6);
 }
 
-// ── PARSE REVIEWS ──────────────────────────────────
-function parseReviews(raw) {
-  if (!raw || !raw.trim()) return [];
-  return raw.trim().split('\n').map(line => {
-    const parts = line.split('|').map(p => p.trim());
-    return {
-      name:  parts[0] || 'Guest',
-      stars: Math.min(5, Math.max(1, parseInt(parts[1]) || 5)),
-      text:  parts[2] || '',
-    };
-  }).filter(r => r.text).slice(0, 5);
+function parseReviews(input) {
+  return normalizeLines(input)
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.includes(":"))
+    .map((l) => {
+      const colonIdx = l.indexOf(":");
+      const name = l.slice(0, colonIdx).trim();
+      const text = l.slice(colonIdx + 1).trim();
+      return { name, text };
+    })
+    .filter((r) => r.name && r.text)
+    .slice(0, 5);
 }
 
-// ── PARSE GALLERY ──────────────────────────────────
-function parseGallery(raw) {
-  if (!raw || !raw.trim()) return [];
-  return raw.trim().split('\n').map(l => l.trim()).filter(Boolean).slice(0, 6);
+function parseMenu(input) {
+  const normalized = normalizeLines(input);
+  // Split by one or more blank lines
+  const blocks = normalized.split(/\n{2,}/).map((b) => b.trim()).filter(Boolean);
+
+  return blocks
+    .map((block) => {
+      const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+      if (lines.length === 0) return null;
+
+      const category = lines[0];
+      const items = lines.slice(1).map((line) => {
+        const parts = line.split(" - ");
+        const itemName = safe(parts[0]);
+        const price = parts.length > 1 ? safe(parts.slice(1).join(" - ")) : "";
+        if (!itemName) return null;
+        return { name: itemName, price };
+      }).filter(Boolean);
+
+      return { category, items };
+    })
+    .filter((cat) => cat && cat.category);
 }
 
-// ── STAR SVG ───────────────────────────────────────
-function stars(n) {
-  return Array.from({ length: 5 }, (_, i) =>
-    `<span style="color:${i < n ? '#f5a623' : '#d0c8b8'}">★</span>`
-  ).join('');
+function parseTimings(input) {
+  return normalizeLines(input)
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
 }
 
-// ── BUTTON STYLES (fixed, theme-independent) ───────
-const BTN = {
-  primary:  'display:block;width:100%;padding:14px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#2c2c2c,#1a1a1a);color:#fff;font-size:15px;font-weight:600;letter-spacing:0.2px;cursor:pointer;text-align:center;text-decoration:none;',
-  call:     'flex:1;padding:13px 10px;border-radius:10px;border:none;background:#2c2c2c;color:#fff;font-size:14px;font-weight:600;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;',
-  whatsapp: 'flex:1;padding:13px 10px;border-radius:10px;border:none;background:#25d366;color:#fff;font-size:14px;font-weight:600;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;',
-};
+/* ────────────────────────────────────────────
+   HTML GENERATORS (section builders)
+──────────────────────────────────────────── */
 
-// ── GENERATE HTML ──────────────────────────────────
-function buildHTML(data, theme, font, texture) {
-  const T = THEMES[theme]  || THEMES.beige;
-  const F = FONTS[font]    || FONTS.poppins;
-  const TX = TEXTURES[texture] || '';
+function buildHeroSection(heroUrl, cafeName) {
+  const name = safe(cafeName) || "Cafe Name";
+  const hasImage = isValidUrl(safe(heroUrl));
 
-  const cleanPhone = (data.phone || '').replace(/\D/g, '');
-  const hasPhone   = cleanPhone.length >= 7;
-  const hasMap     = !!(data.map || '').trim();
-  const hasTiming  = !!(data.timing || '').trim();
-  const menuParsed = parseMenu(data.menu);
-  const reviews    = parseReviews(data.reviews);
-  const gallery    = parseGallery(data.gallery);
-  const hasGallery = gallery.length > 0;
-  const hasReviews = reviews.length > 0;
-  const hasMenu    = menuParsed && menuParsed.length > 0;
+  if (hasImage) {
+    return `
+    <section class="pg-hero">
+      <div class="pg-hero-img-wrap">
+        <img src="${escHtml(safe(heroUrl))}"
+             alt="${escHtml(name)} cover"
+             onerror="this.closest('.pg-hero-img-wrap').classList.add('pg-hero-fallback')"
+             loading="eager" />
+        <div class="pg-hero-overlay"></div>
+      </div>
+      <div class="pg-hero-content">
+        <h1 class="pg-cafe-name">${escHtml(name)}</h1>
+      </div>
+    </section>`;
+  } else {
+    return `
+    <section class="pg-hero pg-hero-no-image">
+      <div class="pg-hero-fallback-icon">☕</div>
+      <div class="pg-hero-content">
+        <h1 class="pg-cafe-name">${escHtml(name)}</h1>
+      </div>
+    </section>`;
+  }
+}
 
-  /* ── Gallery HTML ── */
-  const galleryHTML = !hasGallery ? '' : `
-  <!-- Gallery -->
-  <section style="padding:0 0 4px;">
-    <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};padding:0 18px;margin-bottom:12px;">Our Space</h2>
-    <div style="display:flex;gap:10px;overflow-x:auto;padding:0 18px 10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      ${gallery.map(url => `
-      <div style="flex:0 0 220px;height:160px;border-radius:12px;overflow:hidden;scroll-snap-align:start;flex-shrink:0;">
-        <img src="${url}" alt="Gallery" onerror="this.parentElement.remove()"
-             style="width:100%;height:100%;object-fit:cover;display:block;" />
-      </div>`).join('')}
+function buildDescriptionSection(desc) {
+  const d = safe(desc);
+  if (!d) return "";
+  return `
+  <section class="pg-section pg-description">
+    <p class="pg-desc-text">${escHtml(d)}</p>
+  </section>`;
+}
+
+function buildCtaSection(ctaText, fallback, id) {
+  const text = safe(ctaText) || fallback;
+  return `
+  <section class="pg-section pg-cta-section" id="${id}">
+    <div class="pg-cta-card">
+      <p class="pg-cta-text">${escHtml(text)}</p>
     </div>
   </section>`;
+}
 
-  /* ── Reviews HTML ── */
-  const reviewsHTML = !hasReviews ? '' : `
-  <!-- Reviews -->
-  <section style="padding:0 0 4px;">
-    <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};padding:0 18px;margin-bottom:12px;">What Guests Say</h2>
-    <div style="display:flex;gap:12px;overflow-x:auto;padding:0 18px 10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      ${reviews.map(r => `
-      <div style="flex:0 0 85%;background:${T.card};border-radius:14px;padding:14px;border:1px solid ${T.border};scroll-snap-align:start;flex-shrink:0;">
-        <div style="margin-bottom:6px;font-size:15px;">${stars(r.stars)}</div>
-        <p style="font-family:${F.body};font-size:13.5px;color:${T.text};line-height:1.55;margin-bottom:8px;">"${r.text}"</p>
-        <p style="font-family:${F.body};font-size:12px;color:${T.muted};font-weight:600;">— ${r.name}</p>
-      </div>`).join('')}
+function buildGallerySection(images) {
+  if (images.length === 0) return "";
+  const imgs = images
+    .map((url) => `<img src="${escHtml(url)}" alt="Gallery photo" onerror="this.remove()" loading="lazy" />`)
+    .join("\n      ");
+  return `
+  <section class="pg-section pg-gallery">
+    <h2 class="pg-section-title">Gallery</h2>
+    <div class="pg-gallery-scroll">
+      ${imgs}
     </div>
   </section>`;
+}
 
-  /* ── Menu HTML ── */
-  const menuHTML = !hasMenu
-    ? `<section style="padding:0 18px;">
-        <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};margin-bottom:12px;">Menu</h2>
-        <p style="font-family:${F.body};font-size:14px;color:${T.muted};">Menu coming soon. Visit us to explore!</p>
-       </section>`
-    : `<section style="padding:0 18px;">
-        <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};margin-bottom:16px;">Menu</h2>
-        ${menuParsed.map(cat => `
-        <div style="margin-bottom:20px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-family:${F.heading};font-size:13px;font-weight:700;color:${T.text};text-transform:uppercase;letter-spacing:1px;">${cat.cat}</span>
-            <div style="flex:1;height:1px;background:${T.border};"></div>
-          </div>
-          <div style="background:${T.card};border-radius:14px;padding:4px 0;border:1px solid ${T.border};">
-            ${cat.items.map((item, idx) => `
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 14px;${idx < cat.items.length - 1 ? `border-bottom:1px solid ${T.border};` : ''}">
-              <span style="font-family:${F.body};font-size:14px;color:${T.text};flex:1;line-height:1.4;">${item.name}</span>
-              <span style="font-family:${F.body};font-size:14px;font-weight:600;color:${T.text};white-space:nowrap;flex-shrink:0;">${item.price}</span>
-            </div>`).join('')}
-          </div>
-        </div>`).join('')}
-       </section>`;
-
-  /* ── Timings HTML ── */
-  const timingsHTML = !hasTiming ? '' : `
-  <section style="padding:0 18px;">
-    <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};margin-bottom:12px;">Opening Hours</h2>
-    <div style="background:${T.card};border-radius:14px;padding:14px 16px;border:1px solid ${T.border};display:flex;align-items:flex-start;gap:12px;">
-      <span style="font-size:20px;flex-shrink:0;margin-top:1px;">🕐</span>
-      <p style="font-family:${F.body};font-size:14px;color:${T.text};line-height:1.6;word-break:break-word;">${data.timing}</p>
+function buildReviewsSection(reviews) {
+  if (reviews.length === 0) return "";
+  const cards = reviews
+    .map((r) => `
+      <div class="pg-review-card">
+        <div class="pg-review-stars">★★★★★</div>
+        <p class="pg-review-text">${escHtml(r.text)}</p>
+        <p class="pg-review-name">— ${escHtml(r.name)}</p>
+      </div>`)
+    .join("");
+  return `
+  <section class="pg-section pg-reviews">
+    <h2 class="pg-section-title">What Our Guests Say</h2>
+    <div class="pg-reviews-scroll">
+      ${cards}
     </div>
   </section>`;
+}
 
-  /* ── Map HTML ── */
-  const mapHTML = !hasMap ? '' : `
-  <section style="padding:0 18px;">
-    <h2 style="font-family:${F.heading};font-size:17px;font-weight:${F.weight};color:${T.text};margin-bottom:12px;">Find Us</h2>
-    <a href="${data.map}" target="_blank" rel="noopener"
-       style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:${T.card};border:1px solid ${T.border};border-radius:14px;text-decoration:none;">
-      <span style="font-size:20px;">📍</span>
-      <span style="font-family:${F.body};font-size:14px;font-weight:600;color:${T.text};">Open in Google Maps</span>
-      <span style="font-size:13px;color:${T.muted};">↗</span>
+function buildMenuSection(menuData) {
+  // Menu ALWAYS renders — even if empty, show a placeholder
+  if (!menuData || menuData.length === 0) {
+    return `
+  <section class="pg-section pg-menu">
+    <h2 class="pg-section-title">Menu</h2>
+    <p class="pg-menu-empty">Menu coming soon…</p>
+  </section>`;
+  }
+
+  const categories = menuData
+    .map((cat) => {
+      const items = (cat.items || [])
+        .map((item) => `
+          <div class="pg-menu-item">
+            <span class="pg-menu-item-name">${escHtml(item.name)}</span>
+            ${item.price ? `<span class="pg-menu-item-price">${escHtml(item.price)}</span>` : ""}
+          </div>`)
+        .join("");
+      return `
+      <div class="pg-menu-category">
+        <h3 class="pg-menu-cat-title">${escHtml(cat.category)}</h3>
+        <div class="pg-menu-items">
+          ${items || '<p class="pg-menu-empty">No items listed</p>'}
+        </div>
+      </div>`;
+    })
+    .join("");
+
+  return `
+  <section class="pg-section pg-menu">
+    <h2 class="pg-section-title">Our Menu</h2>
+    ${categories}
+  </section>`;
+}
+
+function buildTimingsSection(timingLines) {
+  if (!timingLines || timingLines.length === 0) return "";
+  const rows = timingLines
+    .map((line) => {
+      const parts = line.split(":");
+      if (parts.length >= 2) {
+        const day = safe(parts[0]);
+        const hours = safe(parts.slice(1).join(":"));
+        return `<div class="pg-timing-row"><span class="pg-timing-day">${escHtml(day)}</span><span class="pg-timing-hrs">${escHtml(hours)}</span></div>`;
+      }
+      return `<div class="pg-timing-row"><span class="pg-timing-full">${escHtml(line)}</span></div>`;
+    })
+    .join("");
+  return `
+  <section class="pg-section pg-timings">
+    <h2 class="pg-section-title">Opening Hours</h2>
+    <div class="pg-timings-card">
+      ${rows}
+    </div>
+  </section>`;
+}
+
+function buildMapSection(mapUrl) {
+  const u = safe(mapUrl);
+  if (!isValidUrl(u)) return "";
+  return `
+  <section class="pg-section pg-map">
+    <h2 class="pg-section-title">Find Us</h2>
+    <a href="${escHtml(u)}" target="_blank" rel="noopener noreferrer" class="pg-map-link">
+      <span class="pg-map-icon">📍</span> View Location on Maps
     </a>
   </section>`;
+}
 
-  /* ── CTA Card ── */
-  const ctaCard = (label) => `
-  <section style="padding:0 18px;">
-    <div style="background:${T.card};border-radius:14px;padding:18px;border:1px solid ${T.border};text-align:center;">
-      <p style="font-family:${F.body};font-size:13px;color:${T.muted};margin-bottom:12px;">${label}</p>
-      ${hasPhone ? `<a href="tel:+${cleanPhone}" style="${BTN.primary}">Reserve a Table ☕</a>` : `<p style="font-family:${F.body};font-size:14px;color:${T.muted};">Visit us today!</p>`}
+function buildContactSection(phone) {
+  const digits = cleanPhone(phone);
+  if (digits.length < 10) return "";
+  return `
+  <section class="pg-section pg-contact">
+    <div class="pg-contact-btns">
+      <a href="tel:${escHtml(digits)}" class="pg-btn pg-btn-call">
+        📞 Call Us
+      </a>
+      <a href="https://wa.me/${escHtml(digits)}" target="_blank" rel="noopener noreferrer" class="pg-btn pg-btn-whatsapp">
+        💬 WhatsApp
+      </a>
     </div>
   </section>`;
+}
 
-  /* ── Contact Buttons ── */
-  const contactHTML = !hasPhone ? '' : `
-  <div style="padding:0 18px 8px;display:flex;gap:10px;">
-    <a href="tel:+${cleanPhone}" style="${BTN.call}">📞 Call Us</a>
-    <a href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener" style="${BTN.whatsapp}">💬 WhatsApp</a>
-  </div>`;
+/* ────────────────────────────────────────────
+   SECURITY: HTML ESCAPING
+──────────────────────────────────────────── */
+function escHtml(str) {
+  return safe(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
 
-  /* ── Full Page HTML ── */
+/* ────────────────────────────────────────────
+   PAGE CSS (injected into iframe)
+──────────────────────────────────────────── */
+function getPageCss() {
+  return `
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=Lato:wght@300;400;700&family=Josefin+Sans:wght@300;400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── THEME DEFAULTS (Warm Latte) ── */
+  body {
+    --pg-bg: #f5f0ea;
+    --pg-bg2: #ede6db;
+    --pg-card: #ffffff;
+    --pg-card-border: #e0d5c5;
+    --pg-text: #2c2215;
+    --pg-text-muted: #7a6a55;
+    --pg-heading: #1a1208;
+    --pg-divider: #e0d5c5;
+    --pg-accent: #b8873a;
+    --pg-btn-primary: #2c2215;
+    --pg-btn-primary-text: #f5f0ea;
+    --pg-btn-wa: #25d366;
+    --pg-btn-wa-text: #fff;
+    --pg-font-heading: 'Cormorant Garamond', Georgia, serif;
+    --pg-font-body: 'DM Sans', 'Lato', sans-serif;
+
+    background-color: var(--pg-bg);
+    color: var(--pg-text);
+    font-family: var(--pg-font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* THEME OVERRIDES */
+  body.theme-dark {
+    --pg-bg: #0d0d0d; --pg-bg2: #141414; --pg-card: #1c1c1c;
+    --pg-card-border: #2a2a2a; --pg-text: #e0dbd2;
+    --pg-text-muted: #888880; --pg-heading: #f5f0ea; --pg-divider: #2a2a2a;
+    --pg-accent: #c9a96e;
+    --pg-btn-primary: #e0dbd2; --pg-btn-primary-text: #0d0d0d;
+  }
+  body.theme-sage {
+    --pg-bg: #f2f5f0; --pg-bg2: #e8ede4; --pg-card: #ffffff;
+    --pg-card-border: #d2dece; --pg-text: #1e2b1a;
+    --pg-text-muted: #6a7d65; --pg-heading: #0f1a0c; --pg-divider: #d2dece;
+    --pg-accent: #4a7c59;
+    --pg-btn-primary: #1e2b1a; --pg-btn-primary-text: #f2f5f0;
+  }
+  body.theme-cream {
+    --pg-bg: #fffdf7; --pg-bg2: #f9f4e8; --pg-card: #ffffff;
+    --pg-card-border: #ede8d8; --pg-text: #2a2318;
+    --pg-text-muted: #8a7d6a; --pg-heading: #1a1408; --pg-divider: #ede8d8;
+    --pg-accent: #c07d2a;
+    --pg-btn-primary: #2a2318; --pg-btn-primary-text: #fffdf7;
+  }
+
+  /* FONT OVERRIDES */
+  body.font-playfair  { --pg-font-heading: 'Playfair Display', Georgia, serif; }
+  body.font-josefin   { --pg-font-heading: 'Josefin Sans', sans-serif; }
+
+  /* TEXTURE (body only, pointer-events none, z-index 0) */
+  body.texture-noise::after,
+  body.texture-linen::after,
+  body.texture-dots::after {
+    content: ''; position: fixed; inset: 0;
+    pointer-events: none; z-index: 0; opacity: 0.04;
+  }
+  body.texture-noise::after {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+  body.texture-linen::after {
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  }
+  body.texture-dots::after {
+    background-image: radial-gradient(circle, rgba(0,0,0,0.15) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
+  /* ── SECTIONS ── */
+  .pg-section {
+    padding: 28px 20px;
+    border-bottom: 1px solid var(--pg-divider);
+    position: relative;
+    z-index: 1;
+  }
+  .pg-section:last-child { border-bottom: none; }
+
+  .pg-section-title {
+    font-family: var(--pg-font-heading);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--pg-heading);
+    margin-bottom: 18px;
+    letter-spacing: -0.2px;
+  }
+
+  /* ── HERO ── */
+  .pg-hero {
+    position: relative;
+    min-height: 260px;
+    background: var(--pg-bg2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .pg-hero-img-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .pg-hero-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Hero fallback — when image fails to load */
+  .pg-hero-img-wrap.pg-hero-fallback {
+    background: var(--pg-bg2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pg-hero-img-wrap.pg-hero-fallback::before {
+    content: '☕';
+    font-size: 48px;
+    opacity: 0.3;
+  }
+  .pg-hero-img-wrap.pg-hero-fallback img { display: none; }
+
+  .pg-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);
+    z-index: 1;
+  }
+
+  .pg-hero-no-image {
+    align-items: center;
+    justify-content: center;
+    background: var(--pg-bg2);
+    flex-direction: column;
+    gap: 12px;
+    min-height: 200px;
+  }
+
+  .pg-hero-fallback-icon {
+    font-size: 52px;
+    opacity: 0.4;
+  }
+
+  .pg-hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 24px 20px 20px;
+  }
+
+  .pg-hero-no-image .pg-hero-content {
+    padding: 0;
+  }
+
+  .pg-cafe-name {
+    font-family: var(--pg-font-heading);
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+    word-wrap: break-word;
+  }
+
+  .pg-hero-no-image .pg-cafe-name {
+    color: var(--pg-heading);
+    text-shadow: none;
+    text-align: center;
+  }
+
+  /* ── DESCRIPTION ── */
+  .pg-description { background: var(--pg-bg2); }
+  .pg-desc-text {
+    font-size: 15px;
+    color: var(--pg-text);
+    line-height: 1.7;
+    word-wrap: break-word;
+  }
+
+  /* ── CTA CARD ── */
+  .pg-cta-section { background: var(--pg-bg); }
+  .pg-cta-card {
+    background: var(--pg-card);
+    border: 1px solid var(--pg-card-border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .pg-cta-text {
+    font-family: var(--pg-font-heading);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--pg-heading);
+    text-align: center;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  /* ── GALLERY ── */
+  .pg-gallery-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .pg-gallery-scroll::-webkit-scrollbar { display: none; }
+  .pg-gallery-scroll img {
+    height: 200px;
+    width: auto;
+    min-width: 70%;
+    max-width: 85%;
+    object-fit: cover;
+    border-radius: 10px;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  /* ── REVIEWS ── */
+  .pg-reviews-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .pg-reviews-scroll::-webkit-scrollbar { display: none; }
+  .pg-review-card {
+    background: var(--pg-card);
+    border: 1px solid var(--pg-card-border);
+    border-radius: 12px;
+    padding: 18px;
+    min-width: 85%;
+    max-width: 85%;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .pg-review-stars {
+    color: #f0a500;
+    font-size: 14px;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+  .pg-review-text {
+    font-size: 14px;
+    color: var(--pg-text);
+    line-height: 1.6;
+    margin-bottom: 12px;
+    word-wrap: break-word;
+  }
+  .pg-review-name {
+    font-size: 13px;
+    color: var(--pg-text-muted);
+    font-style: italic;
+  }
+
+  /* ── MENU ── */
+  .pg-menu { background: var(--pg-bg2); }
+  .pg-menu-category {
+    margin-bottom: 24px;
+  }
+  .pg-menu-category:last-child { margin-bottom: 0; }
+  .pg-menu-cat-title {
+    font-family: var(--pg-font-heading);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--pg-accent);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--pg-divider);
+  }
+  .pg-menu-items { display: flex; flex-direction: column; gap: 1px; }
+  .pg-menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px dotted var(--pg-divider);
+  }
+  .pg-menu-item:last-child { border-bottom: none; }
+  .pg-menu-item-name {
+    font-size: 14px;
+    color: var(--pg-text);
+    flex: 1;
+    word-wrap: break-word;
+    line-height: 1.4;
+  }
+  .pg-menu-item-price {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--pg-heading);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .pg-menu-empty {
+    font-size: 14px;
+    color: var(--pg-text-muted);
+    font-style: italic;
+    padding: 8px 0;
+  }
+
+  /* ── TIMINGS ── */
+  .pg-timings-card {
+    background: var(--pg-card);
+    border: 1px solid var(--pg-card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .pg-timing-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--pg-divider);
+  }
+  .pg-timing-row:last-child { border-bottom: none; }
+  .pg-timing-day {
+    font-size: 14px;
+    color: var(--pg-text-muted);
+    font-weight: 500;
+  }
+  .pg-timing-hrs {
+    font-size: 14px;
+    color: var(--pg-heading);
+    font-weight: 600;
+  }
+  .pg-timing-full {
+    font-size: 14px;
+    color: var(--pg-text);
+    word-wrap: break-word;
+  }
+
+  /* ── MAP ── */
+  .pg-map-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--pg-card);
+    border: 1px solid var(--pg-card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--pg-heading);
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: box-shadow 0.15s;
+  }
+  .pg-map-link:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .pg-map-icon { font-size: 20px; }
+
+  /* ── CONTACT BUTTONS ── */
+  /* NOTE: Buttons are fully isolated — themes do NOT affect these classes */
+  .pg-contact { background: var(--pg-bg2); }
+  .pg-contact-btns {
+    display: flex;
+    gap: 12px;
+  }
+  .pg-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.1s;
+    text-align: center;
+  }
+  .pg-btn:active { transform: scale(0.97); }
+
+  /* Call button — hardcoded, theme-immune */
+  .pg-btn-call {
+    background: #1a1208 !important;
+    color: #f5f0ea !important;
+    border: none !important;
+  }
+
+  /* WhatsApp button — hardcoded, theme-immune */
+  .pg-btn-whatsapp {
+    background: #25d366 !important;
+    color: #ffffff !important;
+    border: none !important;
+  }
+
+  /* ── FOOTER SPACING ── */
+  .pg-footer-space { height: 32px; }
+  `;
+}
+
+/* ────────────────────────────────────────────
+   FULL PAGE BUILDER
+──────────────────────────────────────────── */
+function buildPage(data) {
+  const {
+    cafeName, cafeDesc, heroImage,
+    ctaTop, ctaBottom,
+    galleryImages, reviews, menuData,
+    timingLines, mapUrl, phone,
+    theme, font, texture
+  } = data;
+
+  // Build body classes (reset then add new — spec rule)
+  // Start from empty string, add only valid classes
+  const bodyClasses = [
+    safe(theme) || "theme-warm",
+    safe(font) || "font-cormorant",
+    safe(texture)
+  ].filter(Boolean).join(" ");
+
+  // Build section HTML in strict spec order
+  const sections = [
+    buildHeroSection(heroImage, cafeName),                            // 1. Hero
+    buildDescriptionSection(cafeDesc),                                 // 3. Description (conditional)
+    buildCtaSection(ctaTop, "🍽 Order your favorites online", "cta-top"), // 4. CTA Top
+    buildGallerySection(galleryImages),                               // 5. Gallery (conditional)
+    buildReviewsSection(reviews),                                     // 6. Reviews (conditional)
+    buildMenuSection(menuData),                                       // 7. Menu (always)
+    buildTimingsSection(timingLines),                                 // 8. Timings (conditional)
+    buildMapSection(mapUrl),                                          // 9. Map (conditional)
+    buildCtaSection(ctaBottom, "🎉 Book your celebrations", "cta-bottom"), // 10. CTA Bottom
+    buildContactSection(phone),                                       // 11. Contact (conditional)
+    `<div class="pg-footer-space"></div>`
+  ].join("\n");
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>${data.name || 'Cafe'}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Nunito:wght@300;400;600;700&family=Inter:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px;-webkit-font-smoothing:antialiased;}
-body{
-  background:${T.bg};
-  color:${T.text};
-  font-family:${F.body};
-  min-height:100vh;
-  overflow-x:hidden;
-  transition:background 0.3s ease,color 0.3s ease;
-}
-::-webkit-scrollbar{display:none;}
-img{max-width:100%;height:auto;}
-${TX}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escHtml(safe(cafeName) || "Cafe")}</title>
+  <style>${getPageCss()}</style>
 </head>
-<body>
-
-<!-- HERO -->
-<section style="position:relative;background:#000;margin-bottom:20px;">
-  ${data.heroImg
-    ? `<img src="${data.heroImg}" alt="${data.name}" onerror="this.style.display='none'"
-           style="width:100%;height:auto;display:block;object-fit:cover;max-height:420px;min-height:240px;" />`
-    : `<div style="height:280px;background:linear-gradient(135deg,${T.surface},${T.bg});display:flex;align-items:center;justify-content:center;font-size:48px;">☕</div>`}
-  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.55) 100%);pointer-events:none;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;padding:24px 20px 22px;">
-    <h1 style="font-family:${F.heading};font-size:28px;font-weight:${F.weight};color:#fff;line-height:1.2;text-shadow:0 2px 12px rgba(0,0,0,0.4);">${data.name || 'Your Cafe'}</h1>
-    ${data.desc ? `<p style="font-family:${F.body};font-size:13.5px;color:rgba(255,255,255,0.88);margin-top:6px;line-height:1.5;text-shadow:0 1px 6px rgba(0,0,0,0.3);">${data.desc}</p>` : ''}
-  </div>
-</section>
-
-<!-- CTA TOP -->
-${ctaCard('Perfect for work dates, weekend hangouts & everything in between.')}
-
-<!-- SPACER -->
-<div style="height:20px;"></div>
-
-<!-- GALLERY -->
-${galleryHTML}
-${hasGallery ? '<div style="height:20px;"></div>' : ''}
-
-<!-- REVIEWS -->
-${reviewsHTML}
-${hasReviews ? '<div style="height:20px;"></div>' : ''}
-
-<!-- MENU -->
-${menuHTML}
-
-<div style="height:20px;"></div>
-
-<!-- TIMINGS -->
-${timingsHTML}
-${hasTiming ? '<div style="height:20px;"></div>' : ''}
-
-<!-- MAP -->
-${mapHTML}
-${hasMap ? '<div style="height:20px;"></div>' : ''}
-
-<!-- CTA BOTTOM -->
-${ctaCard('Come in, sit down, and let us take care of the rest.')}
-
-<div style="height:16px;"></div>
-
-<!-- CONTACT BUTTONS -->
-${contactHTML}
-
-<div style="height:32px;"></div>
-
-<!-- FOOTER -->
-<footer style="padding:16px 18px 20px;text-align:center;border-top:1px solid ${T.border};">
-  <p style="font-family:${F.body};font-size:12px;color:${T.muted};">Made with ☕ · ${data.name || 'Cafe'}</p>
-</footer>
-
+<body class="${escHtml(bodyClasses)}">
+  ${sections}
 </body>
 </html>`;
 }
 
-// ── RENDER PREVIEW ─────────────────────────────────
-function getFormData() {
-  const val = id => document.getElementById(id)?.value || '';
+/* ────────────────────────────────────────────
+   COLLECT INPUTS
+──────────────────────────────────────────── */
+function collectData() {
+  const get = (id) => safe(document.getElementById(id)?.value);
+
   return {
-    name:    val('cafeName'),
-    desc:    val('cafeDesc'),
-    phone:   val('cafePhone'),
-    map:     val('cafeMap'),
-    timing:  val('cafeTiming'),
-    heroImg: val('heroImg'),
-    gallery: val('galleryImgs'),
-    menu:    val('cafeMenu'),
-    reviews: val('cafeReviews'),
+    cafeName:     get("cafeName"),
+    cafeDesc:     get("cafeDesc"),
+    heroImage:    get("heroImage"),
+    phone:        get("phoneNumber"),
+    ctaTop:       get("ctaTop"),
+    ctaBottom:    get("ctaBottom"),
+    galleryImages: parseGallery(get("galleryUrls")),
+    reviews:       parseReviews(get("reviewsInput")),
+    menuData:      parseMenu(get("menuInput")),
+    timingLines:   parseTimings(get("timingsInput")),
+    mapUrl:        get("mapUrl"),
+    theme:         get("themeSelect"),
+    font:          get("fontSelect"),
+    texture:       get("textureSelect"),
   };
 }
 
-function isFormEmpty(data) {
-  return !data.name && !data.desc && !data.phone && !data.heroImg && !data.menu && !data.reviews;
+/* ────────────────────────────────────────────
+   PREVIEW — LIVE UPDATE
+──────────────────────────────────────────── */
+let _lastHtml = "";
+
+function updatePreview() {
+  const data = collectData();
+  const html = buildPage(data);
+  _lastHtml = html;
+
+  const iframe = document.getElementById("previewIframe");
+  if (!iframe) return;
+
+  // Write directly to iframe for exact match with final output
+  const doc = iframe.contentDocument || iframe.contentWindow?.document;
+  if (!doc) return;
+  doc.open();
+  doc.write(html);
+  doc.close();
 }
 
-function renderPreview(useDemo = false) {
-  const raw  = getFormData();
-  const data = useDemo || isFormEmpty(raw) ? DEMO : raw;
+/* ────────────────────────────────────────────
+   COPY FULL HTML
+──────────────────────────────────────────── */
+function copyOutput() {
+  const html = _lastHtml || buildPage(collectData());
+  const statusEl = document.getElementById("copyStatus");
 
-  const html = buildHTML(data, state.theme, state.font, state.texture);
-  const frame = document.getElementById('previewFrame');
+  const showStatus = (msg, ok) => {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.style.color = ok ? "#6dbf7a" : "#e07a7a";
+    setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 3000);
+  };
 
-  frame.srcdoc = html;
-}
-
-// ── CHIP SELECTION ─────────────────────────────────
-function bindChips(groupId, stateKey, callback) {
-  const group = document.getElementById(groupId);
-  if (!group) return;
-  group.querySelectorAll('.chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      state[stateKey] = chip.dataset.val;
-      callback && callback();
-    });
-  });
-}
-
-// ── DEVICE PILLS ───────────────────────────────────
-function bindDevicePills() {
-  document.querySelectorAll('.device-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.device-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      const w = parseInt(pill.dataset.width);
-      const frame = document.getElementById('phoneFrame');
-      if (frame) {
-        frame.style.width = w + 'px';
-        frame.style.borderRadius = w <= 420 ? '40px' : '24px';
-      }
-    });
-  });
-}
-
-// ── COPY HTML ──────────────────────────────────────
-function copyHTML() {
-  const raw  = getFormData();
-  const data = isFormEmpty(raw) ? DEMO : raw;
-  const html = buildHTML(data, state.theme, state.font, state.texture);
-
-  const feedback = document.getElementById('copyFeedback');
-
+  // Modern clipboard API with fallback
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(html).then(() => {
-      feedback.textContent = '✓ HTML copied to clipboard!';
-      setTimeout(() => feedback.textContent = '', 3000);
-    }).catch(() => fallbackCopy(html, feedback));
+    navigator.clipboard.writeText(html)
+      .then(() => showStatus("✓ Copied to clipboard!", true))
+      .catch(() => fallbackCopy(html, showStatus));
   } else {
-    fallbackCopy(html, feedback);
+    fallbackCopy(html, showStatus);
   }
 }
 
-function fallbackCopy(text, feedback) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;';
-  document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
+function fallbackCopy(text, callback) {
   try {
-    document.execCommand('copy');
-    feedback.textContent = '✓ HTML copied!';
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;left:-9999px;top:-9999px;opacity:0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    callback(ok ? "✓ Copied!" : "Copy failed — please copy manually.", ok);
   } catch (e) {
-    feedback.textContent = '⚠ Copy failed — please copy manually.';
+    callback("Copy failed — please copy manually.", false);
   }
-  document.body.removeChild(ta);
-  setTimeout(() => feedback.textContent = '', 3000);
 }
 
-// ── INIT ────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+/* ────────────────────────────────────────────
+   PREVIEW DEVICE WIDTH
+──────────────────────────────────────────── */
+function setPreviewWidth(btn, width) {
+  // Update active button state
+  document.querySelectorAll(".dev-btn").forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
 
-  // Chip groups
-  bindChips('themeChips',   'theme',   renderPreview);
-  bindChips('fontChips',    'font',    renderPreview);
-  bindChips('textureChips', 'texture', renderPreview);
+  const frame = document.getElementById("previewFrame");
+  if (!frame) return;
+  frame.style.width = width + "px";
+  // Clamp to stage width
+  const stage = document.getElementById("previewStage");
+  if (stage && frame.offsetWidth > stage.offsetWidth - 48) {
+    frame.style.width = (stage.offsetWidth - 48) + "px";
+  }
+}
 
-  // Device pills
-  bindDevicePills();
+/* ────────────────────────────────────────────
+   INIT — WIRE UP EVENT LISTENERS
+──────────────────────────────────────────── */
+function init() {
+  const inputIds = [
+    "cafeName", "cafeDesc", "heroImage", "phoneNumber",
+    "ctaTop", "ctaBottom", "galleryUrls", "reviewsInput",
+    "menuInput", "timingsInput", "mapUrl",
+    "themeSelect", "fontSelect", "textureSelect"
+  ];
 
-  // Generate button
-  document.getElementById('generateBtn')?.addEventListener('click', () => renderPreview());
-
-  // Copy button
-  document.getElementById('copyBtn')?.addEventListener('click', copyHTML);
-
-  // Live update on typing (debounced)
-  let debounceTimer;
-  const inputs = document.querySelectorAll('.field-input');
-  inputs.forEach(input => {
-    input.addEventListener('input', () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => renderPreview(), 450);
-    });
+  // Live update on any input change
+  inputIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("input", updatePreview);
+      el.addEventListener("change", updatePreview);
+    }
   });
 
-  // Initial render with demo
-  renderPreview(true);
-});
+  // Seed with demo content
+  seedDemo();
+
+  // Initial render
+  updatePreview();
+}
+
+/* ────────────────────────────────────────────
+   DEMO SEED DATA
+──────────────────────────────────────────── */
+function seedDemo() {
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  };
+
+  set("cafeName", "The Roasted Bean");
+  set("cafeDesc", "A cozy corner for coffee lovers and pastry enthusiasts. Artisan brews, house-baked goods, and warm vibes since 2018.");
+  set("heroImage", "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80");
+  set("phoneNumber", "+91 98765 43210");
+  set("ctaTop", "🍽 Order your favorites online");
+  set("ctaBottom", "🎉 Book your celebrations with us");
+  set("galleryUrls", [
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80",
+    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&q=80",
+    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&q=80",
+    "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80"
+  ].join(", "));
+  set("reviewsInput", [
+    "Priya S: Best cappuccino I've ever had. The ambience is just perfect for a Sunday morning.",
+    "Rohan M: Love the avocado toast here. Becomes a ritual every weekend!",
+    "Ananya K: The staff is super friendly and the coffee is always consistent.",
+    "Vikram T: Great place to work from. Fast Wi-Fi and excellent filter coffee.",
+    "Sneha R: The chocolate croissant is absolutely divine. Highly recommend!"
+  ].join("\n"));
+  set("menuInput", [
+    "Hot Drinks",
+    "Espresso - ₹110",
+    "Cappuccino - ₹150",
+    "Filter Coffee - ₹90",
+    "Masala Chai - ₹80",
+    "",
+    "Cold Drinks",
+    "Cold Brew - ₹180",
+    "Iced Latte - ₹170",
+    "Lemonade - ₹120",
+    "",
+    "Snacks & Bites",
+    "Croissant - ₹100",
+    "Avocado Toast - ₹190",
+    "Banana Bread - ₹130",
+    "Cheese Sandwich - ₹160"
+  ].join("\n"));
+  set("timingsInput", "Mon–Fri: 7:30am – 9:00pm\nSat–Sun: 8:00am – 10:00pm");
+  set("mapUrl", "https://maps.google.com/?q=cafe");
+}
+
+// Boot
+document.addEventListener("DOMContentLoaded", init);
