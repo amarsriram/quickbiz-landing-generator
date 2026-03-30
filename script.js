@@ -1,515 +1,660 @@
-/* ═══════════════════════════════════════════════════
-   QUICKBIZ v5.1 — app.js
-   Fixed: srcdoc preview, tab switching, mobile layout
-═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   QUICKBIZ V5.1 — SCRIPT.JS
+   Bug-free engine: safe parsing, live preview, export
+═══════════════════════════════════════════════════════════ */
+
 "use strict";
 
-/* ────────────────────────────────────────────
-   UTILITIES
-──────────────────────────────────────────── */
-const safe = (val) => (val == null ? "" : String(val)).trim();
-const normalizeLines = (str) => safe(str).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-const isValidUrl = (url) => {
-  try {
-    const u = new URL(url);
-    return u.protocol === "http:" || u.protocol === "https:";
-  } catch { return false; }
-};
-const cleanPhone = (phone) => safe(phone).replace(/\D/g, "");
+/* ══════════════════════
+   STATE
+══════════════════════ */
+let selectedTheme   = "theme-beige";
+let selectedFont    = "font-modern";
+let selectedTexture = "texture-plain";
 
-/* ────────────────────────────────────────────
-   HTML ESCAPING
-──────────────────────────────────────────── */
-function escHtml(str) {
+/* ══════════════════════
+   SAFE HELPERS
+══════════════════════ */
+
+/** Safely trim any value */
+const safe = (val) => (val || "").trim();
+
+/** Validate a URL string */
+const isValidUrl = (url) => {
+  try { new URL(url); return true; } catch { return false; }
+};
+
+/** Escape HTML to prevent XSS inside innerHTML */
+const esc = (str) => {
   return safe(str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#x27;");
-}
+    .replace(/'/g, "&#039;");
+};
 
-/* ────────────────────────────────────────────
+/* ══════════════════════
+   INPUT GETTERS
+══════════════════════ */
+
+const getVal = (id) => {
+  const el = document.getElementById(id);
+  return el ? safe(el.value) : "";
+};
+
+/* ══════════════════════
    PARSERS
-──────────────────────────────────────────── */
-function parseGallery(input) {
-  return safe(input)
+══════════════════════ */
+
+/**
+ * Parse gallery: comma-separated URLs, max 6, valid only
+ */
+function parseGallery(raw) {
+  return (safe(raw))
     .split(",")
-    .map((u) => u.trim())
-    .filter((u) => isValidUrl(u))
+    .map(i => i.trim())
+    .filter(i => isValidUrl(i))
     .slice(0, 6);
 }
 
-function parseReviews(input) {
-  return normalizeLines(input)
+/**
+ * Parse reviews: "Name: Text" one per line, max 5
+ */
+function parseReviews(raw) {
+  return (safe(raw))
     .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.includes(":"))
-    .map((l) => {
-      const colonIdx = l.indexOf(":");
+    .map(l => l.trim())
+    .filter(l => l.includes(":"))
+    .map(l => {
+      const [name, ...rest] = l.split(":");
       return {
-        name: l.slice(0, colonIdx).trim(),
-        text: l.slice(colonIdx + 1).trim()
+        name: safe(name),
+        text: safe(rest.join(":"))
       };
     })
-    .filter((r) => r.name && r.text)
+    .filter(r => r.name && r.text)
     .slice(0, 5);
 }
 
-function parseMenu(input) {
-  const normalized = normalizeLines(input);
-  const blocks = normalized.split(/\n{2,}/).map((b) => b.trim()).filter(Boolean);
-  return blocks.map((block) => {
-    const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
-    if (!lines.length) return null;
-    const category = lines[0];
-    const items = lines.slice(1).map((line) => {
-      const parts = line.split(" - ");
-      const itemName = safe(parts[0]);
-      if (!itemName) return null;
-      return { name: itemName, price: parts.length > 1 ? safe(parts.slice(1).join(" - ")) : "" };
-    }).filter(Boolean);
-    return { category, items };
-  }).filter((c) => c && c.category);
-}
+/**
+ * Parse menu: Category heading + Item - ₹Price lines,
+ * blank line separates categories
+ */
+function parseMenu(raw) {
+  const lines  = (safe(raw)).split("\n");
+  const cats   = [];
+  let currentCat = null;
 
-function parseTimings(input) {
-  return normalizeLines(input).split("\n").map((l) => l.trim()).filter(Boolean);
-}
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
 
-/* ────────────────────────────────────────────
-   SECTION BUILDERS
-──────────────────────────────────────────── */
-function buildHeroSection(heroUrl, cafeName) {
-  const name = safe(cafeName) || "Cafe Name";
-  const hasImage = isValidUrl(safe(heroUrl));
-  if (hasImage) {
-    return `<section class="pg-hero">
-  <div class="pg-hero-img-wrap">
-    <img src="${escHtml(safe(heroUrl))}" alt="${escHtml(name)}" onerror="this.closest('.pg-hero-img-wrap').classList.add('pg-hero-img-failed')" loading="eager" />
-    <div class="pg-hero-overlay"></div>
-  </div>
-  <div class="pg-hero-content"><h1 class="pg-cafe-name">${escHtml(name)}</h1></div>
-</section>`;
-  }
-  return `<section class="pg-hero pg-hero-no-image">
-  <div class="pg-hero-fallback-icon">☕</div>
-  <div class="pg-hero-content"><h1 class="pg-cafe-name pg-cafe-name--dark">${escHtml(name)}</h1></div>
-</section>`;
-}
-
-function buildDescriptionSection(desc) {
-  const d = safe(desc);
-  if (!d) return "";
-  return `<section class="pg-section pg-description"><p class="pg-desc-text">${escHtml(d)}</p></section>`;
-}
-
-function buildCtaSection(ctaText, fallback, id) {
-  const text = safe(ctaText) || fallback;
-  return `<section class="pg-section pg-cta-section" id="${id}">
-  <div class="pg-cta-card"><p class="pg-cta-text">${escHtml(text)}</p></div>
-</section>`;
-}
-
-function buildGallerySection(images) {
-  if (!images.length) return "";
-  const imgs = images.map((url) =>
-    `<img src="${escHtml(url)}" alt="Gallery photo" onerror="this.remove()" loading="lazy" />`
-  ).join("\n    ");
-  return `<section class="pg-section pg-gallery">
-  <h2 class="pg-section-title">Gallery</h2>
-  <div class="pg-gallery-scroll">${imgs}</div>
-</section>`;
-}
-
-function buildReviewsSection(reviews) {
-  if (!reviews.length) return "";
-  const cards = reviews.map((r) => `
-  <div class="pg-review-card">
-    <div class="pg-review-stars">★★★★★</div>
-    <p class="pg-review-text">${escHtml(r.text)}</p>
-    <p class="pg-review-name">— ${escHtml(r.name)}</p>
-  </div>`).join("");
-  return `<section class="pg-section pg-reviews">
-  <h2 class="pg-section-title">What Our Guests Say</h2>
-  <div class="pg-reviews-scroll">${cards}</div>
-</section>`;
-}
-
-function buildMenuSection(menuData) {
-  if (!menuData || !menuData.length) {
-    return `<section class="pg-section pg-menu">
-  <h2 class="pg-section-title">Our Menu</h2>
-  <p class="pg-menu-empty">Menu coming soon…</p>
-</section>`;
-  }
-  const cats = menuData.map((cat) => {
-    const items = (cat.items || []).map((item) =>
-      `<div class="pg-menu-item">
-        <span class="pg-menu-item-name">${escHtml(item.name)}</span>
-        ${item.price ? `<span class="pg-menu-item-price">${escHtml(item.price)}</span>` : ""}
-      </div>`
-    ).join("");
-    return `<div class="pg-menu-category">
-      <h3 class="pg-menu-cat-title">${escHtml(cat.category)}</h3>
-      <div class="pg-menu-items">${items || '<p class="pg-menu-empty">No items listed</p>'}</div>
-    </div>`;
-  }).join("");
-  return `<section class="pg-section pg-menu">
-  <h2 class="pg-section-title">Our Menu</h2>${cats}
-</section>`;
-}
-
-function buildTimingsSection(timingLines) {
-  if (!timingLines || !timingLines.length) return "";
-  const rows = timingLines.map((line) => {
-    const idx = line.indexOf(":");
-    if (idx > 0) {
-      const day = line.slice(0, idx).trim();
-      const hrs = line.slice(idx + 1).trim();
-      return `<div class="pg-timing-row"><span class="pg-timing-day">${escHtml(day)}</span><span class="pg-timing-hrs">${escHtml(hrs)}</span></div>`;
+    if (!line) {
+      // blank line → end current category
+      currentCat = null;
+      continue;
     }
-    return `<div class="pg-timing-row"><span class="pg-timing-full">${escHtml(line)}</span></div>`;
-  }).join("");
-  return `<section class="pg-section pg-timings">
-  <h2 class="pg-section-title">Opening Hours</h2>
-  <div class="pg-timings-card">${rows}</div>
-</section>`;
+
+    if (line.includes(" - ")) {
+      // It's a menu item
+      const parts = line.split(" - ");
+      const item  = safe(parts[0]);
+      const price = safe(parts.slice(1).join(" - "));
+
+      if (!item) continue; // skip invalid
+
+      if (!currentCat) {
+        // No active category — create an "unnamed" one
+        currentCat = { name: "", items: [] };
+        cats.push(currentCat);
+      }
+      currentCat.items.push({ item, price });
+
+    } else {
+      // It's a category heading
+      currentCat = { name: line, items: [] };
+      cats.push(currentCat);
+    }
+  }
+
+  // Filter out empty categories
+  return cats.filter(c => c.items.length > 0);
 }
 
-function buildMapSection(mapUrl) {
-  const u = safe(mapUrl);
-  if (!isValidUrl(u)) return "";
-  return `<section class="pg-section pg-map">
-  <h2 class="pg-section-title">Find Us</h2>
-  <a href="${escHtml(u)}" target="_blank" rel="noopener noreferrer" class="pg-map-link">
-    <span class="pg-map-icon">📍</span> View Location on Maps
-  </a>
-</section>`;
+/* ══════════════════════
+   HTML BUILDERS
+══════════════════════ */
+
+function buildHero(coverUrl) {
+  if (coverUrl && isValidUrl(coverUrl)) {
+    return `
+      <div class="cafe-hero">
+        <img src="${esc(coverUrl)}" alt="Cafe cover" onerror="this.parentElement.innerHTML='<div class=\\'cafe-hero-fallback\\'>☕</div>'" loading="lazy" />
+      </div>`;
+  }
+  return `<div class="cafe-hero"><div class="cafe-hero-fallback">☕</div></div>`;
 }
 
-function buildContactSection(phone) {
-  const digits = cleanPhone(phone);
-  if (digits.length < 10) return "";
-  return `<section class="pg-section pg-contact">
-  <div class="pg-contact-btns">
-    <a href="tel:${escHtml(digits)}" class="pg-btn pg-btn-call">📞 Call Us</a>
-    <a href="https://wa.me/${escHtml(digits)}" target="_blank" rel="noopener noreferrer" class="pg-btn pg-btn-whatsapp">💬 WhatsApp</a>
-  </div>
-</section>`;
-}
-
-/* ────────────────────────────────────────────
-   GENERATED PAGE CSS
-──────────────────────────────────────────── */
-function getPageCss() {
+function buildName(name) {
+  const display = name || "Cafe Name";
   return `
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=Josefin+Sans:wght@300;400;600&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{
-  --pg-bg:#f5f0ea;--pg-bg2:#ede6db;--pg-card:#ffffff;--pg-card-border:#e0d5c5;
-  --pg-text:#2c2215;--pg-text-muted:#7a6a55;--pg-heading:#1a1208;--pg-divider:#e0d5c5;
-  --pg-accent:#b8873a;--pg-font-heading:'Cormorant Garamond',Georgia,serif;
-  --pg-font-body:'DM Sans',sans-serif;
-  background:var(--pg-bg);color:var(--pg-text);font-family:var(--pg-font-body);
-  font-size:15px;line-height:1.6;overflow-x:hidden;word-wrap:break-word;
-}
-body.theme-dark{--pg-bg:#0d0d0d;--pg-bg2:#141414;--pg-card:#1c1c1c;--pg-card-border:#2a2a2a;--pg-text:#e0dbd2;--pg-text-muted:#888880;--pg-heading:#f5f0ea;--pg-divider:#2a2a2a;--pg-accent:#c9a96e;}
-body.theme-sage{--pg-bg:#f2f5f0;--pg-bg2:#e8ede4;--pg-card:#ffffff;--pg-card-border:#d2dece;--pg-text:#1e2b1a;--pg-text-muted:#6a7d65;--pg-heading:#0f1a0c;--pg-divider:#d2dece;--pg-accent:#4a7c59;}
-body.theme-cream{--pg-bg:#fffdf7;--pg-bg2:#f9f4e8;--pg-card:#ffffff;--pg-card-border:#ede8d8;--pg-text:#2a2318;--pg-text-muted:#8a7d6a;--pg-heading:#1a1408;--pg-divider:#ede8d8;--pg-accent:#c07d2a;}
-body.font-playfair{--pg-font-heading:'Playfair Display',Georgia,serif;}
-body.font-josefin{--pg-font-heading:'Josefin Sans',sans-serif;}
-body.texture-noise::after,body.texture-linen::after,body.texture-dots::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.04;}
-body.texture-noise::after{background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px;}
-body.texture-linen::after{background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px),repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);}
-body.texture-dots::after{background-image:radial-gradient(circle,rgba(0,0,0,.15) 1px,transparent 1px);background-size:18px 18px;}
-
-.pg-section{padding:28px 20px;border-bottom:1px solid var(--pg-divider);position:relative;z-index:1;}
-.pg-section:last-child{border-bottom:none;}
-.pg-section-title{font-family:var(--pg-font-heading);font-size:22px;font-weight:700;color:var(--pg-heading);margin-bottom:18px;}
-
-/* HERO */
-.pg-hero{position:relative;min-height:260px;background:var(--pg-bg2);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;}
-.pg-hero-img-wrap{position:absolute;inset:0;z-index:0;}
-.pg-hero-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
-.pg-hero-img-wrap.pg-hero-img-failed img{display:none;}
-.pg-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.1) 60%,transparent 100%);z-index:1;}
-.pg-hero-no-image{align-items:center;justify-content:center;min-height:200px;gap:12px;}
-.pg-hero-fallback-icon{font-size:52px;opacity:.3;}
-.pg-hero-content{position:relative;z-index:2;padding:24px 20px 20px;}
-.pg-hero-no-image .pg-hero-content{padding:0;}
-.pg-cafe-name{font-family:var(--pg-font-heading);font-size:32px;font-weight:700;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.4);line-height:1.2;word-wrap:break-word;}
-.pg-cafe-name--dark{color:var(--pg-heading);text-shadow:none;text-align:center;}
-
-/* DESCRIPTION */
-.pg-description{background:var(--pg-bg2);}
-.pg-desc-text{font-size:15px;color:var(--pg-text);line-height:1.7;word-wrap:break-word;}
-
-/* CTA */
-.pg-cta-section{background:var(--pg-bg);}
-.pg-cta-card{background:var(--pg-card);border:1px solid var(--pg-card-border);border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
-.pg-cta-text{font-family:var(--pg-font-heading);font-size:18px;font-weight:600;color:var(--pg-heading);text-align:center;line-height:1.4;word-wrap:break-word;}
-
-/* GALLERY */
-.pg-gallery-scroll{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none;}
-.pg-gallery-scroll::-webkit-scrollbar{display:none;}
-.pg-gallery-scroll img{height:200px;min-width:80%;max-width:80%;object-fit:cover;border-radius:10px;scroll-snap-align:start;flex-shrink:0;display:block;}
-
-/* REVIEWS */
-.pg-reviews-scroll{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none;}
-.pg-reviews-scroll::-webkit-scrollbar{display:none;}
-.pg-review-card{background:var(--pg-card);border:1px solid var(--pg-card-border);border-radius:12px;padding:18px;min-width:85%;max-width:85%;scroll-snap-align:start;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.05);}
-.pg-review-stars{color:#f0a500;font-size:14px;margin-bottom:10px;letter-spacing:2px;}
-.pg-review-text{font-size:14px;color:var(--pg-text);line-height:1.6;margin-bottom:12px;word-wrap:break-word;}
-.pg-review-name{font-size:13px;color:var(--pg-text-muted);font-style:italic;}
-
-/* MENU */
-.pg-menu{background:var(--pg-bg2);}
-.pg-menu-category{margin-bottom:24px;}
-.pg-menu-category:last-child{margin-bottom:0;}
-.pg-menu-cat-title{font-family:var(--pg-font-heading);font-size:16px;font-weight:700;color:var(--pg-accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--pg-divider);}
-.pg-menu-items{display:flex;flex-direction:column;}
-.pg-menu-item{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dotted var(--pg-divider);}
-.pg-menu-item:last-child{border-bottom:none;}
-.pg-menu-item-name{font-size:14px;color:var(--pg-text);flex:1;word-wrap:break-word;line-height:1.4;}
-.pg-menu-item-price{font-size:14px;font-weight:600;color:var(--pg-heading);white-space:nowrap;flex-shrink:0;}
-.pg-menu-empty{font-size:14px;color:var(--pg-text-muted);font-style:italic;padding:8px 0;}
-
-/* TIMINGS */
-.pg-timings-card{background:var(--pg-card);border:1px solid var(--pg-card-border);border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
-.pg-timing-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--pg-divider);}
-.pg-timing-row:last-child{border-bottom:none;}
-.pg-timing-day{font-size:14px;color:var(--pg-text-muted);font-weight:500;}
-.pg-timing-hrs{font-size:14px;color:var(--pg-heading);font-weight:600;}
-.pg-timing-full{font-size:14px;color:var(--pg-text);word-wrap:break-word;}
-
-/* MAP */
-.pg-map-link{display:flex;align-items:center;gap:10px;background:var(--pg-card);border:1px solid var(--pg-card-border);border-radius:12px;padding:16px 20px;font-size:15px;font-weight:500;color:var(--pg-heading);text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.05);}
-.pg-map-icon{font-size:20px;}
-
-/* CONTACT — theme-immune via !important */
-.pg-contact{background:var(--pg-bg2);}
-.pg-contact-btns{display:flex;gap:12px;}
-.pg-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 12px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;text-align:center;}
-.pg-btn-call{background:#1a1208!important;color:#f5f0ea!important;border:none!important;}
-.pg-btn-whatsapp{background:#25d366!important;color:#fff!important;border:none!important;}
-
-.pg-footer-space{height:32px;}
-`;
+    <div class="cafe-name-wrap">
+      <h1 class="cafe-name">${esc(display)}</h1>
+    </div>`;
 }
 
-/* ────────────────────────────────────────────
-   BUILD FULL PAGE
-──────────────────────────────────────────── */
-function buildPage(data) {
-  const { cafeName, cafeDesc, heroImage, ctaTop, ctaBottom,
-          galleryImages, reviews, menuData, timingLines,
-          mapUrl, phone, theme, font, texture } = data;
+function buildDescription(desc) {
+  if (!desc) return "";
+  return `
+    <div class="cafe-desc-wrap">
+      <p class="cafe-desc">${esc(desc)}</p>
+    </div>`;
+}
 
-  const bodyClasses = [
-    safe(theme) || "theme-warm",
-    safe(font)  || "font-cormorant",
-    safe(texture)
-  ].filter(Boolean).join(" ");
+function buildCTA(ctaTop, ctaBottom) {
+  const defaultTop    = "🍽 Order your favorites online";
+  const defaultBottom = "🎉 Book your celebrations";
+  const topText    = ctaTop    || defaultTop;
+  const bottomText = ctaBottom || defaultBottom;
 
-  const sections = [
-    buildHeroSection(heroImage, cafeName),
-    buildDescriptionSection(cafeDesc),
-    buildCtaSection(ctaTop,    "🍽 Order your favorites online", "cta-top"),
-    buildGallerySection(galleryImages),
-    buildReviewsSection(reviews),
-    buildMenuSection(menuData),
-    buildTimingsSection(timingLines),
-    buildMapSection(mapUrl),
-    buildCtaSection(ctaBottom, "🎉 Book your celebrations", "cta-bottom"),
-    buildContactSection(phone),
-    `<div class="pg-footer-space"></div>`
-  ].join("\n");
+  const topBlock = `
+    <div class="cafe-cta">
+      <p>${esc(topText)}</p>
+    </div>`;
+
+  const bottomBlock = `
+    <div class="cafe-cta">
+      <p>${esc(bottomText)}</p>
+    </div>`;
+
+  return { topBlock, bottomBlock };
+}
+
+function buildGallery(images) {
+  if (!images || images.length === 0) return "";
+
+  const imgs = images.map(url =>
+    `<img src="${esc(url)}" alt="Cafe photo" onerror="this.remove()" loading="lazy" />`
+  ).join("\n");
+
+  return `
+    <div class="cafe-gallery-section">
+      <div class="cafe-gallery-title">📸 Gallery</div>
+      <div class="cafe-gallery">
+        ${imgs}
+      </div>
+    </div>`;
+}
+
+function buildReviews(reviews) {
+  if (!reviews || reviews.length === 0) return "";
+
+  const cards = reviews.map(r => `
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">${esc(r.text)}</p>
+      <div class="review-name">— ${esc(r.name)}</div>
+    </div>`
+  ).join("\n");
+
+  return `
+    <div class="cafe-reviews-section">
+      <div class="cafe-reviews-title">⭐ Reviews</div>
+      <div class="reviews-scroll">
+        ${cards}
+      </div>
+    </div>`;
+}
+
+function buildMenu(categories) {
+  if (!categories || categories.length === 0) {
+    return `
+      <div class="cafe-menu-section">
+        <h2 class="cafe-menu-title">🍽 Menu</h2>
+        <div style="padding: 12px; opacity: 0.5; font-size: 13px;">Menu coming soon.</div>
+      </div>`;
+  }
+
+  const catHTML = categories.map(cat => {
+    const catName = cat.name
+      ? `<div class="menu-cat-name">${esc(cat.name)}</div>`
+      : "";
+    const items = cat.items.map(i => `
+      <div class="menu-item">
+        <span class="menu-item-name">${esc(i.item)}</span>
+        ${i.price ? `<span class="menu-item-price">${esc(i.price)}</span>` : ""}
+      </div>`).join("");
+
+    return `<div class="menu-category">${catName}${items}</div>`;
+  }).join("\n");
+
+  return `
+    <div class="cafe-menu-section">
+      <h2 class="cafe-menu-title">🍽 Menu</h2>
+      ${catHTML}
+    </div>`;
+}
+
+function buildTimings(timings) {
+  if (!timings) return "";
+  return `
+    <div class="cafe-timings-section">
+      <div class="cafe-timings-card">
+        <div class="timings-icon">⏰</div>
+        <div class="timings-content">
+          <div class="timings-label">Opening Hours</div>
+          <div class="timings-value">${esc(timings)}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildMap(mapLink) {
+  if (!mapLink || !isValidUrl(mapLink)) return "";
+  return `
+    <div class="cafe-map-section">
+      <a href="${esc(mapLink)}" target="_blank" rel="noopener noreferrer" class="cafe-map-btn">
+        📍 Get Directions on Google Maps
+      </a>
+    </div>`;
+}
+
+function buildContactButtons(phone) {
+  const cleanPhone = safe(phone).replace(/\D/g, "");
+  if (cleanPhone.length < 10) return "";
+
+  return `
+    <div class="cafe-contact-section">
+      <a href="tel:${cleanPhone}" class="contact-btn btn-call">
+        📞 Call Us
+      </a>
+      <a href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener noreferrer" class="contact-btn btn-whatsapp">
+        💬 WhatsApp
+      </a>
+    </div>`;
+}
+
+/* ══════════════════════
+   FULL PAGE ASSEMBLER
+══════════════════════ */
+
+function assemblePage(opts) {
+  const {
+    coverUrl, cafeName, description,
+    ctaTop, ctaBottom,
+    galleryImages, reviews, menuCategories,
+    timings, mapLink, phone,
+    theme, font, texture
+  } = opts;
+
+  const hero       = buildHero(coverUrl);
+  const nameBlock  = buildName(cafeName);
+  const descBlock  = buildDescription(description);
+  const { topBlock: ctaTopBlock, bottomBlock: ctaBottomBlock } = buildCTA(ctaTop, ctaBottom);
+  const galleryBlock  = buildGallery(galleryImages);
+  const reviewsBlock  = buildReviews(reviews);
+  const menuBlock     = buildMenu(menuCategories);
+  const timingsBlock  = buildTimings(timings);
+  const mapBlock      = buildMap(mapLink);
+  const contactBlock  = buildContactButtons(phone);
+
+  /* FIXED section order per spec:
+     1. Cover  2. Name  3. Description  4. CTA Top
+     5. Gallery  6. Reviews  7. Menu  8. Timings
+     9. Map  10. CTA Bottom  11. Buttons */
+
+  return `
+    ${hero}
+    ${nameBlock}
+    ${descBlock}
+    ${ctaTopBlock}
+    ${galleryBlock}
+    ${reviewsBlock}
+    ${menuBlock}
+    ${timingsBlock}
+    ${mapBlock}
+    ${ctaBottomBlock}
+    ${contactBlock}
+    <div class="page-footer-space"></div>
+  `;
+}
+
+/* ══════════════════════
+   MAIN RENDER ENGINE
+══════════════════════ */
+
+function renderPage() {
+  /* ── 1. Read all inputs safely ── */
+  const cafeName   = getVal("cafeName");
+  const description = getVal("description");
+  const phone      = getVal("phone");
+  const coverUrl   = getVal("coverImage");
+  const ctaTop     = getVal("ctaTop");
+  const ctaBottom  = getVal("ctaBottom");
+  const galleryRaw = getVal("gallery");
+  const reviewsRaw = getVal("reviews");
+  const menuRaw    = getVal("menu");
+  const timings    = getVal("timings");
+  const mapLink    = getVal("mapLink");
+
+  /* ── 2. Parse inputs ── */
+  const galleryImages  = parseGallery(galleryRaw);
+  const reviews        = parseReviews(reviewsRaw);
+  const menuCategories = parseMenu(menuRaw);
+
+  /* ── 3. Assemble inner page HTML ── */
+  const innerHTML = assemblePage({
+    coverUrl, cafeName, description,
+    ctaTop, ctaBottom,
+    galleryImages, reviews, menuCategories,
+    timings, mapLink, phone,
+    theme: selectedTheme,
+    font: selectedFont,
+    texture: selectedTexture
+  });
+
+  /* ── 4. Inject into preview with SAFE DOM check ── */
+  const preview = document.getElementById("preview");
+  if (!preview) return;
+
+  /* Reset classes — CRITICAL to prevent stacking */
+  preview.className = "preview";
+
+  /* Apply theme, font, texture to preview root
+     (wrapping page-root handles it) */
+  const pageHTML = `
+    <div class="page-root ${selectedTheme} ${selectedFont} ${selectedTexture}">
+      ${innerHTML}
+    </div>
+  `;
+
+  preview.innerHTML = pageHTML;
+}
+
+function generatePreview() {
+  try {
+    renderPage();
+  } catch (e) {
+    console.error("Render error:", e);
+    // Fail gracefully — never crash the UI
+    const preview = document.getElementById("preview");
+    if (preview && preview.innerHTML === "") {
+      preview.innerHTML = `
+        <div class="page-root theme-beige font-modern texture-plain">
+          <div class="demo-fallback">
+            <div class="demo-icon">☕</div>
+            <p>Your cafe landing page will appear here.<br/>Start filling in the form!</p>
+          </div>
+        </div>`;
+    }
+  }
+}
+
+/* ══════════════════════
+   PILL SELECTORS
+══════════════════════ */
+
+function initPillGroup(groupId, onSelect) {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+
+  group.querySelectorAll(".pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+      group.querySelectorAll(".pill").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      onSelect(btn.dataset.value);
+    });
+  });
+}
+
+/* ══════════════════════
+   DEVICE TOGGLE
+══════════════════════ */
+
+function initDeviceToggle() {
+  const frame   = document.getElementById("previewFrame");
+  const btnMob  = document.getElementById("devMobile");
+  const btnDesk = document.getElementById("devDesktop");
+
+  if (!frame || !btnMob || !btnDesk) return;
+
+  btnMob.addEventListener("click", () => {
+    frame.className = "preview-frame mobile";
+    btnMob.classList.add("active");
+    btnDesk.classList.remove("active");
+  });
+
+  btnDesk.addEventListener("click", () => {
+    frame.className = "preview-frame desktop";
+    btnDesk.classList.add("active");
+    btnMob.classList.remove("active");
+  });
+}
+
+/* ══════════════════════
+   MOBILE PANEL TOGGLE
+══════════════════════ */
+
+function initPanelToggle() {
+  const btn   = document.getElementById("panelToggleBtn");
+  const panel = document.getElementById("builderPanel");
+  if (!btn || !panel) return;
+
+  btn.addEventListener("click", () => {
+    panel.classList.toggle("open");
+    btn.textContent = panel.classList.contains("open") ? "✕ Close" : "✏️ Edit";
+  });
+
+  // Close panel when clicking preview on mobile
+  const previewStage = document.querySelector(".preview-stage");
+  if (previewStage) {
+    previewStage.addEventListener("click", () => {
+      if (panel.classList.contains("open")) {
+        panel.classList.remove("open");
+        btn.textContent = "✏️ Edit";
+      }
+    });
+  }
+}
+
+/* ══════════════════════
+   EXPORT / DOWNLOAD
+══════════════════════ */
+
+function buildExportHTML() {
+  const cafeName   = getVal("cafeName") || "Cafe Name";
+  const description = getVal("description");
+  const phone      = getVal("phone");
+  const coverUrl   = getVal("coverImage");
+  const ctaTop     = getVal("ctaTop");
+  const ctaBottom  = getVal("ctaBottom");
+  const galleryRaw = getVal("gallery");
+  const reviewsRaw = getVal("reviews");
+  const menuRaw    = getVal("menu");
+  const timings    = getVal("timings");
+  const mapLink    = getVal("mapLink");
+
+  const galleryImages  = parseGallery(galleryRaw);
+  const reviews        = parseReviews(reviewsRaw);
+  const menuCategories = parseMenu(menuRaw);
+
+  const innerHTML = assemblePage({
+    coverUrl, cafeName, description,
+    ctaTop, ctaBottom,
+    galleryImages, reviews, menuCategories,
+    timings, mapLink, phone,
+    theme: selectedTheme,
+    font: selectedFont,
+    texture: selectedTexture
+  });
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>${escHtml(safe(cafeName) || "Cafe")}</title>
-<style>${getPageCss()}</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${esc(cafeName)}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@400;600&family=Nunito:wght@300;400;600&family=Inter:wght@300;400;600&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body { overflow-x: hidden; word-wrap: break-word; overflow-wrap: break-word; }
+
+    /* THEMES */
+    .theme-beige { --bg: #F5EDE4; --card: #FFFFFF; --text: #2C2C2C; background: var(--bg); color: var(--text); }
+    .theme-peach { --bg: #FFE8DC; --card: #FFF7F3; --text: #2E2E2E; background: var(--bg); color: var(--text); }
+    .theme-mint  { --bg: #EAF7F2; --card: #FFFFFF; --text: #2A2A2A; background: var(--bg); color: var(--text); }
+    .theme-white { --bg: #FFFFFF; --card: #F4F4F4; --text: #111111; background: var(--bg); color: var(--text); }
+    .theme-dark  { --bg: #121212; --card: #1E1E1E; --text: #F5F5F5; background: var(--bg); color: var(--text); }
+
+    /* TEXTURES */
+    .texture-plain { background: var(--bg); }
+    .texture-grain { position: relative; }
+    .texture-grain::before { content: ""; position: fixed; inset: 0; background-image: url("https://www.transparenttextures.com/patterns/noise.png"); opacity: 0.04; pointer-events: none; z-index: 0; }
+    .texture-soft { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4), transparent 40%), radial-gradient(circle at 80% 80%, rgba(0,0,0,0.05), transparent 40%), var(--bg); }
+
+    /* FONTS */
+    .font-modern  { font-family: 'Poppins', sans-serif; }
+    .font-friendly { font-family: 'Nunito', sans-serif; }
+    .font-minimal  { font-family: 'Inter', sans-serif; }
+    .font-stylish  { font-family: 'DM Sans', sans-serif; }
+    .font-elegant h1, .font-elegant h2 { font-family: 'Playfair Display', serif; }
+
+    .page-root { width: 100%; min-height: 100vh; overflow-x: hidden; word-wrap: break-word; overflow-wrap: break-word; max-width: 480px; margin: 0 auto; }
+
+    .cafe-hero { width: 100%; }
+    .cafe-hero img { width: 100%; height: auto; display: block; }
+    .cafe-hero-fallback { width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; background: var(--card); font-size: 48px; opacity: 0.4; }
+
+    .cafe-name-wrap { padding: 20px 20px 8px; text-align: center; }
+    .cafe-name { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; }
+
+    .cafe-desc-wrap { padding: 6px 20px 16px; text-align: center; }
+    .cafe-desc { font-size: 13.5px; color: var(--text); opacity: 0.7; line-height: 1.6; word-wrap: break-word; overflow-wrap: break-word; }
+
+    .cafe-cta { margin: 0 20px 20px; background: var(--card); border-radius: 14px; padding: 14px 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+    .cafe-cta p { font-size: 13.5px; color: var(--text); line-height: 1.7; font-weight: 500; word-wrap: break-word; overflow-wrap: break-word; }
+
+    .cafe-gallery-section { padding: 16px 0; }
+    .cafe-gallery-title { font-size: 13px; font-weight: 700; color: var(--text); padding: 0 20px 10px; letter-spacing: 0.3px; opacity: 0.85; text-transform: uppercase; }
+    .cafe-gallery { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .cafe-gallery::-webkit-scrollbar { display: none; }
+    .cafe-gallery img { flex: 0 0 75%; height: 160px; border-radius: 14px; object-fit: cover; scroll-snap-align: start; transition: transform 0.3s ease; display: block; }
+    .cafe-gallery img:active { transform: scale(0.97); }
+
+    .cafe-reviews-section { padding: 16px 0; }
+    .cafe-reviews-title { font-size: 13px; font-weight: 700; color: var(--text); padding: 0 20px 10px; letter-spacing: 0.3px; opacity: 0.85; text-transform: uppercase; }
+    .reviews-scroll { display: flex; gap: 14px; overflow-x: auto; padding: 0 20px 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .reviews-scroll::-webkit-scrollbar { display: none; }
+    .review-card { flex: 0 0 85%; border-radius: 16px; padding: 16px; background: var(--card); scroll-snap-align: start; transition: transform 0.3s ease; box-shadow: 0 2px 12px rgba(0,0,0,0.08); word-wrap: break-word; overflow-wrap: break-word; }
+    .review-card:active { transform: scale(0.97); }
+    .review-stars { color: #f4a832; font-size: 13px; margin-bottom: 7px; }
+    .review-text { font-size: 13px; color: var(--text); opacity: 0.85; line-height: 1.6; margin-bottom: 9px; }
+    .review-name { font-size: 11.5px; font-weight: 700; color: var(--text); opacity: 0.6; letter-spacing: 0.3px; }
+
+    .cafe-menu-section { padding: 16px 20px 20px; }
+    .cafe-menu-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 14px; letter-spacing: -0.2px; }
+    .menu-category { margin-bottom: 16px; }
+    .menu-cat-name { font-size: 12px; font-weight: 700; color: var(--text); opacity: 0.5; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: var(--card); border-radius: 10px; margin-bottom: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+    .menu-item-name { font-size: 13.5px; color: var(--text); font-weight: 500; flex: 1; word-wrap: break-word; overflow-wrap: break-word; padding-right: 8px; }
+    .menu-item-price { font-size: 13px; font-weight: 700; color: var(--text); opacity: 0.75; white-space: nowrap; flex-shrink: 0; }
+
+    .cafe-timings-section { margin: 0 20px 20px; }
+    .cafe-timings-card { background: var(--card); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+    .timings-icon { font-size: 22px; flex-shrink: 0; }
+    .timings-label { font-size: 10px; font-weight: 700; color: var(--text); opacity: 0.45; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+    .timings-value { font-size: 13px; color: var(--text); font-weight: 500; word-wrap: break-word; overflow-wrap: break-word; }
+
+    .cafe-map-section { padding: 0 20px 20px; }
+    .cafe-map-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: var(--card); border: none; border-radius: 14px; padding: 14px 20px; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; text-decoration: none; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+
+    .cafe-contact-section { padding: 0 20px 24px; display: flex; gap: 10px; }
+    .contact-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; border: none; border-radius: 14px; padding: 13px 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,0.14); }
+    .btn-call { background: #2563eb; color: #fff; }
+    .btn-whatsapp { background: #25D366; color: #fff; }
+
+    .page-footer-space { height: 32px; }
+  </style>
 </head>
-<body class="${escHtml(bodyClasses)}">
-${sections}
+<body>
+  <div class="page-root ${selectedTheme} ${selectedFont} ${selectedTexture}">
+    ${innerHTML}
+  </div>
 </body>
 </html>`;
 }
 
-/* ────────────────────────────────────────────
-   COLLECT FORM INPUTS
-──────────────────────────────────────────── */
-function collectData() {
-  const get = (id) => safe(document.getElementById(id)?.value);
-  return {
-    cafeName:      get("cafeName"),
-    cafeDesc:      get("cafeDesc"),
-    heroImage:     get("heroImage"),
-    phone:         get("phoneNumber"),
-    ctaTop:        get("ctaTop"),
-    ctaBottom:     get("ctaBottom"),
-    galleryImages: parseGallery(get("galleryUrls")),
-    reviews:       parseReviews(get("reviewsInput")),
-    menuData:      parseMenu(get("menuInput")),
-    timingLines:   parseTimings(get("timingsInput")),
-    mapUrl:        get("mapUrl"),
-    theme:         get("themeSelect"),
-    font:          get("fontSelect"),
-    texture:       get("textureSelect"),
-  };
+function initExport() {
+  const btn = document.getElementById("exportBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    try {
+      const html     = buildExportHTML();
+      const blob     = new Blob([html], { type: "text/html;charset=utf-8" });
+      const url      = URL.createObjectURL(blob);
+      const a        = document.createElement("a");
+      const cafeName = getVal("cafeName") || "cafe-landing";
+      const filename = cafeName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + ".html";
+
+      a.href     = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Export error:", e);
+    }
+  });
 }
 
-/* ────────────────────────────────────────────
-   PREVIEW — uses srcdoc (works on GitHub Pages,
-   no document.write CSP issues)
-──────────────────────────────────────────── */
-let _lastHtml = "";
+/* ══════════════════════
+   LIVE INPUT LISTENERS
+══════════════════════ */
 
-function updatePreview() {
-  const data = collectData();
-  const html = buildPage(data);
-  _lastHtml = html;
-
-  const iframe = document.getElementById("previewIframe");
-  if (!iframe) return;
-
-  // srcdoc is the correct, CSP-safe way to inject HTML into an iframe
-  iframe.srcdoc = html;
+function initLiveListeners() {
+  document.querySelectorAll("input, textarea").forEach(el => {
+    if (el) {
+      el.addEventListener("input", generatePreview);
+    }
+  });
 }
 
-/* ────────────────────────────────────────────
-   TAB SWITCHING
-──────────────────────────────────────────── */
-function switchTab(name, btn) {
-  // Hide all panels
-  document.querySelectorAll(".tab-panel").forEach((p) => p.classList.add("hidden"));
-  // Deactivate all tab buttons
-  document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-
-  // Show selected panel
-  const panel = document.getElementById("tab-" + name);
-  if (panel) panel.classList.remove("hidden");
-  if (btn) btn.classList.add("active");
-
-  // Trigger preview render when switching to preview tab
-  if (name === "preview") updatePreview();
-}
-
-/* ────────────────────────────────────────────
-   PREVIEW DEVICE WIDTH
-──────────────────────────────────────────── */
-function setPreviewWidth(btn, width) {
-  document.querySelectorAll(".dev-btn").forEach((b) => b.classList.remove("active"));
-  if (btn) btn.classList.add("active");
-  const wrap = document.getElementById("previewFrameWrap");
-  if (wrap) wrap.style.width = typeof width === "string" ? width : width + "px";
-}
-
-/* ────────────────────────────────────────────
-   COPY FULL HTML
-──────────────────────────────────────────── */
-function copyOutput() {
-  const html = _lastHtml || buildPage(collectData());
-  const statusEl = document.getElementById("copyStatus");
-
-  const show = (msg, ok) => {
-    if (!statusEl) return;
-    statusEl.textContent = msg;
-    statusEl.style.color = ok ? "#6dbf7a" : "#e07a7a";
-    setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 3000);
-  };
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(html)
-      .then(() => show("✓ Copied to clipboard!", true))
-      .catch(() => fallbackCopy(html, show));
-  } else {
-    fallbackCopy(html, show);
-  }
-}
-
-function fallbackCopy(text, cb) {
-  try {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.cssText = "position:fixed;left:-9999px;top:-9999px;opacity:0;";
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    const ok = document.execCommand("copy");
-    document.body.removeChild(ta);
-    cb(ok ? "✓ Copied!" : "Please copy manually.", ok);
-  } catch {
-    cb("Copy failed — please copy manually.", false);
-  }
-}
-
-/* ────────────────────────────────────────────
-   DEMO SEED
-──────────────────────────────────────────── */
-function seedDemo() {
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-  set("cafeName", "The Roasted Bean");
-  set("cafeDesc", "A cozy corner for coffee lovers and pastry enthusiasts. Artisan brews, house-baked goods, and warm vibes since 2018.");
-  set("heroImage", "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80");
-  set("phoneNumber", "+91 98765 43210");
-  set("ctaTop", "🍽 Order your favorites online");
-  set("ctaBottom", "🎉 Book your celebrations with us");
-  set("galleryUrls", [
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80",
-    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&q=80",
-    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&q=80",
-    "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80"
-  ].join(", "));
-  set("reviewsInput", [
-    "Priya S: Best cappuccino I've ever had. The ambience is just perfect.",
-    "Rohan M: Love the avocado toast here. A weekend ritual!",
-    "Ananya K: Staff is super friendly and coffee is always consistent.",
-    "Vikram T: Great place to work from. Fast Wi-Fi and excellent filter coffee.",
-    "Sneha R: The chocolate croissant is absolutely divine."
-  ].join("\n"));
-  set("menuInput", [
-    "Hot Drinks", "Espresso - ₹110", "Cappuccino - ₹150",
-    "Filter Coffee - ₹90", "Masala Chai - ₹80",
-    "", "Cold Drinks", "Cold Brew - ₹180", "Iced Latte - ₹170", "Lemonade - ₹120",
-    "", "Snacks & Bites", "Croissant - ₹100", "Avocado Toast - ₹190",
-    "Banana Bread - ₹130", "Cheese Sandwich - ₹160"
-  ].join("\n"));
-  set("timingsInput", "Mon–Fri: 7:30am – 9:00pm\nSat–Sun: 8:00am – 10:00pm");
-  set("mapUrl", "https://maps.google.com/?q=cafe");
-}
-
-/* ────────────────────────────────────────────
+/* ══════════════════════
    INIT
-──────────────────────────────────────────── */
-function init() {
-  const inputIds = [
-    "cafeName","cafeDesc","heroImage","phoneNumber",
-    "ctaTop","ctaBottom","galleryUrls","reviewsInput",
-    "menuInput","timingsInput","mapUrl",
-    "themeSelect","fontSelect","textureSelect"
-  ];
+══════════════════════ */
 
-  inputIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    // Debounce text inputs slightly so typing doesn't thrash the iframe
-    let timer;
-    const handler = () => {
-      clearTimeout(timer);
-      timer = setTimeout(updatePreview, 300);
-    };
-    el.addEventListener("input", handler);
-    el.addEventListener("change", handler);
+document.addEventListener("DOMContentLoaded", () => {
+  /* Pill groups */
+  initPillGroup("themeGroup", (val) => {
+    selectedTheme = val;
+    generatePreview();
   });
 
-  seedDemo();
-  // Build initial HTML so Copy works even before switching to Preview tab
-  _lastHtml = buildPage(collectData());
-}
+  initPillGroup("fontGroup", (val) => {
+    selectedFont = val;
+    generatePreview();
+  });
 
-document.addEventListener("DOMContentLoaded", init);
+  initPillGroup("textureGroup", (val) => {
+    selectedTexture = val;
+    generatePreview();
+  });
+
+  /* Device toggle */
+  initDeviceToggle();
+
+  /* Mobile panel toggle */
+  initPanelToggle();
+
+  /* Export */
+  initExport();
+
+  /* Live listeners */
+  initLiveListeners();
+
+  /* Initial render */
+  generatePreview();
+});
