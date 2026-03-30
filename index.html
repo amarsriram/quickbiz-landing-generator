@@ -3,179 +3,180 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuickBiz V5 — Cafe Landing Generator</title>
-
-  <!-- Google Fonts -->
+  <title>QuickBiz v5.1 — Cafe Page Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Nunito:wght@300;400;600;700&family=Inter:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=Lato:wght@300;400;700&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- ════════════════════════════════════════════
-     GENERATOR PANEL
-════════════════════════════════════════════ -->
-<div class="generator-wrap">
+<div class="app-shell">
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="logo-mark">QB<span>5</span></div>
-      <h1 class="sidebar-title">QuickBiz <span>V5</span></h1>
-      <p class="sidebar-sub">Cafe Landing Generator</p>
+  <!-- ═══════════════════════════════════════
+       LEFT PANEL — CONTROLS
+  ═══════════════════════════════════════ -->
+  <aside class="controls-panel" id="controlsPanel">
+    <div class="controls-header">
+      <div class="logo-mark">QB</div>
+      <div>
+        <h1 class="app-title">QuickBiz</h1>
+        <p class="app-sub">Cafe Page Generator · v5.1</p>
+      </div>
     </div>
 
-    <div class="sidebar-body">
+    <div class="controls-scroll">
 
-      <!-- ── CAFE INFO ── -->
-      <section class="form-section">
-        <h2 class="section-label"><span class="label-icon">☕</span> Cafe Info</h2>
+      <!-- BASIC INFO -->
+      <section class="ctrl-section">
+        <h2 class="ctrl-section-title">Basic Info</h2>
 
-        <div class="field-group">
-          <label class="field-label">Cafe Name</label>
-          <input class="field-input" id="cafeName" type="text" placeholder="e.g. Bloom & Brew" maxlength="60" />
+        <div class="ctrl-group">
+          <label class="ctrl-label">Cafe Name <span class="req">*</span></label>
+          <input class="ctrl-input" type="text" id="cafeName" placeholder="e.g. The Roasted Bean" />
         </div>
 
-        <div class="field-group">
-          <label class="field-label">Tagline / Description</label>
-          <textarea class="field-input field-textarea" id="cafeDesc" placeholder="A cozy corner for specialty coffee, warm pastries & good vibes." rows="3"></textarea>
+        <div class="ctrl-group">
+          <label class="ctrl-label">Short Description</label>
+          <textarea class="ctrl-input ctrl-textarea" id="cafeDesc" placeholder="A cozy corner for coffee lovers..." rows="3"></textarea>
         </div>
 
-        <div class="field-group">
-          <label class="field-label">Phone Number</label>
-          <input class="field-input" id="cafePhone" type="tel" placeholder="+91 98765 43210" />
+        <div class="ctrl-group">
+          <label class="ctrl-label">Hero Image URL</label>
+          <input class="ctrl-input" type="text" id="heroImage" placeholder="https://..." />
         </div>
 
-        <div class="field-group">
-          <label class="field-label">Google Maps Link</label>
-          <input class="field-input" id="cafeMap" type="url" placeholder="https://maps.google.com/..." />
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Opening Hours</label>
-          <input class="field-input" id="cafeTiming" type="text" placeholder="Mon–Sat: 8 AM – 9 PM  |  Sun: 10 AM – 6 PM" />
+        <div class="ctrl-group">
+          <label class="ctrl-label">Phone Number</label>
+          <input class="ctrl-input" type="text" id="phoneNumber" placeholder="+91 98765 43210" />
         </div>
       </section>
 
-      <!-- ── IMAGES ── -->
-      <section class="form-section">
-        <h2 class="section-label"><span class="label-icon">🖼</span> Images</h2>
-
-        <div class="field-group">
-          <label class="field-label">Cover / Hero Image URL</label>
-          <input class="field-input" id="heroImg" type="url" placeholder="https://..." />
+      <!-- CTA -->
+      <section class="ctrl-section">
+        <h2 class="ctrl-section-title">Call to Action</h2>
+        <div class="ctrl-group">
+          <label class="ctrl-label">Top CTA Text</label>
+          <input class="ctrl-input" type="text" id="ctaTop" placeholder="🍽 Order your favorites online" />
         </div>
-
-        <div class="field-group">
-          <label class="field-label">Gallery Images <span class="field-hint">(one URL per line, max 6)</span></label>
-          <textarea class="field-input field-textarea" id="galleryImgs" placeholder="https://image1.jpg&#10;https://image2.jpg&#10;https://image3.jpg" rows="4"></textarea>
+        <div class="ctrl-group">
+          <label class="ctrl-label">Bottom CTA Text</label>
+          <input class="ctrl-input" type="text" id="ctaBottom" placeholder="🎉 Book your celebrations" />
         </div>
       </section>
 
-      <!-- ── MENU ── -->
-      <section class="form-section">
-        <h2 class="section-label"><span class="label-icon">🍽</span> Menu</h2>
-        <p class="field-hint-block">Format: Category on its own line, then Item - ₹Price</p>
-        <div class="field-group">
-          <textarea class="field-input field-textarea field-mono" id="cafeMenu" rows="10" placeholder="Coffee
-Espresso - ₹120
-Cappuccino - ₹150
-Cold Brew - ₹180
-
-Snacks
-Croissant - ₹90
-Avocado Toast - ₹220
-Banana Bread - ₹110"></textarea>
+      <!-- GALLERY -->
+      <section class="ctrl-section">
+        <h2 class="ctrl-section-title">Gallery</h2>
+        <div class="ctrl-group">
+          <label class="ctrl-label">Image URLs <span class="hint">(comma-separated, max 6)</span></label>
+          <textarea class="ctrl-input ctrl-textarea" id="galleryUrls" placeholder="https://img1.jpg, https://img2.jpg" rows="3"></textarea>
         </div>
       </section>
 
-      <!-- ── REVIEWS ── -->
-      <section class="form-section">
-        <h2 class="section-label"><span class="label-icon">⭐</span> Reviews</h2>
-        <p class="field-hint-block">Format: Name | Stars (1–5) | Review text (one per line)</p>
-        <div class="field-group">
-          <textarea class="field-input field-textarea" id="cafeReviews" rows="6" placeholder="Priya S | 5 | Best cappuccino in town. The ambiance is absolutely dreamy!
-Rohan M | 5 | Came for the cold brew, stayed for the vibes. 10/10.
-Anya K | 4 | Lovely pastries, great music. Will be back for sure."></textarea>
+      <!-- REVIEWS -->
+      <section class="ctrl-section">
+        <h2 class="ctrl-section-title">Reviews</h2>
+        <div class="ctrl-group">
+          <label class="ctrl-label">Reviews <span class="hint">(one per line: Name: Review text)</span></label>
+          <textarea class="ctrl-input ctrl-textarea" id="reviewsInput" placeholder="Priya: Best coffee in town!&#10;Rohan: Love the ambience here" rows="5"></textarea>
         </div>
       </section>
 
-      <!-- ── STYLE ── -->
-      <section class="form-section">
-        <h2 class="section-label"><span class="label-icon">🎨</span> Visual Style</h2>
-
-        <div class="field-group">
-          <label class="field-label">Theme</label>
-          <div class="chip-row" id="themeChips">
-            <button class="chip chip-theme active" data-val="beige">🟤 Beige</button>
-            <button class="chip chip-theme" data-val="peach">🍑 Peach</button>
-            <button class="chip chip-theme" data-val="mint">🌿 Mint</button>
-            <button class="chip chip-theme" data-val="white">⬜ White</button>
-            <button class="chip chip-theme" data-val="dark">🌑 Dark</button>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Font</label>
-          <div class="chip-row" id="fontChips">
-            <button class="chip chip-font active" data-val="poppins">Modern</button>
-            <button class="chip chip-font" data-val="playfair">Elegant</button>
-            <button class="chip chip-font" data-val="nunito">Friendly</button>
-            <button class="chip chip-font" data-val="inter">Minimal</button>
-            <button class="chip chip-font" data-val="dmsans">Stylish</button>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Texture</label>
-          <div class="chip-row" id="textureChips">
-            <button class="chip chip-texture active" data-val="plain">Plain</button>
-            <button class="chip chip-texture" data-val="grain">Grain</button>
-            <button class="chip chip-texture" data-val="soft">Soft</button>
-          </div>
+      <!-- MENU -->
+      <section class="ctrl-section">
+        <h2 class="ctrl-section-title">Menu</h2>
+        <div class="ctrl-group">
+          <label class="ctrl-label">Menu <span class="hint">(category, then items as Item - ₹Price, blank line between categories)</span></label>
+          <textarea class="ctrl-input ctrl-textarea" id="menuInput" placeholder="Hot Drinks&#10;Espresso - ₹120&#10;Cappuccino - ₹150&#10;&#10;Snacks&#10;Croissant - ₹90&#10;Avocado Toast - ₹180" rows="10"></textarea>
         </div>
       </section>
 
-      <!-- ── ACTIONS ── -->
-      <section class="form-section actions-section">
-        <button class="btn-primary" id="generateBtn">
-          <span class="btn-icon">✦</span> Generate Preview
+      <!-- TIMINGS -->
+      <section class="ctrl-section">
+        <h2 class="ctrl-section-title">Timings</h2>
+        <div class="ctrl-group">
+          <label class="ctrl-label">Opening Hours</label>
+          <textarea class="ctrl-input ctrl-textarea" id="timingsInput" placeholder="Mon–Fri: 8am – 9pm&#10;Sat–Sun: 9am – 10pm" rows="3"></textarea>
+        </div>
+      </section>
+
+      <!-- MAP -->
+      <section class="ctrl-section">
+        <h2 class="ctrl-section-title">Location</h2>
+        <div class="ctrl-group">
+          <label class="ctrl-label">Google Maps URL</label>
+          <input class="ctrl-input" type="text" id="mapUrl" placeholder="https://maps.google.com/..." />
+        </div>
+      </section>
+
+      <!-- CUSTOMISATION -->
+      <section class="ctrl-section">
+        <h2 class="ctrl-section-title">Style</h2>
+
+        <div class="ctrl-group">
+          <label class="ctrl-label">Theme</label>
+          <select class="ctrl-input ctrl-select" id="themeSelect">
+            <option value="theme-warm">☕ Warm Latte</option>
+            <option value="theme-dark">🌑 Midnight Roast</option>
+            <option value="theme-sage">🌿 Sage Garden</option>
+            <option value="theme-cream">🍦 Vanilla Cream</option>
+          </select>
+        </div>
+
+        <div class="ctrl-group">
+          <label class="ctrl-label">Font</label>
+          <select class="ctrl-input ctrl-select" id="fontSelect">
+            <option value="font-cormorant">Cormorant (Elegant)</option>
+            <option value="font-playfair">Playfair (Classic)</option>
+            <option value="font-josefin">Josefin (Modern)</option>
+          </select>
+        </div>
+
+        <div class="ctrl-group">
+          <label class="ctrl-label">Texture</label>
+          <select class="ctrl-input ctrl-select" id="textureSelect">
+            <option value="">None</option>
+            <option value="texture-noise">Subtle Noise</option>
+            <option value="texture-linen">Linen Weave</option>
+            <option value="texture-dots">Dot Grid</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- ACTIONS -->
+      <div class="ctrl-actions">
+        <button class="btn-copy" id="copyBtn" onclick="copyOutput()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy Full HTML
         </button>
-        <button class="btn-secondary" id="copyBtn">
-          <span class="btn-icon">⎘</span> Copy HTML
-        </button>
-        <p class="copy-feedback" id="copyFeedback"></p>
-      </section>
+        <p class="copy-status" id="copyStatus"></p>
+      </div>
 
-    </div><!-- /sidebar-body -->
-  </aside><!-- /sidebar -->
+    </div>
+  </aside>
 
-  <!-- ════════════════════════════════════════
-       PREVIEW PANEL
-  ════════════════════════════════════════ -->
-  <main class="preview-panel">
+  <!-- ═══════════════════════════════════════
+       RIGHT PANEL — PREVIEW
+  ═══════════════════════════════════════ -->
+  <main class="preview-wrapper">
     <div class="preview-topbar">
-      <div class="preview-label">
-        <span class="preview-dot"></span>
-        Live Preview
-      </div>
-      <div class="preview-device-pills">
-        <button class="device-pill active" data-width="390">📱 Mobile</button>
-        <button class="device-pill" data-width="768">📟 Tablet</button>
+      <span class="preview-label">Live Preview</span>
+      <div class="preview-device-btns">
+        <button class="dev-btn active" data-width="390" onclick="setPreviewWidth(this, 390)">📱 Mobile</button>
+        <button class="dev-btn" data-width="768" onclick="setPreviewWidth(this, 768)">📟 Tablet</button>
+        <button class="dev-btn" data-width="1024" onclick="setPreviewWidth(this, 1024)">🖥 Desktop</button>
       </div>
     </div>
-
     <div class="preview-stage" id="previewStage">
-      <div class="phone-frame" id="phoneFrame">
-        <iframe id="previewFrame" title="Cafe Preview" scrolling="yes"></iframe>
+      <div class="preview-phone-frame" id="previewFrame">
+        <iframe id="previewIframe" title="Cafe Page Preview"></iframe>
       </div>
     </div>
   </main>
 
-</div><!-- /generator-wrap -->
+</div>
 
-<script src="script.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
