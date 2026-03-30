@@ -618,11 +618,12 @@ body {
   display: flex;
   gap: 14px;
   overflow-x: auto;
-  padding: 0 20px 12px;
+
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+
+  padding: 0 20px;
 }
 
 .reviews-scroll::-webkit-scrollbar {
@@ -636,7 +637,7 @@ body {
   background: var(--card);
   scroll-snap-align: start;
   transition: transform 0.3s ease;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
@@ -682,14 +683,17 @@ body {
 }
 
 .menu-category {
-  margin-bottom: 16px;
-}
+  margin-top: 18px;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed rgba(0,0,0,0.08);
+  } 
 
 .menu-cat-name {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text);
-  opacity: 0.5;
+  opacity: 0.75;
   letter-spacing: 0.8px;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -705,11 +709,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 9px 12px;
+  padding: 12px 14px;
   background: var(--card);
   border-radius: 10px;
   margin-bottom: 6px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
 }
 
 .menu-item-name {
@@ -726,7 +730,7 @@ body {
   font-size: 13px;
   font-weight: 700;
   color: var(--text);
-  opacity: 0.75;
+  opacity: 1;
   white-space: nowrap;
   flex-shrink: 0;
 }
