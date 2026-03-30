@@ -475,6 +475,11 @@ body {
   );
 }
 
+.cafe-hero * {
+  position: relative;
+  z-index: 2;
+}
+
 .cafe-hero img {
   width: 100%;
   height: auto;
