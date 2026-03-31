@@ -3,376 +3,337 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuickBiz V5.5 — Cafe Landing Page Generator</title>
+  <title>QuickBiz V5.5 — Cafe Page Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Pacifico&display=swap"
-    rel="stylesheet"
-  />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════
-       APP SHELL
-  ═══════════════════════════════════════════ -->
-  <div id="app">
+  <!-- ╔══════════════════════════════════════════╗ -->
+  <!-- ║            APP SHELL                     ║ -->
+  <!-- ╚══════════════════════════════════════════╝ -->
+  <div id="qb-app">
 
     <!-- ── TOP BAR ── -->
-    <header id="topbar">
-      <div id="topbar-brand">
-        <span id="topbar-logo">⚡</span>
-        <span id="topbar-title">QuickBiz <em>V5.5</em></span>
+    <header id="qb-topbar">
+      <div id="qb-brand">
+        <span id="qb-logo">⚡</span>
+        <div id="qb-brand-text">
+          <span id="qb-title">QuickBiz <mark>V5.5</mark></span>
+          <span id="qb-subtitle">Cafe Landing Page Generator</span>
+        </div>
       </div>
-      <div id="topbar-tagline">Cafe Landing Page Generator</div>
+      <button class="btn-primary" id="btn-gen-top" type="button">
+        <span>Generate</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
     </header>
 
-    <!-- ── MAIN WORKSPACE ── -->
-    <main id="workspace">
+    <!-- ── WORKSPACE ── -->
+    <div id="qb-workspace">
 
       <!-- ════════════════════════════
-           LEFT — CONTROL PANEL
+           LEFT PANEL
       ════════════════════════════ -->
-      <aside id="control-panel">
+      <aside id="qb-panel">
+        <div id="qb-panel-inner">
 
-        <!-- ── PANEL HEADER ── -->
-        <div class="panel-section-header" id="panel-top">
-          <span>Configuration</span>
-          <button id="btn-generate" type="button">Generate Page ▶</button>
-        </div>
-
-        <!-- ── SCROLL WRAPPER ── -->
-        <div id="panel-scroll">
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: BRAND              │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="brand">
-            <div class="section-title">
-              <span class="section-icon">☕</span> Brand
+          <!-- ▸ BRAND -->
+          <div class="cfg-block" id="cfg-brand">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">☕</span> Brand
             </div>
-
-            <div class="field-group">
-              <label for="cafe-name">Cafe Name</label>
-              <input type="text" id="cafe-name" placeholder="e.g. Bloom & Brew" />
+            <div class="cfg-field">
+              <label for="inp-name">Cafe Name</label>
+              <input type="text" id="inp-name" placeholder="e.g. Bloom &amp; Brew" autocomplete="off" />
             </div>
-
-            <div class="field-group">
-              <label for="cafe-tagline">Tagline / Description</label>
-              <textarea id="cafe-tagline" rows="2" placeholder="e.g. Where every sip feels like home."></textarea>
+            <div class="cfg-field">
+              <label for="inp-tagline">Tagline</label>
+              <textarea id="inp-tagline" rows="2" placeholder="e.g. Where every sip feels like home."></textarea>
             </div>
-
-            <div class="field-group">
-              <label for="hero-image">Hero Image URL</label>
-              <input type="url" id="hero-image" placeholder="https://..." />
+            <div class="cfg-field">
+              <label for="inp-hero-img">Hero Image URL</label>
+              <input type="url" id="inp-hero-img" placeholder="https://example.com/hero.jpg" />
             </div>
-          </section>
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: INFO               │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="info">
-            <div class="section-title">
-              <span class="section-icon">📍</span> Info
-            </div>
-
-            <div class="field-group">
-              <label for="timings">Opening Hours</label>
-              <input type="text" id="timings" placeholder="Mon–Sat: 8am – 9pm, Sun: 9am – 6pm" />
-            </div>
-
-            <div class="field-group">
-              <label for="location-text">Location Address</label>
-              <input type="text" id="location-text" placeholder="12 Maple Street, Mumbai" />
-            </div>
-
-            <div class="field-group">
-              <label for="maps-url">Google Maps URL</label>
-              <input type="url" id="maps-url" placeholder="https://maps.google.com/..." />
-            </div>
-          </section>
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: GALLERY            │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="gallery">
-            <div class="section-title">
-              <span class="section-icon">🖼</span> Gallery
-            </div>
-            <p class="section-hint">Add image URLs (one per line)</p>
-
-            <div class="field-group">
-              <label for="gallery-images">Gallery Images</label>
-              <textarea id="gallery-images" rows="4" placeholder="https://image1.com&#10;https://image2.com&#10;https://image3.com"></textarea>
-            </div>
-          </section>
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: MENU               │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="menu">
-            <div class="section-title">
-              <span class="section-icon">🍽</span> Menu
-            </div>
-            <p class="section-hint">Format: Category | Item | Price — one per line</p>
-
-            <div class="field-group">
-              <label for="menu-items">Menu Items</label>
-              <textarea id="menu-items" rows="8" placeholder="Coffee | Espresso | ₹120&#10;Coffee | Cappuccino | ₹160&#10;Food | Croissant | ₹90&#10;Food | Avocado Toast | ₹210"></textarea>
-            </div>
-          </section>
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: REVIEWS            │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="reviews">
-            <div class="section-title">
-              <span class="section-icon">⭐</span> Reviews
-            </div>
-            <p class="section-hint">Format: Name | Stars (1–5) | Review text — one per line</p>
-
-            <div class="field-group">
-              <label for="reviews-list">Customer Reviews</label>
-              <textarea id="reviews-list" rows="5" placeholder="Priya M | 5 | Best coffee in town!&#10;Arjun K | 4.5 | Cozy atmosphere, loved it.&#10;Sana R | 5 | The croissants are divine."></textarea>
-            </div>
-          </section>
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: CTA                │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="cta">
-            <div class="section-title">
-              <span class="section-icon">🎯</span> Call to Action
-            </div>
-
-            <div class="field-group">
-              <label for="cta-top">Top CTA Text <span class="field-optional">(optional)</span></label>
-              <input type="text" id="cta-top" placeholder="e.g. Try our new seasonal menu!" />
-            </div>
-
-            <div class="field-group">
-              <label for="cta-bottom">Bottom CTA Text</label>
-              <input type="text" id="cta-bottom" placeholder="e.g. Visit us today — your table is waiting." />
-            </div>
-          </section>
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: BUTTONS            │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="buttons">
-            <div class="section-title">
-              <span class="section-icon">📞</span> Contact Buttons
-            </div>
-
-            <div class="field-row-2">
-              <div class="field-group">
-                <label for="call-number">Call Number</label>
-                <input type="tel" id="call-number" placeholder="+91 98765 43210" />
-              </div>
-              <div class="field-group">
-                <label for="wa-number">WhatsApp Number</label>
-                <input type="tel" id="wa-number" placeholder="+91 98765 43210" />
-              </div>
-            </div>
-
-            <!-- Call Button Styling -->
-            <div class="sub-section-label">Call Button Style</div>
-            <div class="field-row-3">
-              <div class="field-group">
-                <label for="call-bg">Background</label>
-                <div class="color-input-wrap">
-                  <input type="color" id="call-bg" value="#1a1a2e" />
-                  <input type="text" id="call-bg-text" value="#1a1a2e" class="color-text" />
-                </div>
-              </div>
-              <div class="field-group">
-                <label for="call-outline">Outline</label>
-                <div class="color-input-wrap">
-                  <input type="color" id="call-outline" value="#1a1a2e" />
-                  <input type="text" id="call-outline-text" value="#1a1a2e" class="color-text" />
-                </div>
-              </div>
-              <div class="field-group">
-                <label for="call-text">Text</label>
-                <div class="color-input-wrap">
-                  <input type="color" id="call-text" value="#ffffff" />
-                  <input type="text" id="call-text-text" value="#ffffff" class="color-text" />
-                </div>
-              </div>
-            </div>
-
-            <!-- WhatsApp Button Styling -->
-            <div class="sub-section-label">WhatsApp Button Style</div>
-            <div class="field-row-3">
-              <div class="field-group">
-                <label for="wa-bg">Background</label>
-                <div class="color-input-wrap">
-                  <input type="color" id="wa-bg" value="#25D366" />
-                  <input type="text" id="wa-bg-text" value="#25D366" class="color-text" />
-                </div>
-              </div>
-              <div class="field-group">
-                <label for="wa-outline">Outline</label>
-                <div class="color-input-wrap">
-                  <input type="color" id="wa-outline" value="#25D366" />
-                  <input type="text" id="wa-outline-text" value="#25D366" class="color-text" />
-                </div>
-              </div>
-              <div class="field-group">
-                <label for="wa-text">Text</label>
-                <div class="color-input-wrap">
-                  <input type="color" id="wa-text" value="#ffffff" />
-                  <input type="text" id="wa-text-text" value="#ffffff" class="color-text" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: COLORS             │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="colors">
-            <div class="section-title">
-              <span class="section-icon">🎨</span> Color System
-            </div>
-
-            <div class="field-row-2">
-              <div class="field-group">
-                <label for="color-primary">Primary <span class="field-hint">page bg</span></label>
-                <div class="color-input-wrap">
-                  <input type="color" id="color-primary" value="#fdf6ee" />
-                  <input type="text" id="color-primary-text" value="#fdf6ee" class="color-text" />
-                </div>
-              </div>
-              <div class="field-group">
-                <label for="color-secondary">Secondary <span class="field-hint">cards</span></label>
-                <div class="color-input-wrap">
-                  <input type="color" id="color-secondary" value="#fff9f2" />
-                  <input type="text" id="color-secondary-text" value="#fff9f2" class="color-text" />
-                </div>
-              </div>
-            </div>
-
-            <div class="field-row-2">
-              <div class="field-group">
-                <label for="color-surface">Surface <span class="field-hint">alt sections</span></label>
-                <div class="color-input-wrap">
-                  <input type="color" id="color-surface" value="#f5ede0" />
-                  <input type="text" id="color-surface-text" value="#f5ede0" class="color-text" />
-                </div>
-              </div>
-              <div class="field-group">
-                <label for="color-accent">Accent <span class="field-hint">highlights</span></label>
-                <div class="color-input-wrap">
-                  <input type="color" id="color-accent" value="#c8813a" />
-                  <input type="text" id="color-accent-text" value="#c8813a" class="color-text" />
-                </div>
-              </div>
-            </div>
-
-            <div class="field-row-2">
-              <div class="field-group">
-                <label for="color-text">Text <span class="field-hint">headings</span></label>
-                <div class="color-input-wrap">
-                  <input type="color" id="color-text" value="#1c1410" />
-                  <input type="text" id="color-text-text" value="#1c1410" class="color-text" />
-                </div>
-              </div>
-              <div class="field-group">
-                <label for="color-subtext">Subtext <span class="field-hint">descriptions</span></label>
-                <div class="color-input-wrap">
-                  <input type="color" id="color-subtext" value="#6b5744" />
-                  <input type="text" id="color-subtext-text" value="#6b5744" class="color-text" />
-                </div>
-              </div>
-            </div>
-
-            <div class="field-row-2">
-              <div class="field-group">
-                <label for="color-outline">Outline <span class="field-hint">borders</span></label>
-                <div class="color-input-wrap">
-                  <input type="color" id="color-outline" value="#e8d5c0" />
-                  <input type="text" id="color-outline-text" value="#e8d5c0" class="color-text" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ┌──────────────────────────────┐ -->
-          <!-- │  SECTION: TYPOGRAPHY         │ -->
-          <!-- └──────────────────────────────┘ -->
-          <section class="panel-section" data-section="typography">
-            <div class="section-title">
-              <span class="section-icon">✍</span> Typography
-            </div>
-
-            <div class="font-picker-group" id="font-picker">
-              <label class="font-option" data-font="modern">
-                <input type="radio" name="font-style" value="modern" checked />
-                <div class="font-card">
-                  <span class="font-card-name font-modern">Modern</span>
-                  <span class="font-card-detail">Poppins + Poppins</span>
-                </div>
-              </label>
-              <label class="font-option" data-font="elegant">
-                <input type="radio" name="font-style" value="elegant" />
-                <div class="font-card">
-                  <span class="font-card-name font-elegant">Elegant</span>
-                  <span class="font-card-detail">Playfair + Poppins</span>
-                </div>
-              </label>
-              <label class="font-option" data-font="cute">
-                <input type="radio" name="font-style" value="cute" />
-                <div class="font-card">
-                  <span class="font-card-name font-cute">Cute</span>
-                  <span class="font-card-detail">Pacifico + Poppins</span>
-                </div>
-              </label>
-            </div>
-          </section>
-
-          <!-- ── BOTTOM GENERATE BUTTON ── -->
-          <div id="panel-bottom-action">
-            <button id="btn-generate-bottom" type="button">✦ Generate Landing Page</button>
           </div>
 
-        </div><!-- /panel-scroll -->
+          <!-- ▸ INFO -->
+          <div class="cfg-block" id="cfg-info">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">📍</span> Info
+            </div>
+            <div class="cfg-field">
+              <label for="inp-timings">Opening Hours</label>
+              <input type="text" id="inp-timings" placeholder="Mon–Sat: 8am–9pm  ·  Sun: 9am–6pm" />
+            </div>
+            <div class="cfg-field">
+              <label for="inp-location">Location Address</label>
+              <input type="text" id="inp-location" placeholder="12 Maple St, Mumbai" />
+            </div>
+            <div class="cfg-field">
+              <label for="inp-maps-url">Google Maps URL</label>
+              <input type="url" id="inp-maps-url" placeholder="https://maps.google.com/..." />
+            </div>
+          </div>
+
+          <!-- ▸ GALLERY -->
+          <div class="cfg-block" id="cfg-gallery">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">🖼</span> Gallery
+            </div>
+            <p class="cfg-hint">One image URL per line</p>
+            <div class="cfg-field">
+              <label for="inp-gallery">Images</label>
+              <textarea id="inp-gallery" rows="4" placeholder="https://img1.com/a.jpg&#10;https://img2.com/b.jpg&#10;https://img3.com/c.jpg"></textarea>
+            </div>
+          </div>
+
+          <!-- ▸ MENU -->
+          <div class="cfg-block" id="cfg-menu">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">🍽</span> Menu
+            </div>
+            <p class="cfg-hint">Format: <code>Category | Item | Price</code> — one per line</p>
+            <div class="cfg-field">
+              <label for="inp-menu">Items</label>
+              <textarea id="inp-menu" rows="7" placeholder="Coffee | Espresso | ₹120&#10;Coffee | Cappuccino | ₹160&#10;Food | Croissant | ₹90&#10;Food | Avocado Toast | ₹210"></textarea>
+            </div>
+          </div>
+
+          <!-- ▸ REVIEWS -->
+          <div class="cfg-block" id="cfg-reviews">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">⭐</span> Reviews
+            </div>
+            <p class="cfg-hint">Format: <code>Name | Stars | Review</code> — one per line</p>
+            <div class="cfg-field">
+              <label for="inp-reviews">Reviews</label>
+              <textarea id="inp-reviews" rows="4" placeholder="Priya M | 5 | Best coffee in town!&#10;Arjun K | 4.5 | Cozy vibe, loved it."></textarea>
+            </div>
+          </div>
+
+          <!-- ▸ CTA -->
+          <div class="cfg-block" id="cfg-cta">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">🎯</span> Call to Action
+            </div>
+            <div class="cfg-field">
+              <label for="inp-cta-top">Top CTA <span class="lbl-opt">(optional)</span></label>
+              <input type="text" id="inp-cta-top" placeholder="e.g. Try our seasonal menu!" />
+            </div>
+            <div class="cfg-field">
+              <label for="inp-cta-bottom">Bottom CTA</label>
+              <input type="text" id="inp-cta-bottom" placeholder="e.g. Visit us today." />
+            </div>
+          </div>
+
+          <!-- ▸ BUTTONS -->
+          <div class="cfg-block" id="cfg-buttons">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">📞</span> Contact Buttons
+            </div>
+            <div class="cfg-row-2">
+              <div class="cfg-field">
+                <label for="inp-call">Call Number</label>
+                <input type="tel" id="inp-call" placeholder="+91 98765 43210" />
+              </div>
+              <div class="cfg-field">
+                <label for="inp-wa">WhatsApp Number</label>
+                <input type="tel" id="inp-wa" placeholder="+91 98765 43210" />
+              </div>
+            </div>
+
+            <div class="cfg-sublabel">Call Button</div>
+            <div class="cfg-row-3">
+              <div class="cfg-field">
+                <label>BG</label>
+                <div class="clr-pair">
+                  <input type="color" id="c-call-bg" value="#1a1a2e" />
+                  <input type="text"  id="c-call-bg-t" value="#1a1a2e" class="clr-txt" />
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label>Border</label>
+                <div class="clr-pair">
+                  <input type="color" id="c-call-bd" value="#1a1a2e" />
+                  <input type="text"  id="c-call-bd-t" value="#1a1a2e" class="clr-txt" />
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label>Text</label>
+                <div class="clr-pair">
+                  <input type="color" id="c-call-tx" value="#ffffff" />
+                  <input type="text"  id="c-call-tx-t" value="#ffffff" class="clr-txt" />
+                </div>
+              </div>
+            </div>
+
+            <div class="cfg-sublabel">WhatsApp Button</div>
+            <div class="cfg-row-3">
+              <div class="cfg-field">
+                <label>BG</label>
+                <div class="clr-pair">
+                  <input type="color" id="c-wa-bg" value="#25D366" />
+                  <input type="text"  id="c-wa-bg-t" value="#25D366" class="clr-txt" />
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label>Border</label>
+                <div class="clr-pair">
+                  <input type="color" id="c-wa-bd" value="#25D366" />
+                  <input type="text"  id="c-wa-bd-t" value="#25D366" class="clr-txt" />
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label>Text</label>
+                <div class="clr-pair">
+                  <input type="color" id="c-wa-tx" value="#ffffff" />
+                  <input type="text"  id="c-wa-tx-t" value="#ffffff" class="clr-txt" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ▸ COLORS -->
+          <div class="cfg-block" id="cfg-colors">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">🎨</span> Colors
+            </div>
+            <div class="cfg-row-2">
+              <div class="cfg-field">
+                <label>Primary <span class="lbl-role">page bg</span></label>
+                <div class="clr-pair">
+                  <input type="color" id="c-primary" value="#fdf6ee" />
+                  <input type="text"  id="c-primary-t" value="#fdf6ee" class="clr-txt" />
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label>Secondary <span class="lbl-role">cards</span></label>
+                <div class="clr-pair">
+                  <input type="color" id="c-secondary" value="#fff9f2" />
+                  <input type="text"  id="c-secondary-t" value="#fff9f2" class="clr-txt" />
+                </div>
+              </div>
+            </div>
+            <div class="cfg-row-2">
+              <div class="cfg-field">
+                <label>Surface <span class="lbl-role">alt bg</span></label>
+                <div class="clr-pair">
+                  <input type="color" id="c-surface" value="#f5ede0" />
+                  <input type="text"  id="c-surface-t" value="#f5ede0" class="clr-txt" />
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label>Accent <span class="lbl-role">highlights</span></label>
+                <div class="clr-pair">
+                  <input type="color" id="c-accent" value="#c8813a" />
+                  <input type="text"  id="c-accent-t" value="#c8813a" class="clr-txt" />
+                </div>
+              </div>
+            </div>
+            <div class="cfg-row-2">
+              <div class="cfg-field">
+                <label>Text <span class="lbl-role">headings</span></label>
+                <div class="clr-pair">
+                  <input type="color" id="c-text" value="#1c1410" />
+                  <input type="text"  id="c-text-t" value="#1c1410" class="clr-txt" />
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label>Subtext <span class="lbl-role">descriptions</span></label>
+                <div class="clr-pair">
+                  <input type="color" id="c-subtext" value="#6b5744" />
+                  <input type="text"  id="c-subtext-t" value="#6b5744" class="clr-txt" />
+                </div>
+              </div>
+            </div>
+            <div class="cfg-row-2">
+              <div class="cfg-field">
+                <label>Outline <span class="lbl-role">borders</span></label>
+                <div class="clr-pair">
+                  <input type="color" id="c-outline" value="#e8d5c0" />
+                  <input type="text"  id="c-outline-t" value="#e8d5c0" class="clr-txt" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ▸ TYPOGRAPHY -->
+          <div class="cfg-block" id="cfg-typo">
+            <div class="cfg-block-title">
+              <span class="cfg-icon">✍</span> Typography
+            </div>
+            <div class="font-grid" id="font-grid">
+              <label class="font-opt">
+                <input type="radio" name="qb-font" value="modern" checked />
+                <div class="font-card">
+                  <span class="font-preview f-modern">Modern</span>
+                  <span class="font-meta">Poppins + Poppins</span>
+                </div>
+              </label>
+              <label class="font-opt">
+                <input type="radio" name="qb-font" value="elegant" />
+                <div class="font-card">
+                  <span class="font-preview f-elegant">Elegant</span>
+                  <span class="font-meta">Playfair + Poppins</span>
+                </div>
+              </label>
+              <label class="font-opt">
+                <input type="radio" name="qb-font" value="cute" />
+                <div class="font-card">
+                  <span class="font-preview f-cute">Cute</span>
+                  <span class="font-meta">Pacifico + Poppins</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- ▸ BOTTOM GENERATE -->
+          <div id="cfg-generate-wrap">
+            <button class="btn-primary btn-full" id="btn-gen-bottom" type="button">
+              ✦ Generate Landing Page
+            </button>
+          </div>
+
+        </div><!-- /qb-panel-inner -->
       </aside>
 
       <!-- ════════════════════════════
-           RIGHT — PREVIEW AREA
+           RIGHT — PREVIEW
       ════════════════════════════ -->
-      <section id="preview-area">
-        <div id="preview-toolbar">
-          <span id="preview-label">Live Preview</span>
-          <div id="preview-controls">
-            <button class="preview-ctrl-btn active" id="btn-mobile" title="Mobile view" type="button">📱</button>
-            <button class="preview-ctrl-btn" id="btn-tablet" title="Tablet view" type="button">📟</button>
+      <main id="qb-preview-area">
+        <div id="qb-preview-bar">
+          <span id="qb-preview-lbl">Live Preview</span>
+          <div id="qb-device-btns">
+            <button class="dev-btn active" id="dev-mobile" type="button" title="Mobile">📱 Mobile</button>
+            <button class="dev-btn" id="dev-tablet" type="button" title="Tablet">📟 Tablet</button>
           </div>
         </div>
 
-        <div id="preview-wrapper">
-          <div id="device-frame">
-            <div id="device-notch"></div>
+        <div id="qb-preview-stage">
+          <div id="qb-device-shell" class="mode-mobile">
+            <div id="qb-device-notch"></div>
+            <!-- ✅ CORRECT: iframe scrolls independently -->
             <iframe
-              id="preview-frame"
-              title="Landing Page Preview"
+              id="qb-preview-frame"
+              title="Cafe Page Preview"
               sandbox="allow-scripts allow-same-origin"
             ></iframe>
           </div>
-        </div>
 
-        <!-- Empty state -->
-        <div id="preview-empty">
-          <div id="preview-empty-icon">☕</div>
-          <p id="preview-empty-title">Your page will appear here</p>
-          <p id="preview-empty-sub">Fill in the details and click <strong>Generate Page</strong></p>
+          <!-- Empty state -->
+          <div id="qb-empty-state">
+            <div id="qb-empty-icon">☕</div>
+            <p id="qb-empty-title">Preview appears here</p>
+            <p id="qb-empty-body">Fill in your cafe details and hit <strong>Generate</strong></p>
+          </div>
         </div>
-      </section>
+      </main>
 
-    </main>
-  </div><!-- /app -->
+    </div><!-- /qb-workspace -->
+  </div><!-- /qb-app -->
 
   <script src="script.js"></script>
 </body>
