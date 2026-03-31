@@ -1,64 +1,120 @@
-QuickBiz Cafe Page Generator (V2)
+# 🚀 QuickBiz V5 — Cafe Landing Page Generator
 
-A simple tool to create aesthetic, mobile-friendly mini business pages for cafes and small businesses.
-
-🚀 What it Does
-
-QuickBiz helps businesses create a clean online presence with:
-
-- Cover image
-- Brand name with custom fonts
-- Description
-- Menu section
-- Location link
-- Call & WhatsApp buttons
-- Subtle aesthetic color themes
-
-💡 Problem
-
-Many small businesses rely only on Instagram, where:
-
-- Contact details are hard to access
-- Information is scattered
-- Customers lose interest due to extra steps
-
-✅ Solution
-
-QuickBiz creates a single clean page where customers can:
-
-- View key information instantly
-- Contact the business in one click
-
-🎯 Use Case
-
-Perfect for:
-
-- Cafes ☕
-- Bakeries 🧁
-- Small shops 🏪
-- Local services
-
-🎨 Features
-
-- 5 subtle aesthetic themes (Peach, Mint, White, Beige, Black)
-- 3 font styles (Elegant, Cute, Modern)
-- Mobile-first design
-- Simple and fast generation
-
-⚙️ Tech Stack
-
-- HTML
-- CSS
-- JavaScript
-
-📌 Status
-
-Version 2 — Built for real-world testing and iteration.
-
-🔮 Vision
-
-To create simple, affordable tools that help small businesses get customers without needing complex websites.
+Create modern, mobile-first landing pages for cafes and small businesses in seconds.
 
 ---
 
-Built by Amar Sriram 🚀
+## ✨ What is QuickBiz?
+
+QuickBiz is a lightweight tool that generates **clean, professional, and conversion-focused landing pages** for cafes.
+
+No coding required. Just enter details → get a ready-to-deploy website.
+
+---
+
+## 🔥 Features
+
+### 🎨 Themes & Design
+- 5 aesthetic themes (Beige, Peach, Mint, White, Dark)
+- 5 font styles (Modern, Friendly, Minimal, Stylish, Elegant)
+- 3 texture layers (Plain, Grain, Soft)
+
+---
+
+### 🖼️ Media & Layout
+- Full-width cover image (no cropping issues)
+- Smooth horizontal gallery (swipe-based)
+- Clean section-based layout
+
+---
+
+### ⭐ Social Proof
+- Swipeable review cards
+- Optimized for trust & engagement
+
+---
+
+### 🍽️ Menu System
+- Category-based structure
+- Clean pricing alignment
+- Mobile-friendly readability
+
+---
+
+### 📍 Business Essentials
+- Google Maps integration
+- Click-to-call button
+- WhatsApp direct contact
+
+---
+
+### ⚡ Conversion Focused
+- Top CTA (quick action)
+- Bottom CTA (detailed conversion message)
+
+---
+
+## 📱 Output
+
+Generates a **fully responsive HTML page** that works perfectly on mobile devices.
+
+---
+
+## 🚀 How to Use
+
+1. Enter cafe details in the generator  
+2. Customize theme, fonts, and layout  
+3. Click **Generate Page**  
+4. Copy the HTML code  
+5. Deploy using:
+   - GitHub Pages  
+   - Vercel (recommended)
+
+---
+
+## 🌐 Deployment
+
+### Vercel (Recommended)
+- Fast, clean, no branding
+- Instant deployment
+
+### GitHub Pages
+- Free hosting
+- Simple setup
+
+---
+
+## 💡 Use Case
+
+Perfect for:
+- Cafes ☕
+- Small restaurants 🍴
+- Juice shops 🥤
+- Local businesses 🏪
+
+---
+
+## 🎯 Goal
+
+Help small businesses build a **strong digital presence** with minimal effort.
+
+---
+
+## 📌 Version
+
+**V5 — Enhanced UI, themes, gallery, reviews & structured menu**
+
+---
+
+## 👨‍💻 Built by
+
+Amar Sriram
+
+---
+
+## ⚠️ Note
+
+This tool generates static pages.  
+For advanced features (custom domains, updates, enhancements), manual setup is required.
+
+---
