@@ -1,660 +1,1038 @@
-/* ═══════════════════════════════════════════════════════════
-   QUICKBIZ V5.1 — SCRIPT.JS
-   Bug-free engine: safe parsing, live preview, export
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   QUICKBIZ V5.5 — SCRIPT SYSTEM
+   Architecture: Input → State → Generate → Output (iframe)
+   ═══════════════════════════════════════════════════════ */
 
-"use strict";
+'use strict';
 
-/* ══════════════════════
-   STATE
-══════════════════════ */
-let selectedTheme   = "theme-beige";
-let selectedFont    = "font-modern";
-let selectedTexture = "texture-plain";
-
-/* ══════════════════════
-   SAFE HELPERS
-══════════════════════ */
-
-/** Safely trim any value */
-const safe = (val) => (val || "").trim();
-
-/** Validate a URL string */
-const isValidUrl = (url) => {
-  try { new URL(url); return true; } catch { return false; }
+/* ════════════════════════════════════
+   1. STATE — Single source of truth
+════════════════════════════════════ */
+const state = {
+  brand: {
+    name: '',
+    tagline: '',
+    heroImage: '',
+  },
+  info: {
+    timings: '',
+    locationText: '',
+    mapsUrl: '',
+  },
+  gallery: [],
+  menu: [],           // [{ category, item, price }]
+  reviews: [],        // [{ name, stars, text }]
+  cta: {
+    top: '',
+    bottom: '',
+  },
+  buttons: {
+    callNumber: '',
+    waNumber: '',
+    callBg: '#1a1a2e',
+    callOutline: '#1a1a2e',
+    callText: '#ffffff',
+    waBg: '#25D366',
+    waOutline: '#25D366',
+    waText: '#ffffff',
+  },
+  colors: {
+    primary: '#fdf6ee',
+    secondary: '#fff9f2',
+    surface: '#f5ede0',
+    accent: '#c8813a',
+    text: '#1c1410',
+    subtext: '#6b5744',
+    outline: '#e8d5c0',
+  },
+  typography: 'modern',
 };
 
-/** Escape HTML to prevent XSS inside innerHTML */
-const esc = (str) => {
-  return safe(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+/* ════════════════════════════════════
+   2. DOM REFERENCES
+════════════════════════════════════ */
+const DOM = {
+  cafeName:         () => document.getElementById('cafe-name'),
+  cafeTagline:      () => document.getElementById('cafe-tagline'),
+  heroImage:        () => document.getElementById('hero-image'),
+  timings:          () => document.getElementById('timings'),
+  locationText:     () => document.getElementById('location-text'),
+  mapsUrl:          () => document.getElementById('maps-url'),
+  galleryImages:    () => document.getElementById('gallery-images'),
+  menuItems:        () => document.getElementById('menu-items'),
+  reviewsList:      () => document.getElementById('reviews-list'),
+  ctaTop:           () => document.getElementById('cta-top'),
+  ctaBottom:        () => document.getElementById('cta-bottom'),
+  callNumber:       () => document.getElementById('call-number'),
+  waNumber:         () => document.getElementById('wa-number'),
+
+  // Color pickers (returns [colorInput, textInput])
+  colorPrimary:     () => [document.getElementById('color-primary'), document.getElementById('color-primary-text')],
+  colorSecondary:   () => [document.getElementById('color-secondary'), document.getElementById('color-secondary-text')],
+  colorSurface:     () => [document.getElementById('color-surface'), document.getElementById('color-surface-text')],
+  colorAccent:      () => [document.getElementById('color-accent'), document.getElementById('color-accent-text')],
+  colorText:        () => [document.getElementById('color-text'), document.getElementById('color-text-text')],
+  colorSubtext:     () => [document.getElementById('color-subtext'), document.getElementById('color-subtext-text')],
+  colorOutline:     () => [document.getElementById('color-outline'), document.getElementById('color-outline-text')],
+
+  // Button colors
+  callBg:           () => [document.getElementById('call-bg'), document.getElementById('call-bg-text')],
+  callOutline:      () => [document.getElementById('call-outline'), document.getElementById('call-outline-text')],
+  callTextColor:    () => [document.getElementById('call-text'), document.getElementById('call-text-text')],
+  waBg:             () => [document.getElementById('wa-bg'), document.getElementById('wa-bg-text')],
+  waOutline:        () => [document.getElementById('wa-outline'), document.getElementById('wa-outline-text')],
+  waTextColor:      () => [document.getElementById('wa-text'), document.getElementById('wa-text-text')],
+
+  fontRadios:       () => document.querySelectorAll('input[name="font-style"]'),
+  btnGenerate:      () => document.getElementById('btn-generate'),
+  btnGenerateBot:   () => document.getElementById('btn-generate-bottom'),
+  previewFrame:     () => document.getElementById('preview-frame'),
+  previewEmpty:     () => document.getElementById('preview-empty'),
+  deviceFrame:      () => document.getElementById('device-frame'),
+  btnMobile:        () => document.getElementById('btn-mobile'),
+  btnTablet:        () => document.getElementById('btn-tablet'),
 };
 
-/* ══════════════════════
-   INPUT GETTERS
-══════════════════════ */
+/* ════════════════════════════════════
+   3. STATE COLLECTION — reads inputs → state
+════════════════════════════════════ */
+function collectState() {
+  // Brand
+  state.brand.name       = DOM.cafeName().value.trim();
+  state.brand.tagline    = DOM.cafeTagline().value.trim();
+  state.brand.heroImage  = DOM.heroImage().value.trim();
 
-const getVal = (id) => {
-  const el = document.getElementById(id);
-  return el ? safe(el.value) : "";
-};
+  // Info
+  state.info.timings      = DOM.timings().value.trim();
+  state.info.locationText = DOM.locationText().value.trim();
+  state.info.mapsUrl      = DOM.mapsUrl().value.trim();
 
-/* ══════════════════════
-   PARSERS
-══════════════════════ */
+  // Gallery
+  state.gallery = DOM.galleryImages().value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
 
-/**
- * Parse gallery: comma-separated URLs, max 6, valid only
- */
-function parseGallery(raw) {
-  return (safe(raw))
-    .split(",")
-    .map(i => i.trim())
-    .filter(i => isValidUrl(i))
-    .slice(0, 6);
-}
-
-/**
- * Parse reviews: "Name: Text" one per line, max 5
- */
-function parseReviews(raw) {
-  return (safe(raw))
-    .split("\n")
-    .map(l => l.trim())
-    .filter(l => l.includes(":"))
-    .map(l => {
-      const [name, ...rest] = l.split(":");
+  // Menu
+  state.menu = DOM.menuItems().value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(s => s.length > 0)
+    .map(line => {
+      const parts = line.split('|').map(p => p.trim());
       return {
-        name: safe(name),
-        text: safe(rest.join(":"))
+        category: parts[0] || '',
+        item:     parts[1] || '',
+        price:    parts[2] || '',
       };
     })
-    .filter(r => r.name && r.text)
-    .slice(0, 5);
+    .filter(m => m.category && m.item);
+
+  // Reviews
+  state.reviews = DOM.reviewsList().value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(s => s.length > 0)
+    .map(line => {
+      const parts = line.split('|').map(p => p.trim());
+      return {
+        name:  parts[0] || '',
+        stars: parseFloat(parts[1]) || 5,
+        text:  parts[2] || '',
+      };
+    })
+    .filter(r => r.name && r.text);
+
+  // CTA
+  state.cta.top    = DOM.ctaTop().value.trim();
+  state.cta.bottom = DOM.ctaBottom().value.trim();
+
+  // Buttons
+  state.buttons.callNumber  = DOM.callNumber().value.trim();
+  state.buttons.waNumber    = DOM.waNumber().value.trim();
+  state.buttons.callBg      = DOM.callBg()[0].value;
+  state.buttons.callOutline = DOM.callOutline()[0].value;
+  state.buttons.callText    = DOM.callTextColor()[0].value;
+  state.buttons.waBg        = DOM.waBg()[0].value;
+  state.buttons.waOutline   = DOM.waOutline()[0].value;
+  state.buttons.waText      = DOM.waTextColor()[0].value;
+
+  // Colors
+  state.colors.primary   = DOM.colorPrimary()[0].value;
+  state.colors.secondary = DOM.colorSecondary()[0].value;
+  state.colors.surface   = DOM.colorSurface()[0].value;
+  state.colors.accent    = DOM.colorAccent()[0].value;
+  state.colors.text      = DOM.colorText()[0].value;
+  state.colors.subtext   = DOM.colorSubtext()[0].value;
+  state.colors.outline   = DOM.colorOutline()[0].value;
+
+  // Typography
+  const selectedFont = document.querySelector('input[name="font-style"]:checked');
+  state.typography = selectedFont ? selectedFont.value : 'modern';
+}
+
+/* ════════════════════════════════════
+   4. HELPERS
+════════════════════════════════════ */
+
+/**
+ * Render star rating HTML (supports half stars)
+ */
+function renderStars(rating) {
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5 ? 1 : 0;
+  const empty = 5 - full - half;
+  return (
+    '★'.repeat(full) +
+    (half ? '½' : '') +
+    '☆'.repeat(empty)
+  );
 }
 
 /**
- * Parse menu: Category heading + Item - ₹Price lines,
- * blank line separates categories
+ * Get Google Fonts import URL from typography state
  */
-function parseMenu(raw) {
-  const lines  = (safe(raw)).split("\n");
-  const cats   = [];
-  let currentCat = null;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-
-    if (!line) {
-      // blank line → end current category
-      currentCat = null;
-      continue;
-    }
-
-    if (line.includes(" - ")) {
-      // It's a menu item
-      const parts = line.split(" - ");
-      const item  = safe(parts[0]);
-      const price = safe(parts.slice(1).join(" - "));
-
-      if (!item) continue; // skip invalid
-
-      if (!currentCat) {
-        // No active category — create an "unnamed" one
-        currentCat = { name: "", items: [] };
-        cats.push(currentCat);
-      }
-      currentCat.items.push({ item, price });
-
-    } else {
-      // It's a category heading
-      currentCat = { name: line, items: [] };
-      cats.push(currentCat);
-    }
+function getFontImport(typography) {
+  if (typography === 'elegant') {
+    return 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap';
   }
-
-  // Filter out empty categories
-  return cats.filter(c => c.items.length > 0);
-}
-
-/* ══════════════════════
-   HTML BUILDERS
-══════════════════════ */
-
-function buildHero(coverUrl) {
-  if (coverUrl && isValidUrl(coverUrl)) {
-    return `
-      <div class="cafe-hero">
-        <img src="${esc(coverUrl)}" alt="Cafe cover" onerror="this.parentElement.innerHTML='<div class=\\'cafe-hero-fallback\\'>☕</div>'" loading="lazy" />
-      </div>`;
+  if (typography === 'cute') {
+    return 'https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap';
   }
-  return `<div class="cafe-hero"><div class="cafe-hero-fallback">☕</div></div>`;
+  // modern
+  return 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap';
 }
 
-function buildName(name) {
-  const display = name || "Cafe Name";
+/**
+ * Get heading font stack from typography state
+ */
+function getHeadingFont(typography) {
+  if (typography === 'elegant') return "'Playfair Display', Georgia, serif";
+  if (typography === 'cute')    return "'Pacifico', cursive";
+  return "'Poppins', sans-serif";
+}
+
+/**
+ * Group menu items by category
+ * Returns: [{ category, items: [{item, price}] }]
+ */
+function groupMenuByCategory(menuItems) {
+  const map = new Map();
+  for (const m of menuItems) {
+    if (!map.has(m.category)) map.set(m.category, []);
+    map.get(m.category).push({ item: m.item, price: m.price });
+  }
+  return Array.from(map.entries()).map(([category, items]) => ({ category, items }));
+}
+
+/**
+ * Escape HTML entities
+ */
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ════════════════════════════════════
+   5. SECTION BUILDERS
+════════════════════════════════════ */
+
+/** HERO SECTION */
+function buildHero(s) {
+  const heroStyle = s.brand.heroImage
+    ? `background-image: linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.55) 100%), url('${esc(s.brand.heroImage)}');`
+    : `background: linear-gradient(135deg, ${s.colors.surface}, ${s.colors.secondary});`;
+
   return `
-    <div class="cafe-name-wrap">
-      <h1 class="cafe-name">${esc(display)}</h1>
-    </div>`;
+    <section class="qb-hero" style="${heroStyle}">
+      <div class="qb-hero-inner fade-in">
+        <h1 class="qb-hero-name">${esc(s.brand.name || 'Your Cafe Name')}</h1>
+        ${s.brand.tagline ? `<p class="qb-hero-tagline">${esc(s.brand.tagline)}</p>` : ''}
+      </div>
+    </section>`;
 }
 
-function buildDescription(desc) {
-  if (!desc) return "";
-  return `
-    <div class="cafe-desc-wrap">
-      <p class="cafe-desc">${esc(desc)}</p>
-    </div>`;
-}
+/** INFO SECTION */
+function buildInfo(s) {
+  if (!s.info.timings && !s.info.locationText) return '';
 
-function buildCTA(ctaTop, ctaBottom) {
-  const defaultTop    = "🍽 Order your favorites online";
-  const defaultBottom = "🎉 Book your celebrations";
-  const topText    = ctaTop    || defaultTop;
-  const bottomText = ctaBottom || defaultBottom;
+  const timingsBlock = s.info.timings ? `
+    <div class="qb-info-card">
+      <div class="qb-info-icon">🕐</div>
+      <div class="qb-info-content">
+        <div class="qb-info-label">Hours</div>
+        <div class="qb-info-value">${esc(s.info.timings)}</div>
+      </div>
+    </div>` : '';
 
-  const topBlock = `
-    <div class="cafe-cta">
-      <p>${esc(topText)}</p>
-    </div>`;
-
-  const bottomBlock = `
-    <div class="cafe-cta">
-      <p>${esc(bottomText)}</p>
-    </div>`;
-
-  return { topBlock, bottomBlock };
-}
-
-function buildGallery(images) {
-  if (!images || images.length === 0) return "";
-
-  const imgs = images.map(url =>
-    `<img src="${esc(url)}" alt="Cafe photo" onerror="this.remove()" loading="lazy" />`
-  ).join("\n");
+  const locationBlock = s.info.locationText ? `
+    <div class="qb-info-card ${s.info.mapsUrl ? 'qb-info-link' : ''}"
+      ${s.info.mapsUrl ? `onclick="window.open('${esc(s.info.mapsUrl)}','_blank')" role="button" tabindex="0"` : ''}>
+      <div class="qb-info-icon">📍</div>
+      <div class="qb-info-content">
+        <div class="qb-info-label">Location</div>
+        <div class="qb-info-value">${esc(s.info.locationText)}</div>
+      </div>
+      ${s.info.mapsUrl ? `<div class="qb-info-arrow">→</div>` : ''}
+    </div>` : '';
 
   return `
-    <div class="cafe-gallery-section">
-      <div class="cafe-gallery-title">📸 Gallery</div>
-      <div class="cafe-gallery">
+    <section class="qb-info fade-in">
+      <div class="qb-info-grid">
+        ${timingsBlock}
+        ${locationBlock}
+      </div>
+    </section>`;
+}
+
+/** GALLERY SECTION */
+function buildGallery(s) {
+  if (!s.gallery.length) return '';
+
+  const imgs = s.gallery.map(url => `
+    <div class="qb-gallery-item">
+      <img src="${esc(url)}" alt="Cafe photo" loading="lazy" />
+    </div>`).join('');
+
+  return `
+    <section class="qb-gallery-section fade-in">
+      <h2 class="qb-section-title">Gallery</h2>
+      <div class="qb-gallery-track">
         ${imgs}
       </div>
-    </div>`;
+    </section>`;
 }
 
-function buildReviews(reviews) {
-  if (!reviews || reviews.length === 0) return "";
+/** MENU SECTION */
+function buildMenu(s) {
+  if (!s.menu.length) return '';
 
-  const cards = reviews.map(r => `
-    <div class="review-card">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">${esc(r.text)}</p>
-      <div class="review-name">— ${esc(r.name)}</div>
-    </div>`
-  ).join("\n");
+  const grouped = groupMenuByCategory(s.menu);
+  const SHOW_LIMIT = 7;
+  const totalItems = s.menu.length;
+
+  let categoriesHtml = '';
+  let renderedCount = 0;
+  let needsExpand = totalItems > SHOW_LIMIT;
+
+  for (const group of grouped) {
+    const itemsHtml = group.items.map(it => {
+      renderedCount++;
+      const hiddenClass = needsExpand && renderedCount > SHOW_LIMIT ? ' qb-menu-item--hidden' : '';
+      return `
+      <div class="qb-menu-item${hiddenClass}">
+        <span class="qb-menu-item-name">${esc(it.item)}</span>
+        <span class="qb-menu-item-price">${esc(it.price)}</span>
+      </div>`;
+    }).join('');
+
+    categoriesHtml += `
+    <div class="qb-menu-category">
+      <div class="qb-menu-cat-header">${esc(group.category)}</div>
+      <div class="qb-menu-items">
+        ${itemsHtml}
+      </div>
+    </div>`;
+  }
+
+  const toggleBtn = needsExpand ? `
+    <button class="qb-menu-toggle" id="menu-toggle" onclick="toggleMenu(this)" type="button">
+      Show more →
+    </button>` : '';
 
   return `
-    <div class="cafe-reviews-section">
-      <div class="cafe-reviews-title">⭐ Reviews</div>
-      <div class="reviews-scroll">
+    <section class="qb-menu-section fade-in">
+      <h2 class="qb-section-title">Menu</h2>
+      <div class="qb-menu-list" id="menu-list">
+        ${categoriesHtml}
+      </div>
+      ${toggleBtn}
+    </section>`;
+}
+
+/** REVIEWS SECTION */
+function buildReviews(s) {
+  if (!s.reviews.length) return '';
+
+  const cards = s.reviews.map(r => `
+    <div class="qb-review-card">
+      <div class="qb-review-stars">${renderStars(r.stars)}</div>
+      <p class="qb-review-text">${esc(r.text)}</p>
+      <div class="qb-review-name">${esc(r.name)}</div>
+    </div>`).join('');
+
+  return `
+    <section class="qb-reviews-section fade-in">
+      <h2 class="qb-section-title">Reviews</h2>
+      <div class="qb-reviews-track">
         ${cards}
       </div>
-    </div>`;
+    </section>`;
 }
 
-function buildMenu(categories) {
-  if (!categories || categories.length === 0) {
-    return `
-      <div class="cafe-menu-section">
-        <h2 class="cafe-menu-title">🍽 Menu</h2>
-        <div style="padding: 12px; opacity: 0.5; font-size: 13px;">Menu coming soon.</div>
-      </div>`;
-  }
+/** CTA SECTION */
+function buildCTA(s) {
+  // Top CTA — only if not empty
+  const topCTA = s.cta.top ? `
+    <section class="qb-cta-top fade-in">
+      <p class="qb-cta-top-text">${esc(s.cta.top)}</p>
+    </section>` : '';
 
-  const catHTML = categories.map(cat => {
-    const catName = cat.name
-      ? `<div class="menu-cat-name">${esc(cat.name)}</div>`
-      : "";
-    const items = cat.items.map(i => `
-      <div class="menu-item">
-        <span class="menu-item-name">${esc(i.item)}</span>
-        ${i.price ? `<span class="menu-item-price">${esc(i.price)}</span>` : ""}
-      </div>`).join("");
+  // Bottom CTA — always present
+  const bottomCTA = `
+    <section class="qb-cta-bottom fade-in">
+      <p class="qb-cta-bottom-text">${esc(s.cta.bottom || 'Come visit us today.')}</p>
+    </section>`;
 
-    return `<div class="menu-category">${catName}${items}</div>`;
-  }).join("\n");
-
-  return `
-    <div class="cafe-menu-section">
-      <h2 class="cafe-menu-title">🍽 Menu</h2>
-      ${catHTML}
-    </div>`;
+  return topCTA + bottomCTA;
 }
 
-function buildTimings(timings) {
-  if (!timings) return "";
+/** BUTTONS SECTION */
+function buildButtons(s) {
+  const hasCall = !!s.buttons.callNumber;
+  const hasWA   = !!s.buttons.waNumber;
+
+  if (!hasCall && !hasWA) return '';
+
+  const callBtn = hasCall ? `
+    <a class="qb-btn qb-btn-call"
+      href="tel:${esc(s.buttons.callNumber)}"
+      style="
+        background:${s.buttons.callBg};
+        border-color:${s.buttons.callOutline};
+        color:${s.buttons.callText};
+      ">
+      📞 Call Us
+    </a>` : '';
+
+  const waBtn = hasWA ? `
+    <a class="qb-btn qb-btn-wa"
+      href="https://wa.me/${s.buttons.waNumber.replace(/[^0-9]/g, '')}"
+      target="_blank"
+      style="
+        background:${s.buttons.waBg};
+        border-color:${s.buttons.waOutline};
+        color:${s.buttons.waText};
+      ">
+      💬 WhatsApp
+    </a>` : '';
+
   return `
-    <div class="cafe-timings-section">
-      <div class="cafe-timings-card">
-        <div class="timings-icon">⏰</div>
-        <div class="timings-content">
-          <div class="timings-label">Opening Hours</div>
-          <div class="timings-value">${esc(timings)}</div>
-        </div>
+    <section class="qb-buttons-section fade-in">
+      <div class="qb-buttons-row">
+        ${callBtn}
+        ${waBtn}
       </div>
-    </div>`;
+    </section>`;
 }
 
-function buildMap(mapLink) {
-  if (!mapLink || !isValidUrl(mapLink)) return "";
-  return `
-    <div class="cafe-map-section">
-      <a href="${esc(mapLink)}" target="_blank" rel="noopener noreferrer" class="cafe-map-btn">
-        📍 Get Directions on Google Maps
-      </a>
-    </div>`;
-}
-
-function buildContactButtons(phone) {
-  const cleanPhone = safe(phone).replace(/\D/g, "");
-  if (cleanPhone.length < 10) return "";
+/* ════════════════════════════════════
+   6. CSS BUILDER — generates all page CSS from state
+════════════════════════════════════ */
+function buildPageCSS(s) {
+  const headingFont = getHeadingFont(s.typography);
 
   return `
-    <div class="cafe-contact-section">
-      <a href="tel:${cleanPhone}" class="contact-btn btn-call">
-        📞 Call Us
-      </a>
-      <a href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener noreferrer" class="contact-btn btn-whatsapp">
-        💬 WhatsApp
-      </a>
-    </div>`;
-}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ══════════════════════
-   FULL PAGE ASSEMBLER
-══════════════════════ */
+    html { scroll-behavior: smooth; }
 
-function assemblePage(opts) {
-  const {
-    coverUrl, cafeName, description,
-    ctaTop, ctaBottom,
-    galleryImages, reviews, menuCategories,
-    timings, mapLink, phone,
-    theme, font, texture
-  } = opts;
-
-  const hero       = buildHero(coverUrl);
-  const nameBlock  = buildName(cafeName);
-  const descBlock  = buildDescription(description);
-  const { topBlock: ctaTopBlock, bottomBlock: ctaBottomBlock } = buildCTA(ctaTop, ctaBottom);
-  const galleryBlock  = buildGallery(galleryImages);
-  const reviewsBlock  = buildReviews(reviews);
-  const menuBlock     = buildMenu(menuCategories);
-  const timingsBlock  = buildTimings(timings);
-  const mapBlock      = buildMap(mapLink);
-  const contactBlock  = buildContactButtons(phone);
-
-  /* FIXED section order per spec:
-     1. Cover  2. Name  3. Description  4. CTA Top
-     5. Gallery  6. Reviews  7. Menu  8. Timings
-     9. Map  10. CTA Bottom  11. Buttons */
-
-  return `
-    ${hero}
-    ${nameBlock}
-    ${descBlock}
-    ${ctaTopBlock}
-    ${galleryBlock}
-    ${reviewsBlock}
-    ${menuBlock}
-    ${timingsBlock}
-    ${mapBlock}
-    ${ctaBottomBlock}
-    ${contactBlock}
-    <div class="page-footer-space"></div>
-  `;
-}
-
-/* ══════════════════════
-   MAIN RENDER ENGINE
-══════════════════════ */
-
-function renderPage() {
-  /* ── 1. Read all inputs safely ── */
-  const cafeName   = getVal("cafeName");
-  const description = getVal("description");
-  const phone      = getVal("phone");
-  const coverUrl   = getVal("coverImage");
-  const ctaTop     = getVal("ctaTop");
-  const ctaBottom  = getVal("ctaBottom");
-  const galleryRaw = getVal("gallery");
-  const reviewsRaw = getVal("reviews");
-  const menuRaw    = getVal("menu");
-  const timings    = getVal("timings");
-  const mapLink    = getVal("mapLink");
-
-  /* ── 2. Parse inputs ── */
-  const galleryImages  = parseGallery(galleryRaw);
-  const reviews        = parseReviews(reviewsRaw);
-  const menuCategories = parseMenu(menuRaw);
-
-  /* ── 3. Assemble inner page HTML ── */
-  const innerHTML = assemblePage({
-    coverUrl, cafeName, description,
-    ctaTop, ctaBottom,
-    galleryImages, reviews, menuCategories,
-    timings, mapLink, phone,
-    theme: selectedTheme,
-    font: selectedFont,
-    texture: selectedTexture
-  });
-
-  /* ── 4. Inject into preview with SAFE DOM check ── */
-  const preview = document.getElementById("preview");
-  if (!preview) return;
-
-  /* Reset classes — CRITICAL to prevent stacking */
-  preview.className = "preview";
-
-  /* Apply theme, font, texture to preview root
-     (wrapping page-root handles it) */
-  const pageHTML = `
-    <div class="page-root ${selectedTheme} ${selectedFont} ${selectedTexture}">
-      ${innerHTML}
-    </div>
-  `;
-
-  preview.innerHTML = pageHTML;
-}
-
-function generatePreview() {
-  try {
-    renderPage();
-  } catch (e) {
-    console.error("Render error:", e);
-    // Fail gracefully — never crash the UI
-    const preview = document.getElementById("preview");
-    if (preview && preview.innerHTML === "") {
-      preview.innerHTML = `
-        <div class="page-root theme-beige font-modern texture-plain">
-          <div class="demo-fallback">
-            <div class="demo-icon">☕</div>
-            <p>Your cafe landing page will appear here.<br/>Start filling in the form!</p>
-          </div>
-        </div>`;
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: ${s.colors.primary};
+      color: ${s.colors.text};
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-  }
+
+    /* ── FADE-IN ── */
+    @keyframes qb-fadein {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: qb-fadein 0.55s ease forwards;
+    }
+
+    /* stagger */
+    .qb-hero        { animation-delay: 0.05s; }
+    .qb-info        { animation-delay: 0.1s; }
+    .qb-gallery-section { animation-delay: 0.15s; }
+    .qb-menu-section    { animation-delay: 0.2s; }
+    .qb-reviews-section { animation-delay: 0.25s; }
+    .qb-cta-top         { animation-delay: 0.3s; }
+    .qb-cta-bottom      { animation-delay: 0.32s; }
+    .qb-buttons-section { animation-delay: 0.35s; }
+
+    /* ── HERO ── */
+    .qb-hero {
+      width: 100%;
+      min-height: 280px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      padding: 0;
+    }
+
+    .qb-hero-inner {
+      padding: 32px 24px 28px;
+      width: 100%;
+    }
+
+    .qb-hero-name {
+      font-family: ${headingFont};
+      font-size: clamp(26px, 7vw, 36px);
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.15;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+      letter-spacing: -0.3px;
+    }
+
+    .qb-hero-tagline {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.5;
+      max-width: 320px;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+    }
+
+    /* ── INFO ── */
+    .qb-info {
+      background: ${s.colors.surface};
+      padding: 20px 16px;
+    }
+
+    .qb-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .qb-info-card {
+      background: ${s.colors.secondary};
+      border: 1px solid ${s.colors.outline};
+      border-radius: 12px;
+      padding: 14px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .qb-info-link {
+      cursor: pointer;
+    }
+
+    .qb-info-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .qb-info-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .qb-info-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .qb-info-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: ${s.colors.accent};
+      margin-bottom: 3px;
+    }
+
+    .qb-info-value {
+      font-size: 12px;
+      font-weight: 500;
+      color: ${s.colors.text};
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .qb-info-arrow {
+      font-size: 14px;
+      color: ${s.colors.accent};
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    /* ── SECTION TITLE ── */
+    .qb-section-title {
+      font-family: ${headingFont};
+      font-size: 20px;
+      font-weight: 700;
+      color: ${s.colors.text};
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid ${s.colors.outline};
+    }
+
+    /* ── GALLERY ── */
+    .qb-gallery-section {
+      padding: 28px 0 28px 16px;
+      background: ${s.colors.primary};
+    }
+
+    .qb-gallery-section .qb-section-title {
+      margin-right: 16px;
+    }
+
+    .qb-gallery-track {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-right: 16px;
+      padding-bottom: 4px;
+    }
+
+    .qb-gallery-track::-webkit-scrollbar { display: none; }
+
+    .qb-gallery-item {
+      flex-shrink: 0;
+      width: calc(85%);
+      height: 200px;
+      border-radius: 14px;
+      overflow: hidden;
+      scroll-snap-align: start;
+      border: 1px solid ${s.colors.outline};
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .qb-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .qb-gallery-item:hover img {
+      transform: scale(1.03);
+    }
+
+    /* ── MENU ── */
+    .qb-menu-section {
+      padding: 28px 16px;
+      background: ${s.colors.surface};
+    }
+
+    .qb-menu-category {
+      margin-bottom: 20px;
+    }
+
+    .qb-menu-category:last-child {
+      margin-bottom: 0;
+    }
+
+    .qb-menu-cat-header {
+      font-family: ${headingFont};
+      font-size: 14px;
+      font-weight: 700;
+      color: ${s.colors.accent};
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid ${s.colors.outline};
+    }
+
+    .qb-menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px dashed ${s.colors.outline}80;
+      transition: opacity 0.25s ease, max-height 0.35s ease;
+    }
+
+    .qb-menu-item:last-child {
+      border-bottom: none;
+    }
+
+    .qb-menu-item--hidden {
+      display: none;
+    }
+
+    .qb-menu-item-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: ${s.colors.text};
+      line-height: 1.4;
+    }
+
+    .qb-menu-item-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: ${s.colors.accent};
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .qb-menu-toggle {
+      display: block;
+      margin: 16px auto 0;
+      background: transparent;
+      border: 1px solid ${s.colors.accent};
+      border-radius: 8px;
+      color: ${s.colors.accent};
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .qb-menu-toggle:hover {
+      background: ${s.colors.accent};
+      color: #fff;
+    }
+
+    /* ── REVIEWS ── */
+    .qb-reviews-section {
+      padding: 28px 0 28px 16px;
+      background: ${s.colors.primary};
+    }
+
+    .qb-reviews-section .qb-section-title {
+      margin-right: 16px;
+    }
+
+    .qb-reviews-track {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-right: 16px;
+      padding-bottom: 4px;
+    }
+
+    .qb-reviews-track::-webkit-scrollbar { display: none; }
+
+    .qb-review-card {
+      flex-shrink: 0;
+      width: 78%;
+      background: ${s.colors.secondary};
+      border: 1px solid ${s.colors.outline};
+      border-radius: 14px;
+      padding: 18px 16px;
+      scroll-snap-align: start;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .qb-review-stars {
+      font-size: 15px;
+      color: ${s.colors.accent};
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .qb-review-text {
+      font-size: 13px;
+      color: ${s.colors.subtext};
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+
+    .qb-review-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: ${s.colors.text};
+    }
+
+    /* ── CTA TOP ── */
+    .qb-cta-top {
+      background: ${s.colors.accent};
+      padding: 20px 20px;
+      text-align: center;
+    }
+
+    .qb-cta-top-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.5;
+    }
+
+    /* ── CTA BOTTOM ── */
+    .qb-cta-bottom {
+      padding: 28px 20px 8px;
+      text-align: center;
+      background: ${s.colors.primary};
+    }
+
+    .qb-cta-bottom-text {
+      font-family: ${headingFont};
+      font-size: 18px;
+      font-weight: 700;
+      color: ${s.colors.text};
+      line-height: 1.4;
+    }
+
+    /* ── BUTTONS ── */
+    .qb-buttons-section {
+      padding: 20px 16px 36px;
+      background: ${s.colors.primary};
+    }
+
+    .qb-buttons-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .qb-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 15px 12px;
+      border-radius: 12px;
+      border-width: 2px;
+      border-style: solid;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    }
+
+    .qb-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    }
+
+    .qb-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ── SCROLLBAR GLOBAL ── */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: ${s.colors.outline}; border-radius: 3px; }
+  `;
 }
 
-/* ══════════════════════
-   PILL SELECTORS
-══════════════════════ */
+/* ════════════════════════════════════
+   7. PAGE JS BUILDER — inline JS for generated page
+════════════════════════════════════ */
+function buildPageJS() {
+  return `
+    // Menu expand/collapse
+    function toggleMenu(btn) {
+      var hidden = document.querySelectorAll('.qb-menu-item--hidden');
+      var allItems = document.querySelectorAll('.qb-menu-item');
+      var isExpanded = btn.dataset.expanded === '1';
 
-function initPillGroup(groupId, onSelect) {
-  const group = document.getElementById(groupId);
-  if (!group) return;
-
-  group.querySelectorAll(".pill").forEach(btn => {
-    btn.addEventListener("click", () => {
-      group.querySelectorAll(".pill").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      onSelect(btn.dataset.value);
-    });
-  });
-}
-
-/* ══════════════════════
-   DEVICE TOGGLE
-══════════════════════ */
-
-function initDeviceToggle() {
-  const frame   = document.getElementById("previewFrame");
-  const btnMob  = document.getElementById("devMobile");
-  const btnDesk = document.getElementById("devDesktop");
-
-  if (!frame || !btnMob || !btnDesk) return;
-
-  btnMob.addEventListener("click", () => {
-    frame.className = "preview-frame mobile";
-    btnMob.classList.add("active");
-    btnDesk.classList.remove("active");
-  });
-
-  btnDesk.addEventListener("click", () => {
-    frame.className = "preview-frame desktop";
-    btnDesk.classList.add("active");
-    btnMob.classList.remove("active");
-  });
-}
-
-/* ══════════════════════
-   MOBILE PANEL TOGGLE
-══════════════════════ */
-
-function initPanelToggle() {
-  const btn   = document.getElementById("panelToggleBtn");
-  const panel = document.getElementById("builderPanel");
-  if (!btn || !panel) return;
-
-  btn.addEventListener("click", () => {
-    panel.classList.toggle("open");
-    btn.textContent = panel.classList.contains("open") ? "✕ Close" : "✏️ Edit";
-  });
-
-  // Close panel when clicking preview on mobile
-  const previewStage = document.querySelector(".preview-stage");
-  if (previewStage) {
-    previewStage.addEventListener("click", () => {
-      if (panel.classList.contains("open")) {
-        panel.classList.remove("open");
-        btn.textContent = "✏️ Edit";
+      if (!isExpanded) {
+        allItems.forEach(function(item) {
+          item.classList.remove('qb-menu-item--hidden');
+        });
+        btn.textContent = 'Show less ↑';
+        btn.dataset.expanded = '1';
+      } else {
+        var count = 0;
+        allItems.forEach(function(item) {
+          count++;
+          if (count > 7) {
+            item.classList.add('qb-menu-item--hidden');
+          }
+        });
+        btn.textContent = 'Show more →';
+        btn.dataset.expanded = '0';
+        // scroll back to menu
+        var menu = document.querySelector('.qb-menu-section');
+        if (menu) menu.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    });
-  }
+    }
+
+    // Intersection Observer for fade-in
+    (function() {
+      var els = document.querySelectorAll('.fade-in');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function(el) { el.style.opacity = '1'; });
+        return;
+      }
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08 });
+      els.forEach(function(el) {
+        el.style.animationPlayState = 'paused';
+        obs.observe(el);
+      });
+    })();
+  `;
 }
 
-/* ══════════════════════
-   EXPORT / DOWNLOAD
-══════════════════════ */
+/* ════════════════════════════════════
+   8. PAGE BUILDER — assembles full HTML document
+════════════════════════════════════ */
+function buildPage(s) {
+  const fontImport = getFontImport(s.typography);
+  const css        = buildPageCSS(s);
+  const js         = buildPageJS();
 
-function buildExportHTML() {
-  const cafeName   = getVal("cafeName") || "Cafe Name";
-  const description = getVal("description");
-  const phone      = getVal("phone");
-  const coverUrl   = getVal("coverImage");
-  const ctaTop     = getVal("ctaTop");
-  const ctaBottom  = getVal("ctaBottom");
-  const galleryRaw = getVal("gallery");
-  const reviewsRaw = getVal("reviews");
-  const menuRaw    = getVal("menu");
-  const timings    = getVal("timings");
-  const mapLink    = getVal("mapLink");
-
-  const galleryImages  = parseGallery(galleryRaw);
-  const reviews        = parseReviews(reviewsRaw);
-  const menuCategories = parseMenu(menuRaw);
-
-  const innerHTML = assemblePage({
-    coverUrl, cafeName, description,
-    ctaTop, ctaBottom,
-    galleryImages, reviews, menuCategories,
-    timings, mapLink, phone,
-    theme: selectedTheme,
-    font: selectedFont,
-    texture: selectedTexture
-  });
+  // Build sections in strict order:
+  // Hero → Info → Gallery → Menu → Reviews → Top CTA → Bottom CTA → Buttons
+  const heroHtml    = buildHero(s);
+  const infoHtml    = buildInfo(s);
+  const galleryHtml = buildGallery(s);
+  const menuHtml    = buildMenu(s);
+  const reviewsHtml = buildReviews(s);
+  const ctaHtml     = buildCTA(s);
+  const btnHtml     = buildButtons(s);
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${esc(cafeName)}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@400;600&family=Nunito:wght@300;400;600&family=Inter:wght@300;400;600&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { min-height: 100%; }
-    body { overflow-x: hidden; word-wrap: break-word; overflow-wrap: break-word; }
-
-    /* THEMES */
-    .theme-beige { --bg: #F5EDE4; --card: #FFFFFF; --text: #2C2C2C; background: var(--bg); color: var(--text); }
-    .theme-peach { --bg: #FFE8DC; --card: #FFF7F3; --text: #2E2E2E; background: var(--bg); color: var(--text); }
-    .theme-mint  { --bg: #EAF7F2; --card: #FFFFFF; --text: #2A2A2A; background: var(--bg); color: var(--text); }
-    .theme-white { --bg: #FFFFFF; --card: #F4F4F4; --text: #111111; background: var(--bg); color: var(--text); }
-    .theme-dark  { --bg: #121212; --card: #1E1E1E; --text: #F5F5F5; background: var(--bg); color: var(--text); }
-
-    /* TEXTURES */
-    .texture-plain { background: var(--bg); }
-    .texture-grain { position: relative; }
-    .texture-grain::before { content: ""; position: fixed; inset: 0; background-image: url("https://www.transparenttextures.com/patterns/noise.png"); opacity: 0.04; pointer-events: none; z-index: 0; }
-    .texture-soft { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4), transparent 40%), radial-gradient(circle at 80% 80%, rgba(0,0,0,0.05), transparent 40%), var(--bg); }
-
-    /* FONTS */
-    .font-modern  { font-family: 'Poppins', sans-serif; }
-    .font-friendly { font-family: 'Nunito', sans-serif; }
-    .font-minimal  { font-family: 'Inter', sans-serif; }
-    .font-stylish  { font-family: 'DM Sans', sans-serif; }
-    .font-elegant h1, .font-elegant h2 { font-family: 'Playfair Display', serif; }
-
-    .page-root { width: 100%; min-height: 100vh; overflow-x: hidden; word-wrap: break-word; overflow-wrap: break-word; max-width: 480px; margin: 0 auto; }
-
-    .cafe-hero { width: 100%; }
-    .cafe-hero img { width: 100%; height: auto; display: block; }
-    .cafe-hero-fallback { width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; background: var(--card); font-size: 48px; opacity: 0.4; }
-
-    .cafe-name-wrap { padding: 20px 20px 8px; text-align: center; }
-    .cafe-name { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; }
-
-    .cafe-desc-wrap { padding: 6px 20px 16px; text-align: center; }
-    .cafe-desc { font-size: 13.5px; color: var(--text); opacity: 0.7; line-height: 1.6; word-wrap: break-word; overflow-wrap: break-word; }
-
-    .cafe-cta { margin: 0 20px 20px; background: var(--card); border-radius: 14px; padding: 14px 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
-    .cafe-cta p { font-size: 13.5px; color: var(--text); line-height: 1.7; font-weight: 500; word-wrap: break-word; overflow-wrap: break-word; }
-
-    .cafe-gallery-section { padding: 16px 0; }
-    .cafe-gallery-title { font-size: 13px; font-weight: 700; color: var(--text); padding: 0 20px 10px; letter-spacing: 0.3px; opacity: 0.85; text-transform: uppercase; }
-    .cafe-gallery { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .cafe-gallery::-webkit-scrollbar { display: none; }
-    .cafe-gallery img { flex: 0 0 75%; height: 160px; border-radius: 14px; object-fit: cover; scroll-snap-align: start; transition: transform 0.3s ease; display: block; }
-    .cafe-gallery img:active { transform: scale(0.97); }
-
-    .cafe-reviews-section { padding: 16px 0; }
-    .cafe-reviews-title { font-size: 13px; font-weight: 700; color: var(--text); padding: 0 20px 10px; letter-spacing: 0.3px; opacity: 0.85; text-transform: uppercase; }
-    .reviews-scroll { display: flex; gap: 14px; overflow-x: auto; padding: 0 20px 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .reviews-scroll::-webkit-scrollbar { display: none; }
-    .review-card { flex: 0 0 85%; border-radius: 16px; padding: 16px; background: var(--card); scroll-snap-align: start; transition: transform 0.3s ease; box-shadow: 0 2px 12px rgba(0,0,0,0.08); word-wrap: break-word; overflow-wrap: break-word; }
-    .review-card:active { transform: scale(0.97); }
-    .review-stars { color: #f4a832; font-size: 13px; margin-bottom: 7px; }
-    .review-text { font-size: 13px; color: var(--text); opacity: 0.85; line-height: 1.6; margin-bottom: 9px; }
-    .review-name { font-size: 11.5px; font-weight: 700; color: var(--text); opacity: 0.6; letter-spacing: 0.3px; }
-
-    .cafe-menu-section { padding: 16px 20px 20px; }
-    .cafe-menu-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 14px; letter-spacing: -0.2px; }
-    .menu-category { margin-bottom: 16px; }
-    .menu-cat-name { font-size: 12px; font-weight: 700; color: var(--text); opacity: 0.5; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.08); }
-    .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: var(--card); border-radius: 10px; margin-bottom: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-    .menu-item-name { font-size: 13.5px; color: var(--text); font-weight: 500; flex: 1; word-wrap: break-word; overflow-wrap: break-word; padding-right: 8px; }
-    .menu-item-price { font-size: 13px; font-weight: 700; color: var(--text); opacity: 0.75; white-space: nowrap; flex-shrink: 0; }
-
-    .cafe-timings-section { margin: 0 20px 20px; }
-    .cafe-timings-card { background: var(--card); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
-    .timings-icon { font-size: 22px; flex-shrink: 0; }
-    .timings-label { font-size: 10px; font-weight: 700; color: var(--text); opacity: 0.45; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
-    .timings-value { font-size: 13px; color: var(--text); font-weight: 500; word-wrap: break-word; overflow-wrap: break-word; }
-
-    .cafe-map-section { padding: 0 20px 20px; }
-    .cafe-map-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: var(--card); border: none; border-radius: 14px; padding: 14px 20px; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; text-decoration: none; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-
-    .cafe-contact-section { padding: 0 20px 24px; display: flex; gap: 10px; }
-    .contact-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; border: none; border-radius: 14px; padding: 13px 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,0.14); }
-    .btn-call { background: #2563eb; color: #fff; }
-    .btn-whatsapp { background: #25D366; color: #fff; }
-
-    .page-footer-space { height: 32px; }
-  </style>
+  <title>${esc(s.brand.name || 'Cafe')}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="${fontImport}" rel="stylesheet" />
+  <style>${css}</style>
 </head>
 <body>
-  <div class="page-root ${selectedTheme} ${selectedFont} ${selectedTexture}">
-    ${innerHTML}
-  </div>
+  ${heroHtml}
+  ${infoHtml}
+  ${galleryHtml}
+  ${menuHtml}
+  ${reviewsHtml}
+  ${ctaHtml}
+  ${btnHtml}
+  <script>${js}<\/script>
 </body>
 </html>`;
 }
 
-function initExport() {
-  const btn = document.getElementById("exportBtn");
-  if (!btn) return;
+/* ════════════════════════════════════
+   9. RENDER — injects into iframe
+════════════════════════════════════ */
+function renderPreview() {
+  // 1. Collect all inputs into state
+  collectState();
 
-  btn.addEventListener("click", () => {
-    try {
-      const html     = buildExportHTML();
-      const blob     = new Blob([html], { type: "text/html;charset=utf-8" });
-      const url      = URL.createObjectURL(blob);
-      const a        = document.createElement("a");
-      const cafeName = getVal("cafeName") || "cafe-landing";
-      const filename = cafeName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + ".html";
+  // 2. Build full HTML from state (never read inputs again)
+  const html = buildPage(state);
 
-      a.href     = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.error("Export error:", e);
+  // 3. Inject into iframe
+  const frame = DOM.previewFrame();
+  frame.srcdoc = html;
+
+  // 4. Hide empty state
+  const empty = DOM.previewEmpty();
+  empty.classList.add('hidden');
+}
+
+/* ════════════════════════════════════
+   10. COLOR INPUT SYNC — keeps picker ↔ text in sync
+════════════════════════════════════ */
+function syncColorPair(picker, textInput) {
+  picker.addEventListener('input', () => {
+    textInput.value = picker.value;
+  });
+
+  textInput.addEventListener('input', () => {
+    const val = textInput.value.trim();
+    // Accept hex colors
+    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(val)) {
+      picker.value = val;
     }
   });
 }
 
-/* ══════════════════════
-   LIVE INPUT LISTENERS
-══════════════════════ */
+/* ════════════════════════════════════
+   11. DEVICE SWITCHER
+════════════════════════════════════ */
+function setupDeviceSwitcher() {
+  const btnMobile = DOM.btnMobile();
+  const btnTablet = DOM.btnTablet();
+  const deviceFrame = DOM.deviceFrame();
 
-function initLiveListeners() {
-  document.querySelectorAll("input, textarea").forEach(el => {
-    if (el) {
-      el.addEventListener("input", generatePreview);
-    }
+  btnMobile.addEventListener('click', () => {
+    deviceFrame.classList.remove('tablet-mode');
+    btnMobile.classList.add('active');
+    btnTablet.classList.remove('active');
+  });
+
+  btnTablet.addEventListener('click', () => {
+    deviceFrame.classList.add('tablet-mode');
+    btnTablet.classList.add('active');
+    btnMobile.classList.remove('active');
   });
 }
 
-/* ══════════════════════
-   INIT
-══════════════════════ */
+/* ════════════════════════════════════
+   12. INIT — wire everything up
+════════════════════════════════════ */
+function init() {
+  // ── Generate buttons
+  DOM.btnGenerate().addEventListener('click', renderPreview);
+  DOM.btnGenerateBot().addEventListener('click', renderPreview);
 
-document.addEventListener("DOMContentLoaded", () => {
-  /* Pill groups */
-  initPillGroup("themeGroup", (val) => {
-    selectedTheme = val;
-    generatePreview();
+  // ── Color sync — page colors
+  const colorPairs = [
+    DOM.colorPrimary(),
+    DOM.colorSecondary(),
+    DOM.colorSurface(),
+    DOM.colorAccent(),
+    DOM.colorText(),
+    DOM.colorSubtext(),
+    DOM.colorOutline(),
+    DOM.callBg(),
+    DOM.callOutline(),
+    DOM.callTextColor(),
+    DOM.waBg(),
+    DOM.waOutline(),
+    DOM.waTextColor(),
+  ];
+
+  for (const [picker, textInp] of colorPairs) {
+    if (picker && textInp) syncColorPair(picker, textInp);
+  }
+
+  // ── Device switcher
+  setupDeviceSwitcher();
+
+  // ── Also allow Enter on inputs to trigger generate
+  const allInputs = document.querySelectorAll('input[type="text"], input[type="url"], input[type="tel"]');
+  allInputs.forEach(inp => {
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') renderPreview();
+    });
   });
+}
 
-  initPillGroup("fontGroup", (val) => {
-    selectedFont = val;
-    generatePreview();
-  });
-
-  initPillGroup("textureGroup", (val) => {
-    selectedTexture = val;
-    generatePreview();
-  });
-
-  /* Device toggle */
-  initDeviceToggle();
-
-  /* Mobile panel toggle */
-  initPanelToggle();
-
-  /* Export */
-  initExport();
-
-  /* Live listeners */
-  initLiveListeners();
-
-  /* Initial render */
-  generatePreview();
-});
+/* ── BOOT ── */
+document.addEventListener('DOMContentLoaded', init);
