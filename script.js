@@ -17,7 +17,7 @@
 ════════════════════════════════════ */
 const STATE = {
   brand:    { name: '', tagline: '', heroImg: '' },
-  info:     { timings: '', location: '', mapsUrl: '' },
+  info:     { timings: '', location: '', mapsUrl: '' }, 
   gallery:  [],        // string[]
   menu:     [],        // {category, item, price}[]
   reviews:  [],        // {name, stars, text}[]
