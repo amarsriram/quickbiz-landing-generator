@@ -749,6 +749,17 @@ function buildPageJS() {
 (function () {
   'use strict';
 
+  const API = "${document.getElementById("inp-api")?.value || ""}"; 
+
+  function getVisits(phone) {
+  if (!API) return Promise.resolve(0);
+
+  return fetch(API + "?phone=" + phone)
+    .then(res => res.json())
+    .then(data => data.visits || 0)
+    .catch(() => 0);
+}
+  
   /* ── MENU TOGGLE ── */
   window.menuToggle = function (btn) {
     var rows = document.querySelectorAll('.menu-item');
