@@ -749,7 +749,7 @@ function buildPageJS() {
 (function () {
   'use strict';
 
-  const API = "${document.getElementById("inp-api")?.value || ""}"; 
+  const API = "${s.api}"; 
 
   function getVisits(phone) {
   if (!API) return Promise.resolve(0);
