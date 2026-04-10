@@ -1775,8 +1775,38 @@ function buildPageJS() {
   return `
 (function () {
   'use strict';
+const API = "${document.getElementById("inp-api")?.value || ""}";
+ 
+  /*function getVisits(phone) {
+  if (!API) return Promise.resolve(0);
 
-  /* ── MENU TOGGLE ── */
+  return fetch(API + "?phone=" + phone)
+    .then(res => res.json())
+    .then(data => data.visits || 0)
+    .catch(() => 0);
+} 
+   function checkLoyalty() {
+     const phone = document.getElementById("loyalty-phone").value;
+
+   if (!phone) {
+    document.getElementById("loyalty-result").innerText = "Enter phone number";
+    return;
+  }
+
+  getVisits(phone).then(visits => {
+    let msg = "Visits: " + visits + " / 5";
+
+    if (visits >= 5) {
+      msg += " 🎉 Reward unlocked!";
+    } else {
+      msg += " — " + (5 - visits) + " more to go";
+    }
+
+    document.getElementById("loyalty-result").innerText = msg;
+  });
+}
+
+  ── MENU TOGGLE ── */
   window.menuToggle = function (btn) {
     var rows = document.querySelectorAll('.menu-item');
     var expanded = btn.getAttribute('data-expanded') === '1';
@@ -1888,6 +1918,13 @@ function buildHero(s) {
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <h1 class="hero-name">${name}</h1>
+   
+    <div class="loyalty-box">
+  <input type="tel" id="loyalty-phone" placeholder="Enter phone to track rewards" />
+  <button onclick="checkLoyalty()">Check</button>
+  <p id="loyalty-result"></p>
+</div>
+      
       ${tagline ? `<p class="hero-tagline">${tagline}</p>` : ''}
     </div>
   </div>
