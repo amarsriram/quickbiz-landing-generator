@@ -3,52 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuickBiz V5.6 — Cafe Page Generator</title>
+  <title>QuickBiz V5.7 — Cafe Page Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet" />
   <style>
 /* ════════════════════════════════════════════════════════════
-   QUICKBIZ V5.6 — TOOL SHELL STYLES
-   Only styles the builder UI.
-   Generated page CSS lives in script.js → buildPageCSS()
+   QUICKBIZ V5.7 — TOOL SHELL STYLES
+   Aesthetic: Dark luxury tool — gold accents, deep backgrounds
+   Generated page CSS lives entirely in script.js → buildCSS()
    ════════════════════════════════════════════════════════════ */
 
-/* ── TOKENS ── */
+/* ── DESIGN TOKENS ── */
 :root {
-  --sh:    #08080d;
-  --pb:    #0e0e18;
-  --pbd:   #1c1c2e;
-  --psurf: #131322;
-  --phov:  #18182c;
-  --th:    54px;
+  /* Shell */
+  --sh-bg:     #080810;
+  --panel-bg:  #0d0d1a;
+  --panel-bdr: #1a1a2e;
+  --panel-srf: #111120;
+  --panel-hov: #161630;
+  --topbar-h:  54px;
 
-  --t1: #edeae7;
-  --t2: #9896a4;
-  --t3: #525168;
-  --t4: #36354c;
+  /* Text */
+  --t1: #eceae8;
+  --t2: #9896a6;
+  --t3: #50506a;
+  --t4: #333348;
 
-  --gold:    #d4a84b;
-  --gold-h:  #e0b85c;
-  --gold-d:  rgba(212,168,75,.13);
-  --gold-g:  rgba(212,168,75,.28);
-  --gold-gs: rgba(212,168,75,.12);
+  /* Gold */
+  --gold:     #d4a84b;
+  --gold-lt:  #e0b85c;
+  --gold-dim: rgba(212, 168, 75, 0.12);
+  --gold-glo: rgba(212, 168, 75, 0.26);
 
-  --ib:  #0f0f1c;
-  --ibd: #232336;
-  --itx: #edeae7;
-  --iph: #3c3b54;
+  /* Inputs */
+  --inp-bg:  #0c0c1c;
+  --inp-bdr: #212136;
+  --inp-tx:  #eceae8;
+  --inp-ph:  #3a3958;
 
-  --pw:  430px;
+  /* Layout */
+  --pw:  440px;
   --rb:  12px;
   --ri:  8px;
   --rc:  10px;
 
-  --sp1: 4px;  --sp2: 8px;
-  --sp3: 12px; --sp4: 16px;
-  --sp5: 20px; --sp6: 24px;
+  /* Spacing */
+  --s1: 4px;  --s2: 8px;  --s3: 12px;
+  --s4: 16px; --s5: 20px; --s6: 24px;
 
-  --ef: .13s ease;
+  /* Easing */
+  --ef: .14s ease;
   --em: .24s ease;
   --es: .38s ease;
 
@@ -61,7 +66,7 @@ html, body { height: 100%; overflow: hidden; }
 
 body {
   font-family: var(--font);
-  background: var(--sh);
+  background: var(--sh-bg);
   color: var(--t1);
   font-size: 13px;
   line-height: 1.5;
@@ -75,36 +80,39 @@ body {
 
 /* ── TOPBAR ── */
 #topbar {
-  height: var(--th);
-  background: var(--pb);
-  border-bottom: 1px solid var(--pbd);
+  height: var(--topbar-h);
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--panel-bdr);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--sp5);
-  flex-shrink: 0;
-  gap: var(--sp3);
-  z-index: 100;
+  padding: 0 var(--s5); flex-shrink: 0; gap: var(--s3); z-index: 100;
 }
 
-#topbar-brand { display: flex; align-items: center; gap: var(--sp3); }
-#topbar-logo  { font-size: 21px; filter: drop-shadow(0 0 9px var(--gold)); flex-shrink: 0; }
-#topbar-text  { display: flex; flex-direction: column; gap: 1px; }
+#topbar-brand { display: flex; align-items: center; gap: var(--s3); }
 
-#topbar-title {
+#topbar-logo {
+  font-size: 21px;
+  filter: drop-shadow(0 0 10px var(--gold));
+  flex-shrink: 0;
+}
+
+#topbar-info { display: flex; flex-direction: column; gap: 1px; }
+
+#topbar-name {
   font-size: 14px; font-weight: 700;
   letter-spacing: -.35px; line-height: 1.1;
 }
-#topbar-title mark { background: none; color: var(--gold); }
+#topbar-name mark { background: none; color: var(--gold); }
 
-#topbar-sub {
+#topbar-tag {
   font-size: 9px; color: var(--t3);
-  letter-spacing: .6px; text-transform: uppercase;
+  letter-spacing: .65px; text-transform: uppercase;
 }
 
-#topbar-actions { display: flex; gap: var(--sp2); align-items: center; }
+#topbar-actions { display: flex; gap: var(--s2); align-items: center; }
 
-/* ══════════════
+/* ═══════════════
    BUTTON SYSTEM
-══════════════ */
+═══════════════ */
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
   border: none; border-radius: var(--ri);
@@ -112,38 +120,47 @@ body {
   cursor: pointer; white-space: nowrap; flex-shrink: 0;
   position: relative; overflow: hidden;
   transition: background var(--ef), color var(--ef), border-color var(--ef),
-              box-shadow var(--ef), transform var(--ef);
+              box-shadow var(--ef), transform var(--ef), opacity var(--ef);
 }
 
-.btn.sm  { font-size: 11px; padding: 7px 13px; }
-.btn.md  { font-size: 12px; padding: 9px 16px; }
-.btn.full { width: 100%; justify-content: center; padding: 14px 18px; font-size: 13px; font-weight: 700; border-radius: 10px; }
+/* Sizes */
+.btn.sm   { font-size: 11px; padding: 7px 13px; }
+.btn.md   { font-size: 12px; padding: 9px 16px; }
+.btn.full {
+  width: 100%; justify-content: center;
+  padding: 14px 20px; font-size: 13px; font-weight: 700;
+  border-radius: 10px;
+}
 
-/* Gold / Primary */
+/* Gold — primary */
 .btn.gold {
   background: var(--gold); color: #08080d;
-  box-shadow: 0 2px 12px var(--gold-g);
+  box-shadow: 0 2px 14px var(--gold-glo);
 }
-.btn.gold::before {
+.btn.gold::after {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.13), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
   transform: translateX(-100%);
   transition: transform .5s ease;
 }
-.btn.gold:hover::before { transform: translateX(100%); }
-.btn.gold:hover { background: var(--gold-h); box-shadow: 0 4px 20px var(--gold-g); transform: translateY(-1px); }
-.btn.gold:active { transform: translateY(0); box-shadow: 0 1px 6px var(--gold-gs); }
-.btn.gold.full { box-shadow: 0 4px 26px var(--gold-g); }
-.btn.gold.full:hover { box-shadow: 0 6px 34px rgba(212,168,75,.4); }
-
-/* Ghost */
-.btn.ghost {
-  background: var(--psurf); color: var(--t2);
-  border: 1px solid var(--pbd);
+.btn.gold:hover::after { transform: translateX(100%); }
+.btn.gold:hover {
+  background: var(--gold-lt);
+  box-shadow: 0 4px 22px var(--gold-glo);
+  transform: translateY(-1px);
 }
-.btn.ghost:hover { background: var(--phov); border-color: #2c2c48; color: var(--t1); }
-.btn.ghost:active { transform: scale(.98); }
+.btn.gold:active { transform: translateY(0); }
+.btn.gold.full { box-shadow: 0 4px 28px var(--gold-glo); }
+.btn.gold.full:hover { box-shadow: 0 6px 36px rgba(212,168,75,.42); }
+
+/* Outline / Ghost */
+.btn.outline {
+  background: var(--panel-srf); color: var(--t2);
+  border: 1px solid var(--panel-bdr);
+}
+.btn.outline:hover { background: var(--panel-hov); border-color: #28285a; color: var(--t1); }
+.btn.outline:active { transform: scale(.98); }
 
 /* ═════════════
    WORKSPACE
@@ -155,270 +172,319 @@ body {
 ═══════════ */
 #panel {
   width: var(--pw); min-width: var(--pw);
-  background: var(--pb);
-  border-right: 1px solid var(--pbd);
+  background: var(--panel-bg);
+  border-right: 1px solid var(--panel-bdr);
   overflow: hidden; display: flex; flex-direction: column;
 }
 
-#panel-body {
+#panel-scroll {
   flex: 1; overflow-y: auto; overflow-x: hidden;
-  padding: var(--sp3); display: flex; flex-direction: column; gap: var(--sp2);
-  scrollbar-width: thin; scrollbar-color: var(--pbd) transparent;
+  padding: var(--s3); display: flex; flex-direction: column; gap: var(--s2);
+  scrollbar-width: thin; scrollbar-color: var(--panel-bdr) transparent;
 }
-#panel-body::-webkit-scrollbar { width: 3px; }
-#panel-body::-webkit-scrollbar-thumb { background: var(--pbd); border-radius: 3px; }
+#panel-scroll::-webkit-scrollbar { width: 3px; }
+#panel-scroll::-webkit-scrollbar-thumb { background: var(--panel-bdr); border-radius: 3px; }
 
-/* ── CONFIG SECTIONS ── */
-.cfg {
-  background: var(--psurf); border: 1px solid var(--pbd);
-  border-radius: var(--rb); padding: var(--sp3);
-  display: flex; flex-direction: column; gap: var(--sp3);
+/* ── CONFIG BLOCKS ── */
+.config-block {
+  background: var(--panel-srf);
+  border: 1px solid var(--panel-bdr);
+  border-radius: var(--rb);
+  padding: var(--s3);
+  display: flex; flex-direction: column; gap: var(--s3);
   transition: border-color var(--ef);
 }
-.cfg:hover { border-color: #28284a; }
+.config-block:hover { border-color: #24244a; }
 
-.cfg-head {
+.config-block-header {
   display: flex; align-items: center; gap: 6px;
-  padding-bottom: var(--sp2); border-bottom: 1px solid var(--pbd);
+  padding-bottom: var(--s2); border-bottom: 1px solid var(--panel-bdr);
 }
-.cfg-head h3 {
+.config-block-header h3 {
   font-size: 10.5px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .9px; color: var(--t2);
+  text-transform: uppercase; letter-spacing: .95px; color: var(--t2);
+  flex: 1;
 }
-.cfg-ico { font-size: 12px; }
+.config-icon { font-size: 12px; }
 
-.cfg-hint {
-  font-size: 11px; color: var(--t4); line-height: 1.5;
+.config-hint {
+  font-size: 11px; color: var(--t4); line-height: 1.55;
 }
-.cfg-hint code {
-  background: #181828; border: 1px solid var(--pbd);
+.config-hint code {
+  background: #14143a; border: 1px solid var(--panel-bdr);
   border-radius: 3px; padding: 1px 5px;
   font-size: 10px; color: var(--gold); font-family: 'Courier New', monospace;
 }
 
 /* ── FIELDS ── */
-.field { display: flex; flex-direction: column; gap: 4px; }
-.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp2); }
-.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+.field-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
 
 .field-note {
-  font-size: 10px; color: var(--t4); line-height: 1.5; margin-top: 3px;
+  font-size: 10.5px; color: var(--t4); line-height: 1.5; margin-top: 3px;
 }
-.field-note code { color: var(--gold); background: #181828; padding: 1px 4px; border-radius: 3px; font-size: 9.5px; }
+.field-note code {
+  background: #14143a; border-radius: 3px; padding: 1px 4px;
+  font-size: 10px; color: var(--gold); font-family: 'Courier New', monospace;
+}
 
 label { font-size: 11px; font-weight: 600; color: var(--t2); letter-spacing: .2px; }
-.opt { font-weight: 400; color: var(--t4); }
+.label-muted { font-weight: 400; color: var(--t4); }
 
-input[type=text], input[type=url], input[type=tel], textarea {
-  background: var(--ib); border: 1px solid var(--ibd);
-  border-radius: var(--ri); color: var(--itx);
+/* ── TEXT INPUTS ── */
+input[type=text],
+input[type=url],
+input[type=tel],
+textarea {
+  background: var(--inp-bg);
+  border: 1px solid var(--inp-bdr);
+  border-radius: var(--ri);
+  color: var(--inp-tx);
   font-family: var(--font); font-size: 12px;
-  padding: 9px 11px; width: 100%; outline: none; resize: vertical;
+  padding: 9px 11px; width: 100%;
+  outline: none; resize: vertical;
   transition: border-color var(--ef), box-shadow var(--ef), background var(--ef);
 }
-input::placeholder, textarea::placeholder { color: var(--iph); }
+input::placeholder, textarea::placeholder { color: var(--inp-ph); }
 input:focus, textarea:focus {
-  border-color: var(--gold); background: #14142a;
-  box-shadow: 0 0 0 3px var(--gold-d);
+  border-color: var(--gold);
+  background: #121228;
+  box-shadow: 0 0 0 3px var(--gold-dim);
 }
-textarea { line-height: 1.6; }
+textarea { line-height: 1.65; }
 
-/* ── COLOR ROWS ── */
-.clr-row {
+/* ── COLOR FIELDS ── */
+.color-field {
   display: flex; align-items: center; gap: 7px;
-  background: var(--ib); border: 1px solid var(--ibd);
+  background: var(--inp-bg); border: 1px solid var(--inp-bdr);
   border-radius: var(--ri); padding: 5px 9px;
   transition: border-color var(--ef), box-shadow var(--ef);
 }
-.clr-row:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-d); }
-input[type=color] { width: 22px; height: 22px; border: none; background: none; padding: 0; outline: none; cursor: pointer; border-radius: 4px; flex-shrink: 0; }
+.color-field:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+input[type=color] {
+  width: 22px; height: 22px; border: none; background: none;
+  padding: 0; outline: none; cursor: pointer; border-radius: 4px; flex-shrink: 0;
+}
 input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
 input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
-.clr-txt {
-  background: transparent !important; border: none !important; padding: 0 !important;
-  box-shadow: none !important; font-size: 11px !important;
-  font-family: 'Courier New', monospace !important; color: var(--t2) !important;
-  width: 100% !important; resize: none !important;
+.color-hex {
+  background: transparent !important; border: none !important;
+  padding: 0 !important; box-shadow: none !important;
+  font-size: 11px !important; font-family: 'Courier New', monospace !important;
+  color: var(--t2) !important; width: 100% !important; resize: none !important;
 }
-.clr-txt:focus { border: none !important; box-shadow: none !important; }
+.color-hex:focus { border: none !important; box-shadow: none !important; }
 
-/* ── TOGGLE SWITCH ── */
-.toggle-row { display: flex; align-items: center; justify-content: space-between; }
-.toggle-label { font-size: 12px; font-weight: 600; color: var(--t1); }
-
-.toggle-switch { position: relative; display: inline-block; cursor: pointer; flex-shrink: 0; }
-.toggle-switch input { display: none; }
+/* ── LOYALTY TOGGLE ── */
+.toggle-wrap { margin-left: auto; }
+.toggle { cursor: pointer; display: block; }
+.toggle input[type=checkbox] { display: none; }
 .toggle-track {
-  display: block; width: 42px; height: 24px;
-  background: var(--ibd); border-radius: 12px;
+  display: block; width: 40px; height: 22px;
+  background: var(--inp-bdr); border-radius: 11px; position: relative;
   transition: background var(--em);
-  position: relative;
 }
 .toggle-thumb {
-  position: absolute; top: 3px; left: 3px;
-  width: 18px; height: 18px;
-  background: #fff; border-radius: 50%;
+  position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3);
   transition: transform var(--em), box-shadow var(--em);
-  box-shadow: 0 1px 4px rgba(0,0,0,.3);
 }
-.toggle-switch input:checked + .toggle-track { background: var(--gold); }
-.toggle-switch input:checked + .toggle-track .toggle-thumb {
+.toggle input:checked + .toggle-track { background: var(--gold); }
+.toggle input:checked + .toggle-track .toggle-thumb {
   transform: translateX(18px);
-  box-shadow: 0 1px 6px rgba(212,168,75,.4);
+  box-shadow: 0 1px 6px rgba(212,168,75,.45);
 }
 
-.loyalty-fields { display: flex; flex-direction: column; gap: var(--sp3); }
-.loyalty-fields.hidden { display: none; }
+.loyalty-fields {
+  display: flex; flex-direction: column; gap: var(--s3);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height var(--es), opacity var(--em);
+  opacity: 0;
+}
+.loyalty-fields.open {
+  max-height: 400px;
+  opacity: 1;
+}
 
 /* ── FONT PICKER ── */
-.font-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--sp2); }
-.font-opt { cursor: pointer; }
-.font-opt input[type=radio] { display: none; }
+.font-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--s2); }
+.font-option { cursor: pointer; }
+.font-option input[type=radio] { display: none; }
 .font-card {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 12px 6px; border: 1px solid var(--pbd);
-  border-radius: var(--rc); background: var(--ib); text-align: center;
+  padding: 12px 6px; border: 1px solid var(--panel-bdr);
+  border-radius: var(--rc); background: var(--inp-bg); text-align: center;
   transition: border-color var(--ef), background var(--ef), transform var(--ef);
 }
-.font-opt:hover .font-card { border-color: #303050; background: #181828; transform: translateY(-1px); }
-.font-opt input:checked + .font-card { border-color: var(--gold); background: var(--gold-d); box-shadow: 0 0 0 1px var(--gold); }
-.fp { font-size: 15px; font-weight: 700; color: var(--t1); line-height: 1; }
-.fm { font-size: 9px; color: var(--t3); line-height: 1; }
-.f-modern  { font-family: 'Poppins', sans-serif; }
-.f-elegant { font-family: 'Playfair Display', serif; }
-.f-cute    { font-family: 'Pacifico', cursive; }
+.font-option:hover .font-card {
+  border-color: #2e2e5a; background: #14143a; transform: translateY(-1px);
+}
+.font-option input:checked + .font-card {
+  border-color: var(--gold); background: var(--gold-dim);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+.font-preview { font-size: 15px; font-weight: 700; color: var(--t1); line-height: 1; }
+.font-meta    { font-size: 9px; color: var(--t3); line-height: 1; }
+.fp-modern  { font-family: 'Poppins', sans-serif; }
+.fp-elegant { font-family: 'Playfair Display', serif; }
+.fp-cute    { font-family: 'Pacifico', cursive; }
 
-#panel-gen { padding: 3px 0 5px; }
+/* Panel bottom CTA */
+.panel-bottom-cta { padding: 4px 0 6px; }
 
-/* ═══════════════
+/* ═══════════════════
    RIGHT — PREVIEW
-═══════════════ */
+═══════════════════ */
 #preview-area {
   flex: 1; display: flex; flex-direction: column;
-  background: radial-gradient(ellipse at 50% 22%, #0d0d20 0%, #060610 100%);
+  background: radial-gradient(ellipse at 50% 20%, #0c0c24 0%, #060610 100%);
   overflow: hidden; position: relative;
 }
 
 /* ── PREVIEW BAR ── */
 #preview-bar {
   height: 46px;
-  background: rgba(11,11,22,.96); backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--pbd);
+  background: rgba(10, 10, 24, 0.96);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--panel-bdr);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--sp4); flex-shrink: 0; gap: var(--sp3); z-index: 5;
+  padding: 0 var(--s4); flex-shrink: 0; gap: var(--s3); z-index: 10;
 }
-#preview-bar-l { display: flex; align-items: center; gap: var(--sp3); }
-#preview-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px; color: var(--t3); }
-#dev-switch { display: flex; gap: 5px; }
+#preview-bar-left { display: flex; align-items: center; gap: var(--s3); }
 
-.dev-btn {
-  background: var(--psurf); border: 1px solid var(--pbd);
-  border-radius: 7px; color: var(--t2); font-family: var(--font);
-  font-size: 10.5px; font-weight: 600; padding: 5px 12px;
-  cursor: pointer; transition: background var(--ef), border-color var(--ef), color var(--ef);
+#preview-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.1px; color: var(--t3);
 }
-.dev-btn:hover { background: var(--phov); border-color: #2e2e48; }
-.dev-btn.active { background: var(--gold-d); border-color: var(--gold); color: var(--gold); }
-#preview-bar-r { display: flex; gap: 6px; }
+
+#device-switcher { display: flex; gap: 5px; }
+.device-btn {
+  background: var(--panel-srf); border: 1px solid var(--panel-bdr);
+  border-radius: 7px; color: var(--t2);
+  font-family: var(--font); font-size: 10.5px; font-weight: 600;
+  padding: 5px 12px; cursor: pointer;
+  transition: background var(--ef), border-color var(--ef), color var(--ef);
+}
+.device-btn:hover { background: var(--panel-hov); border-color: #28285a; }
+.device-btn.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+
+#preview-bar-right { display: flex; gap: 6px; }
 
 /* ── PREVIEW STAGE ── */
 #preview-stage {
   flex: 1; display: flex; align-items: center; justify-content: center;
   overflow: hidden; position: relative;
-  background-image: radial-gradient(circle, rgba(255,255,255,.022) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-image: radial-gradient(circle, rgba(255,255,255,.02) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
+/* Ambient glow */
 #stage-glow {
-  position: absolute; width: 480px; height: 480px;
-  background: radial-gradient(circle, rgba(212,168,75,.06) 0%, transparent 65%);
+  position: absolute; width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(212,168,75,.055) 0%, transparent 65%);
   border-radius: 50%; pointer-events: none; z-index: 0;
-  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
 }
 
-/* ══════════════════════════
-   PREMIUM DEVICE FRAME
-══════════════════════════ */
+/* ════════════════════════════
+   PREMIUM PHONE FRAME
+════════════════════════════ */
 #device {
   position: relative; z-index: 1; flex-shrink: 0;
-  background: linear-gradient(162deg, #30304a 0%, #1e1e34 45%, #282840 100%);
+  /* Brushed metal gradient */
+  background: linear-gradient(165deg, #2e2e50 0%, #1c1c36 50%, #26263e 100%);
   box-shadow:
     0 0 0 1px rgba(255,255,255,.07),
-    0 0 0 2.5px rgba(0,0,0,.88),
-    0 52px 100px rgba(0,0,0,.72),
-    0 26px 52px rgba(0,0,0,.55),
-    0 8px 22px rgba(0,0,0,.4),
-    inset 0 1px 0 rgba(255,255,255,.12),
-    inset 0 -1px 0 rgba(0,0,0,.55);
-  transition: border-radius var(--em), padding var(--em), width var(--em);
+    0 0 0 3px rgba(0,0,0,.9),
+    0 54px 110px rgba(0,0,0,.75),
+    0 28px 56px rgba(0,0,0,.55),
+    0 10px 24px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(0,0,0,.6);
+  transition: width var(--em), border-radius var(--em), padding var(--em);
 }
+#device.mobile { width: 375px; border-radius: 48px; padding: 17px 12px 24px; }
+#device.tablet { width: 490px; border-radius: 28px; padding: 12px 10px 18px; }
 
-#device.mobile { width: 375px; border-radius: 46px; padding: 16px 12px 22px; }
-#device.tablet { width: 480px; border-radius: 26px; padding: 12px 10px 18px; }
-
-/* Side buttons */
+/* Hardware buttons */
 #device::before {
-  content: ''; position: absolute; right: -4px; top: 108px;
-  width: 4px; height: 58px;
-  background: linear-gradient(to bottom, #2e2e48, #1e1e34, #2e2e48);
+  content: ''; position: absolute;
+  right: -4px; top: 110px;
+  width: 4px; height: 60px;
+  background: linear-gradient(to bottom, #2a2a46, #1a1a30, #2a2a46);
   border-radius: 0 4px 4px 0;
   box-shadow: 2px 0 5px rgba(0,0,0,.55), inset -1px 0 0 rgba(255,255,255,.06);
 }
 #device::after {
-  content: ''; position: absolute; left: -4px; top: 84px;
+  content: ''; position: absolute;
+  left: -4px; top: 86px;
   width: 4px; height: 36px;
-  background: linear-gradient(to bottom, #2e2e48, #1e1e34, #2e2e48);
+  background: linear-gradient(to bottom, #2a2a46, #1a1a30, #2a2a46);
   border-radius: 4px 0 0 4px;
   box-shadow: -2px 0 5px rgba(0,0,0,.55), inset 1px 0 0 rgba(255,255,255,.06);
 }
 
 /* Status bar */
-#device-statusbar {
-  position: absolute; top: 0; left: 0; right: 0; height: 32px; z-index: 9;
+#dev-status {
+  position: absolute; top: 0; left: 0; right: 0; height: 32px;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 22px 0 20px; pointer-events: none;
-  background: linear-gradient(to bottom, rgba(0,0,0,.28) 0%, transparent 100%);
+  padding: 0 22px 0 20px; z-index: 9; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,.3) 0%, transparent 100%);
 }
-#device-clock { font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.92); letter-spacing: .3px; padding-top: 3px; font-family: var(--font); }
-#device-status-icons { display: flex; align-items: center; gap: 5px; padding-top: 3px; }
-#device.tablet #device-statusbar { display: none; }
+#dev-clock {
+  font-size: 11.5px; font-weight: 700;
+  color: rgba(255,255,255,.94); letter-spacing: .3px;
+  padding-top: 2px; font-family: var(--font);
+}
+#dev-icons {
+  display: flex; align-items: center; gap: 5px; padding-top: 2px;
+}
+#device.tablet #dev-status { display: none; }
 
-/* Notch / Dynamic Island */
-#device-notch {
+/* Notch */
+#dev-notch {
   position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 108px; height: 30px; background: #06060f;
+  width: 110px; height: 30px; background: #06060e;
   border-radius: 0 0 22px 22px; z-index: 10; pointer-events: none;
-  display: flex; align-items: center; justify-content: flex-end; padding-right: 22px;
+  display: flex; align-items: center;
+  justify-content: flex-end; padding-right: 22px;
 }
-#device-cam {
+#dev-cam {
   width: 8px; height: 8px; border-radius: 50%;
-  background: #1a1a2c; box-shadow: inset 0 0 0 2px #0e0e1c; margin-top: 5px;
+  background: #1a1a28; box-shadow: inset 0 0 0 2px #0e0e1e;
+  margin-top: 5px;
 }
-#device.tablet #device-notch { display: none; }
+#device.tablet #dev-notch { display: none; }
 
 /* Screen */
-#device-screen {
-  position: relative; border-radius: 34px; overflow: hidden;
-  background: #040410;
-  height: min(720px, 80vh);
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.95), inset 0 3px 14px rgba(0,0,0,.7);
+#dev-screen {
+  position: relative; border-radius: 36px; overflow: hidden;
+  background: #03030c; height: min(720px, 80vh);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.95), inset 0 3px 16px rgba(0,0,0,.7);
 }
-#device.tablet #device-screen { border-radius: 18px; }
+#device.tablet #dev-screen { border-radius: 20px; }
 
 /* Home bar */
-#device-home {
+#dev-home {
   position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%);
-  width: 108px; height: 4px; background: rgba(255,255,255,.2); border-radius: 3px;
+  width: 108px; height: 4px;
+  background: rgba(255,255,255,.22); border-radius: 3px;
   z-index: 10; pointer-events: none;
 }
-#device.tablet #device-home { display: none; }
+#device.tablet #dev-home { display: none; }
 
-/* ═══════════════════════════════════
-   IFRAME — SCROLL FIX (3 layers):
-   1. scrolling="yes" on element
-   2. overflow:auto in CSS
-   3. onload body/html patch in JS
-═══════════════════════════════════ */
+/* ═══════════════════════════════════════
+   IFRAME — SCROLL FIX
+   Three-layer approach:
+   1. scrolling="yes" attribute in HTML
+   2. overflow:auto in CSS below
+   3. onload body/html patch in script.js
+═══════════════════════════════════════ */
 #preview-frame {
   display: block; width: 100%; height: 100%;
   border: none; background: #fff;
@@ -434,34 +500,37 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
   transition: opacity var(--em);
 }
 #empty-state.gone { opacity: 0; pointer-events: none; display: none !important; }
-.empty-icon  { font-size: 50px; opacity: .17; margin-bottom: 4px; }
-.empty-title { font-size: 15px; font-weight: 600; color: var(--t3); }
-.empty-sub   { font-size: 12px; color: var(--t4); text-align: center; line-height: 1.65; max-width: 170px; }
+.empty-ico   { font-size: 52px; opacity: .16; margin-bottom: 4px; }
+.empty-title { font-size: 16px; font-weight: 600; color: var(--t3); }
+.empty-sub   { font-size: 12px; color: var(--t4); text-align: center; line-height: 1.65; max-width: 175px; }
 .empty-sub strong { color: var(--t2); }
 
 /* ── TOAST ── */
 #toast {
   position: fixed; bottom: 22px; left: 50%;
-  transform: translateX(-50%) translateY(50px);
-  background: #15152a; border: 1px solid var(--pbd); border-radius: 9px;
+  transform: translateX(-50%) translateY(54px);
+  background: #141428; border: 1px solid var(--panel-bdr); border-radius: 9px;
   padding: 10px 20px; font-size: 12px; font-weight: 600; color: var(--t1);
-  box-shadow: 0 10px 32px rgba(0,0,0,.55); opacity: 0; white-space: nowrap;
-  transition: transform .23s ease, opacity .23s ease; z-index: 1000; pointer-events: none;
+  box-shadow: 0 10px 36px rgba(0,0,0,.55);
+  opacity: 0; white-space: nowrap;
+  transition: transform .22s ease, opacity .22s ease;
+  z-index: 1000; pointer-events: none;
 }
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-#toast.ok  { border-color: rgba(74,222,128,.4); color: #4ade80; }
+#toast.ok  { border-color: rgba(74,222,128,.4);  color: #4ade80; }
 #toast.err { border-color: rgba(248,113,113,.4); color: #f87171; }
+#toast.info { border-color: rgba(212,168,75,.4); color: var(--gold); }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   #workspace { flex-direction: column; }
-  #panel { width: 100%; min-width: unset; max-height: 44vh; border-right: none; border-bottom: 1px solid var(--pbd); }
-  #topbar-sub, #preview-label { display: none; }
+  #panel { width: 100%; min-width: unset; max-height: 44vh; border-right: none; border-bottom: 1px solid var(--panel-bdr); }
+  #topbar-tag, #preview-label { display: none; }
   #device.mobile, #device.tablet { width: calc(100vw - 48px); }
-  #device-screen { height: min(640px, 52vh); }
+  #dev-screen { height: min(640px, 52vh); }
 }
-@media (max-width: 460px) {
-  #topbar-actions .btn.ghost { display: none; }
+@media (max-width: 480px) {
+  #topbar-actions .btn.outline { display: none; }
 }
 
 </style>
@@ -470,179 +539,291 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
 
 <div id="app">
 
-  <!-- ═══════════════════════════════
-       TOP BAR
-  ════════════════════════════════ -->
+  <!-- ══════════════════════════════════
+       TOPBAR
+  ══════════════════════════════════ -->
   <header id="topbar">
     <div id="topbar-brand">
       <span id="topbar-logo">⚡</span>
-      <div id="topbar-text">
-        <span id="topbar-title">QuickBiz <mark>V5.6</mark></span>
-        <span id="topbar-sub">Cafe Landing Page Generator</span>
+      <div id="topbar-info">
+        <span id="topbar-name">QuickBiz <mark>V5.7</mark></span>
+        <span id="topbar-tag">Cafe Landing Page Generator</span>
       </div>
     </div>
     <div id="topbar-actions">
-      <button class="btn ghost sm" id="btn-copy-1" type="button" onclick="copyHTML()">
+      <button class="btn outline sm" id="btn-copy" type="button" onclick="copyHTML()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Copy HTML
       </button>
-      <button class="btn ghost sm" id="btn-dl-1" type="button" onclick="downloadHTML()">
+      <button class="btn outline sm" id="btn-dl" type="button" onclick="downloadHTML()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download
       </button>
-      <button class="btn gold sm" id="btn-gen-1" type="button" onclick="renderPage()">
+      <button class="btn gold sm" id="btn-gen-top" type="button" onclick="renderPage()">
         Generate
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
     </div>
   </header>
 
-  <!-- ═══════════════════════════════
+  <!-- ══════════════════════════════════
        WORKSPACE
-  ════════════════════════════════ -->
+  ══════════════════════════════════ -->
   <div id="workspace">
 
-    <!-- ═══ LEFT PANEL ═══ -->
+    <!-- ════ LEFT PANEL ════ -->
     <aside id="panel">
-      <div id="panel-body">
+      <div id="panel-scroll">
 
-        <!-- ── BRAND ── -->
-        <section class="cfg" id="cfg-brand">
-          <header class="cfg-head"><span class="cfg-ico">☕</span><h3>Brand</h3></header>
-          <div class="field"><label for="i-name">Cafe Name</label><input type="text" id="i-name" placeholder="e.g. Bloom & Brew" autocomplete="off" /></div>
-          <div class="field"><label for="i-tag">Tagline</label><textarea id="i-tag" rows="2" placeholder="Where every sip feels like home."></textarea></div>
-          <div class="field"><label for="i-hero">Cover Image URL</label><input type="url" id="i-hero" placeholder="https://example.com/hero.jpg" /></div>
-          <div class="field"><label for="i-insta">Instagram URL <span class="opt">(optional)</span></label><input type="url" id="i-insta" placeholder="https://instagram.com/yourcafe" /></div>
-        </section>
-
-        <!-- ── ORDER LINKS ── -->
-        <section class="cfg" id="cfg-order">
-          <header class="cfg-head"><span class="cfg-ico">🛵</span><h3>Order Links</h3></header>
-          <p class="cfg-hint">Leave empty to hide the button</p>
-          <div class="row-2">
-            <div class="field"><label for="i-swiggy">Swiggy URL</label><input type="url" id="i-swiggy" placeholder="https://swiggy.com/..." /></div>
-            <div class="field"><label for="i-zomato">Zomato URL</label><input type="url" id="i-zomato" placeholder="https://zomato.com/..." /></div>
+        <!-- BRAND -->
+        <section class="config-block" id="cfg-brand">
+          <header class="config-block-header">
+            <span class="config-icon">☕</span>
+            <h3>Brand</h3>
+          </header>
+          <div class="field-group">
+            <label for="inp-name">Cafe Name</label>
+            <input type="text" id="inp-name" placeholder="e.g. Bloom & Brew" autocomplete="off" />
+          </div>
+          <div class="field-group">
+            <label for="inp-tagline">Tagline</label>
+            <textarea id="inp-tagline" rows="2" placeholder="Where every sip feels like home."></textarea>
+          </div>
+          <div class="field-group">
+            <label for="inp-hero">Cover Image URL</label>
+            <input type="url" id="inp-hero" placeholder="https://example.com/cover.jpg" />
+          </div>
+          <div class="field-group">
+            <label for="inp-insta">Instagram URL <span class="label-muted">(optional)</span></label>
+            <input type="url" id="inp-insta" placeholder="https://instagram.com/yourcafe" />
           </div>
         </section>
 
-        <!-- ── LOCATION + TIMINGS ── -->
-        <section class="cfg" id="cfg-info">
-          <header class="cfg-head"><span class="cfg-ico">📍</span><h3>Location & Hours</h3></header>
-          <div class="field"><label for="i-loc">Location Address</label><input type="text" id="i-loc" placeholder="12 Maple St, Bandra, Mumbai" /></div>
-          <div class="field"><label for="i-maps">Google Maps URL</label><input type="url" id="i-maps" placeholder="https://maps.google.com/..." /></div>
-          <div class="field"><label for="i-time">Opening Hours</label><input type="text" id="i-time" placeholder="Mon–Sat: 8am–10pm · Sun: 9am–8pm" /></div>
-        </section>
-
-        <!-- ── MENU ── -->
-        <section class="cfg" id="cfg-menu">
-          <header class="cfg-head"><span class="cfg-ico">🍽</span><h3>Menu</h3></header>
-          <p class="cfg-hint">Format: <code>Category | Item | Price</code> — one per line</p>
-          <div class="field"><label for="i-menu">Items</label>
-            <textarea id="i-menu" rows="8" placeholder="Coffee | Espresso | ₹120&#10;Coffee | Cappuccino | ₹160&#10;Coffee | Cold Brew | ₹180&#10;Food | Croissant | ₹90&#10;Food | Avocado Toast | ₹210&#10;Desserts | Tiramisu | ₹200&#10;Desserts | Cheesecake | ₹220"></textarea>
-          </div>
-        </section>
-
-        <!-- ── GALLERY ── -->
-        <section class="cfg" id="cfg-gallery">
-          <header class="cfg-head"><span class="cfg-ico">📸</span><h3>Gallery</h3></header>
-          <p class="cfg-hint">One image URL per line. Empty = section hidden.</p>
-          <div class="field"><label for="i-gallery">Images</label>
-            <textarea id="i-gallery" rows="4" placeholder="https://img1.com/a.jpg&#10;https://img2.com/b.jpg&#10;https://img3.com/c.jpg"></textarea>
-          </div>
-        </section>
-
-        <!-- ── REVIEWS ── -->
-        <section class="cfg" id="cfg-reviews">
-          <header class="cfg-head"><span class="cfg-ico">⭐</span><h3>Reviews</h3></header>
-          <p class="cfg-hint">Format: <code>Name | Stars | Review text</code></p>
-          <div class="field"><label for="i-reviews">Reviews</label>
-            <textarea id="i-reviews" rows="4" placeholder="Priya M | 5 | Best coffee in town!&#10;Arjun K | 4.5 | Cozy vibes, loved it.&#10;Sana R | 5 | Croissants are divine!"></textarea>
-          </div>
-        </section>
-
-        <!-- ── CONTACT BUTTONS ── -->
-        <section class="cfg" id="cfg-contact">
-          <header class="cfg-head"><span class="cfg-ico">📞</span><h3>Contact Buttons</h3></header>
-          <div class="row-2">
-            <div class="field"><label for="i-call">Call Number</label><input type="tel" id="i-call" placeholder="+91 98765 43210" /></div>
-            <div class="field"><label for="i-wa">WhatsApp Number</label><input type="tel" id="i-wa" placeholder="+91 98765 43210" /></div>
-          </div>
-        </section>
-
-        <!-- ── LOYALTY ── -->
-        <section class="cfg" id="cfg-loyalty">
-          <header class="cfg-head"><span class="cfg-ico">🎁</span><h3>Loyalty System</h3></header>
-          <div class="toggle-row">
-            <label class="toggle-label" for="i-loyalty-on">Enable Loyalty Section</label>
-            <label class="toggle-switch">
-              <input type="checkbox" id="i-loyalty-on" onchange="toggleLoyaltyFields()" />
-              <span class="toggle-track"><span class="toggle-thumb"></span></span>
-            </label>
-          </div>
-          <div id="loyalty-fields" class="loyalty-fields hidden">
-            <div class="field"><label for="i-loyalty-title">Section Title</label><input type="text" id="i-loyalty-title" placeholder="e.g. Bloom Rewards" /></div>
-            <div class="field"><label for="i-loyalty-desc">Description</label><input type="text" id="i-loyalty-desc" placeholder="e.g. Earn a free coffee every 10 visits!" /></div>
-            <div class="field">
-              <label for="i-api">Loyalty API URL</label>
-              <input type="url" id="i-api" placeholder="https://your-api.com/loyalty" />
-              <p class="field-note">API must accept <code>?phone=NUMBER</code> and return <code>{ "visits": N }</code></p>
+        <!-- ORDER LINKS -->
+        <section class="config-block" id="cfg-order">
+          <header class="config-block-header">
+            <span class="config-icon">🛵</span>
+            <h3>Order Links</h3>
+          </header>
+          <p class="config-hint">Leave empty to hide the button.</p>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="inp-swiggy">Swiggy URL</label>
+              <input type="url" id="inp-swiggy" placeholder="https://swiggy.com/..." />
+            </div>
+            <div class="field-group">
+              <label for="inp-zomato">Zomato URL</label>
+              <input type="url" id="inp-zomato" placeholder="https://zomato.com/..." />
             </div>
           </div>
         </section>
 
-        <!-- ── COLORS ── -->
-        <section class="cfg" id="cfg-colors">
-          <header class="cfg-head"><span class="cfg-ico">🎨</span><h3>Colors</h3></header>
-          <div class="row-2">
-            <div class="field"><label>Page BG</label><div class="clr-row"><input type="color" id="c-bg" value="#fdf6ee" /><input type="text" id="c-bg-t" value="#fdf6ee" class="clr-txt" /></div></div>
-            <div class="field"><label>Cards</label><div class="clr-row"><input type="color" id="c-card" value="#fff9f2" /><input type="text" id="c-card-t" value="#fff9f2" class="clr-txt" /></div></div>
+        <!-- LOCATION + TIMINGS -->
+        <section class="config-block" id="cfg-info">
+          <header class="config-block-header">
+            <span class="config-icon">📍</span>
+            <h3>Location & Hours</h3>
+          </header>
+          <div class="field-group">
+            <label for="inp-location">Location Address</label>
+            <input type="text" id="inp-location" placeholder="12 Maple St, Bandra, Mumbai" />
           </div>
-          <div class="row-2">
-            <div class="field"><label>Surface</label><div class="clr-row"><input type="color" id="c-surf" value="#f5ede0" /><input type="text" id="c-surf-t" value="#f5ede0" class="clr-txt" /></div></div>
-            <div class="field"><label>Accent</label><div class="clr-row"><input type="color" id="c-acc" value="#c8813a" /><input type="text" id="c-acc-t" value="#c8813a" class="clr-txt" /></div></div>
+          <div class="field-group">
+            <label for="inp-maps">Google Maps URL <span class="label-muted">(makes it clickable)</span></label>
+            <input type="url" id="inp-maps" placeholder="https://maps.google.com/..." />
           </div>
-          <div class="row-2">
-            <div class="field"><label>Heading Text</label><div class="clr-row"><input type="color" id="c-tx" value="#1c1410" /><input type="text" id="c-tx-t" value="#1c1410" class="clr-txt" /></div></div>
-            <div class="field"><label>Body Text</label><div class="clr-row"><input type="color" id="c-sub" value="#6b5744" /><input type="text" id="c-sub-t" value="#6b5744" class="clr-txt" /></div></div>
-          </div>
-          <div class="row-2">
-            <div class="field"><label>Borders</label><div class="clr-row"><input type="color" id="c-bdr" value="#e8d5c0" /><input type="text" id="c-bdr-t" value="#e8d5c0" class="clr-txt" /></div></div>
+          <div class="field-group">
+            <label for="inp-timings">Opening Hours</label>
+            <input type="text" id="inp-timings" placeholder="Mon–Sat: 8am–10pm · Sun: 9am–8pm" />
           </div>
         </section>
 
-        <!-- ── TYPOGRAPHY ── -->
-        <section class="cfg" id="cfg-typo">
-          <header class="cfg-head"><span class="cfg-ico">✍</span><h3>Typography</h3></header>
+        <!-- MENU -->
+        <section class="config-block" id="cfg-menu">
+          <header class="config-block-header">
+            <span class="config-icon">🍽</span>
+            <h3>Menu</h3>
+          </header>
+          <p class="config-hint">Format: <code>Category | Item Name | Price</code> — one per line. No descriptions needed.</p>
+          <div class="field-group">
+            <label for="inp-menu">Items</label>
+            <textarea id="inp-menu" rows="9" placeholder="Coffee | Espresso | ₹120&#10;Coffee | Cappuccino | ₹160&#10;Coffee | Cold Brew | ₹180&#10;Food | Croissant | ₹90&#10;Food | Avocado Toast | ₹210&#10;Desserts | Tiramisu | ₹200&#10;Desserts | Cheesecake | ₹220&#10;Shakes | Oreo Shake | ₹180"></textarea>
+          </div>
+        </section>
+
+        <!-- GALLERY -->
+        <section class="config-block" id="cfg-gallery">
+          <header class="config-block-header">
+            <span class="config-icon">📸</span>
+            <h3>Gallery</h3>
+          </header>
+          <p class="config-hint">One image URL per line. Leave empty to hide section.</p>
+          <div class="field-group">
+            <label for="inp-gallery">Images</label>
+            <textarea id="inp-gallery" rows="4" placeholder="https://img1.com/a.jpg&#10;https://img2.com/b.jpg&#10;https://img3.com/c.jpg"></textarea>
+          </div>
+        </section>
+
+        <!-- REVIEWS -->
+        <section class="config-block" id="cfg-reviews">
+          <header class="config-block-header">
+            <span class="config-icon">⭐</span>
+            <h3>Reviews</h3>
+          </header>
+          <p class="config-hint">Format: <code>Name | Stars (1-5) | Review text</code></p>
+          <div class="field-group">
+            <label for="inp-reviews">Reviews</label>
+            <textarea id="inp-reviews" rows="4" placeholder="Priya M | 5 | Best coffee in town!&#10;Arjun K | 4.5 | Cozy vibes, loved it.&#10;Sana R | 5 | The croissants are divine!"></textarea>
+          </div>
+        </section>
+
+        <!-- CONTACT BUTTONS -->
+        <section class="config-block" id="cfg-contact">
+          <header class="config-block-header">
+            <span class="config-icon">📞</span>
+            <h3>Contact</h3>
+          </header>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="inp-call">Call Number</label>
+              <input type="tel" id="inp-call" placeholder="+91 98765 43210" />
+            </div>
+            <div class="field-group">
+              <label for="inp-wa">WhatsApp Number</label>
+              <input type="tel" id="inp-wa" placeholder="+91 98765 43210" />
+            </div>
+          </div>
+        </section>
+
+        <!-- LOYALTY SYSTEM -->
+        <section class="config-block" id="cfg-loyalty">
+          <header class="config-block-header">
+            <span class="config-icon">🎁</span>
+            <h3>Loyalty System</h3>
+            <div class="toggle-wrap">
+              <label class="toggle" title="Enable loyalty section">
+                <input type="checkbox" id="inp-loyalty-toggle" onchange="toggleLoyalty()" />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </header>
+          <div id="loyalty-fields" class="loyalty-fields collapsed">
+            <div class="field-group">
+              <label for="inp-loyalty-title">Section Title</label>
+              <input type="text" id="inp-loyalty-title" placeholder="Bloom Rewards" />
+            </div>
+            <div class="field-group">
+              <label for="inp-loyalty-desc">Subtitle</label>
+              <input type="text" id="inp-loyalty-desc" placeholder="Earn a free coffee every 10 visits!" />
+            </div>
+            <div class="field-group">
+              <label for="inp-loyalty-api">Loyalty API URL</label>
+              <input type="url" id="inp-loyalty-api" placeholder="https://your-api.com/loyalty" />
+              <p class="field-note">Must return <code>{ "visits": N }</code> on <code>GET ?phone=NUMBER</code></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- COLORS -->
+        <section class="config-block" id="cfg-colors">
+          <header class="config-block-header">
+            <span class="config-icon">🎨</span>
+            <h3>Colors</h3>
+          </header>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label>Page Background</label>
+              <div class="color-field"><input type="color" id="c-bg" value="#fdf6ee" /><input type="text" id="c-bg-t" value="#fdf6ee" class="color-hex" /></div>
+            </div>
+            <div class="field-group">
+              <label>Card Background</label>
+              <div class="color-field"><input type="color" id="c-card" value="#fff9f2" /><input type="text" id="c-card-t" value="#fff9f2" class="color-hex" /></div>
+            </div>
+          </div>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label>Surface / Alt BG</label>
+              <div class="color-field"><input type="color" id="c-surf" value="#f5ede0" /><input type="text" id="c-surf-t" value="#f5ede0" class="color-hex" /></div>
+            </div>
+            <div class="field-group">
+              <label>Accent</label>
+              <div class="color-field"><input type="color" id="c-accent" value="#c8813a" /><input type="text" id="c-accent-t" value="#c8813a" class="color-hex" /></div>
+            </div>
+          </div>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label>Heading Text</label>
+              <div class="color-field"><input type="color" id="c-text" value="#1c1410" /><input type="text" id="c-text-t" value="#1c1410" class="color-hex" /></div>
+            </div>
+            <div class="field-group">
+              <label>Body Text</label>
+              <div class="color-field"><input type="color" id="c-sub" value="#6b5744" /><input type="text" id="c-sub-t" value="#6b5744" class="color-hex" /></div>
+            </div>
+          </div>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label>Borders</label>
+              <div class="color-field"><input type="color" id="c-bdr" value="#e8d5c0" /><input type="text" id="c-bdr-t" value="#e8d5c0" class="color-hex" /></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TYPOGRAPHY -->
+        <section class="config-block" id="cfg-typo">
+          <header class="config-block-header">
+            <span class="config-icon">✍</span>
+            <h3>Typography</h3>
+          </header>
           <div class="font-grid">
-            <label class="font-opt"><input type="radio" name="qbfont" value="modern" checked /><div class="font-card"><span class="fp f-modern">Modern</span><span class="fm">Poppins</span></div></label>
-            <label class="font-opt"><input type="radio" name="qbfont" value="elegant" /><div class="font-card"><span class="fp f-elegant">Elegant</span><span class="fm">Playfair</span></div></label>
-            <label class="font-opt"><input type="radio" name="qbfont" value="cute" /><div class="font-card"><span class="fp f-cute">Cute</span><span class="fm">Pacifico</span></div></label>
+            <label class="font-option">
+              <input type="radio" name="qb-font" value="modern" checked />
+              <div class="font-card">
+                <span class="font-preview fp-modern">Modern</span>
+                <span class="font-meta">Poppins</span>
+              </div>
+            </label>
+            <label class="font-option">
+              <input type="radio" name="qb-font" value="elegant" />
+              <div class="font-card">
+                <span class="font-preview fp-elegant">Elegant</span>
+                <span class="font-meta">Playfair</span>
+              </div>
+            </label>
+            <label class="font-option">
+              <input type="radio" name="qb-font" value="cute" />
+              <div class="font-card">
+                <span class="font-preview fp-cute">Cute</span>
+                <span class="font-meta">Pacifico</span>
+              </div>
+            </label>
           </div>
         </section>
 
-        <!-- ── BOTTOM GENERATE ── -->
-        <div id="panel-gen">
-          <button class="btn gold full" id="btn-gen-2" type="button" onclick="renderPage()">✦ Generate Landing Page</button>
+        <!-- BOTTOM CTA -->
+        <div class="panel-bottom-cta">
+          <button class="btn gold full" id="btn-gen-bottom" type="button" onclick="renderPage()">
+            ✦ Generate Landing Page
+          </button>
         </div>
 
-      </div><!-- /panel-body -->
+      </div><!-- /panel-scroll -->
     </aside>
 
-    <!-- ═══ RIGHT PREVIEW ═══ -->
+    <!-- ════ RIGHT PREVIEW ════ -->
     <main id="preview-area">
 
       <!-- Preview Bar -->
       <div id="preview-bar">
-        <div id="preview-bar-l">
+        <div id="preview-bar-left">
           <span id="preview-label">Live Preview</span>
-          <div id="dev-switch">
-            <button class="dev-btn active" id="dev-m" type="button" onclick="switchDevice('mobile')">📱 Mobile</button>
-            <button class="dev-btn" id="dev-t" type="button" onclick="switchDevice('tablet')">📟 Tablet</button>
+          <div id="device-switcher">
+            <button class="device-btn active" id="dev-m" type="button" onclick="switchDevice('mobile')">📱 Mobile</button>
+            <button class="device-btn" id="dev-t" type="button" onclick="switchDevice('tablet')">📟 Tablet</button>
           </div>
         </div>
-        <div id="preview-bar-r">
-          <button class="btn ghost sm" id="btn-copy-2" type="button" onclick="copyHTML()">📋 Copy HTML</button>
-          <button class="btn ghost sm" id="btn-dl-2" type="button" onclick="downloadHTML()">⬇ Download</button>
+        <div id="preview-bar-right">
+          <button class="btn outline sm" type="button" onclick="copyHTML()">📋 Copy HTML</button>
+          <button class="btn outline sm" type="button" onclick="downloadHTML()">⬇ Download</button>
         </div>
       </div>
 
@@ -652,25 +833,32 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
 
         <!-- Device Frame -->
         <div id="device" class="mobile">
-          <div id="device-statusbar">
-            <span id="device-clock">9:41</span>
-            <div id="device-status-icons">
-              <svg width="15" height="11" viewBox="0 0 15 11" fill="rgba(255,255,255,.9)"><rect x="0" y="4" width="2.5" height="7" rx="1"/><rect x="3.5" y="2.5" width="2.5" height="8.5" rx="1"/><rect x="7" y="1" width="2.5" height="10" rx="1"/><rect x="10.5" y="0" width="2.5" height="11" rx="1"/></svg>
-              <svg width="15" height="11" viewBox="0 0 22 15" fill="rgba(255,255,255,.9)"><path d="M11 3C14.5 3 17.6 4.5 19.8 6.9L21 5.5C18.4 2.6 14.9 1 11 1C7.1 1 3.6 2.6 1 5.5L2.2 6.9C4.4 4.5 7.5 3 11 3Z"/><path d="M11 6.5C13.4 6.5 15.6 7.5 17.2 9.2L18.4 7.7C16.4 5.7 13.8 4.5 11 4.5C8.2 4.5 5.6 5.7 3.6 7.7L4.8 9.2C6.4 7.5 8.6 6.5 11 6.5Z"/><circle cx="11" cy="13" r="2"/></svg>
-              <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x=".5" y=".5" width="21" height="10" rx="2.5" stroke="rgba(255,255,255,.9)"/><rect x="2" y="2" width="16" height="7" rx="1.5" fill="rgba(255,255,255,.9)"/><path d="M22.5 3.5v4c.9-.3 1.5-1 1.5-1.5s-.6-1.2-1.5-1.5Z" fill="rgba(255,255,255,.9)"/></svg>
+          <!-- Cosmetic status bar -->
+          <div id="dev-status">
+            <span id="dev-clock">9:41</span>
+            <div id="dev-icons">
+              <!-- Signal bars -->
+              <svg width="14" height="11" viewBox="0 0 14 11" fill="rgba(255,255,255,.88)"><rect x="0" y="5" width="2" height="6" rx="1"/><rect x="3" y="3" width="2" height="8" rx="1"/><rect x="6" y="1.5" width="2" height="9.5" rx="1"/><rect x="9" y="0" width="2" height="11" rx="1"/><rect x="12" y="4" width="2" height="4" rx="1" opacity=".35"/></svg>
+              <!-- Wifi -->
+              <svg width="14" height="11" viewBox="0 0 20 14" fill="rgba(255,255,255,.88)"><path d="M10 2.5C13.5 2.5 16.6 4 18.8 6.4L20 5C17.4 2.1 13.9.5 10 .5 6.1.5 2.6 2.1 0 5l1.2 1.4C3.4 4 6.5 2.5 10 2.5z"/><path d="M10 6c2.4 0 4.6 1 6.2 2.7L17.4 7.2C15.4 5.2 12.8 4 10 4 7.2 4 4.6 5.2 2.6 7.2L3.8 8.7C5.4 7 7.6 6 10 6z"/><circle cx="10" cy="12" r="2"/></svg>
+              <!-- Battery -->
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="18" height="10" rx="2.5" stroke="rgba(255,255,255,.88)"/><rect x="2" y="2" width="14" height="7" rx="1.5" fill="rgba(255,255,255,.88)"/><path d="M20 3.5v4c.9-.3 1.5-1 1.5-2S20.9 3.8 20 3.5z" fill="rgba(255,255,255,.88)"/></svg>
             </div>
           </div>
-          <div id="device-notch"><div id="device-cam"></div></div>
-          <div id="device-screen">
-            <!-- ✅ SCROLL FIX: scrolling="yes" + overflow:auto in CSS + onload patch -->
-            <iframe id="preview-frame" title="Preview" sandbox="allow-scripts allow-same-origin" scrolling="yes"></iframe>
+          <!-- Notch -->
+          <div id="dev-notch"><div id="dev-cam"></div></div>
+          <!-- Screen -->
+          <div id="dev-screen">
+            <!-- ✅ SCROLL: scrolling="yes" + overflow:auto CSS + onload patch -->
+            <iframe id="preview-frame" title="Cafe Page Preview" sandbox="allow-scripts allow-same-origin" scrolling="yes"></iframe>
           </div>
-          <div id="device-home"></div>
+          <!-- Home bar -->
+          <div id="dev-home"></div>
         </div>
 
-        <!-- Empty State -->
+        <!-- Empty state -->
         <div id="empty-state">
-          <div class="empty-icon">☕</div>
+          <div class="empty-ico">☕</div>
           <p class="empty-title">Your page appears here</p>
           <p class="empty-sub">Fill in your details and hit <strong>Generate</strong></p>
         </div>
@@ -680,156 +868,163 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
   </div><!-- /workspace -->
 </div><!-- /app -->
 
-<!-- Toast -->
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 /* ════════════════════════════════════════════════════════════
-   QUICKBIZ V5.6 — COMPLETE SCRIPT
+   QUICKBIZ V5.7 — COMPLETE SCRIPT
    
-   Architecture: Input → collectState() → STATE → buildPage() → srcdoc
+   All V5.7 bugs addressed:
+   ✅ API baked into page: const API = "${escJS(s.loyalty.api)}"
+   ✅ handleCheck() bound via onclick in generated HTML
+   ✅ Menu: Category card → Item row (name + right-aligned price), NO descriptions
+   ✅ Empty sections: every builder returns "" when data absent
+   ✅ Gallery: object-fit:cover, height:auto, no crop/distortion
+   ✅ Maps URL validated before binding click
+   ✅ Instagram: full gradient CTA button
+   ✅ Loyalty: buildPageJS receives STATE (not just s.api separately)
+   ✅ Loyalty UX: 0–4 / 5–9 / 10+ messaging
+   ✅ Contact buttons: FIXED colors (navy + green), never theme-dependent
+   ✅ Scroll: 3-layer fix (scrolling=yes, overflow:auto, onload patch)
+   ✅ innerHTML = only (never +=)
    
-   Critical fixes applied:
-   ✅ All buttons have explicit onclick in HTML (no addEventListener misses)
-   ✅ API key baked into generated page as const API = "${s.api}"
-   ✅ 3-part iframe scroll fix (scrolling=yes, overflow:auto, onload patch)
-   ✅ Strict conditional rendering — empty section = "" (never rendered)
-   ✅ Gallery/image: object-fit cover, no distortion, aspect-ratio preserved
-   ✅ Menu: Category bold heading + aligned item rows + right-aligned price
-   ✅ Contact buttons: fixed color system, NOT theme-dependent
-   ✅ Loyalty: toggle + API check before rendering
-   ✅ innerHTML = (never +=)
+   Flow: Input → collectState() → STATE → buildPage(STATE) → frame.srcdoc
    ════════════════════════════════════════════════════════════ */
 'use strict';
 
-/* ════════════════
-   STATE
-════════════════ */
+/* ════════════════════════════════════
+   1. STATE — single source of truth
+════════════════════════════════════ */
 const STATE = {
   brand: {
-    name: '', tagline: '', hero: '',
-    instagram: '',
+    name: '', tagline: '', hero: '', instagram: '',
   },
   order: { swiggy: '', zomato: '' },
   info:  { location: '', mapsUrl: '', timings: '' },
-  gallery:  [],   // string[]
-  menu:     [],   // { cat, item, price }[]
-  reviews:  [],   // { name, stars, text }[]
+  gallery:  [],  // string[]
+  menu:     [],  // { cat, item, price }[]
+  reviews:  [],  // { name, stars, text }[]
   contact:  { callNum: '', waNum: '' },
   loyalty: {
-    enabled: false,
-    title: '', desc: '', api: '',
+    enabled: false, title: '', desc: '', api: '',
   },
   colors: {
     bg: '#fdf6ee', card: '#fff9f2', surface: '#f5ede0',
-    accent: '#c8813a', text: '#1c1410', subtext: '#6b5744',
-    border: '#e8d5c0',
+    accent: '#c8813a', text: '#1c1410', subtext: '#6b5744', border: '#e8d5c0',
   },
   font: 'modern',
 };
 
-/* Last generated HTML — used by copy/download */
-let _lastHTML = '';
+let _lastHTML = ''; // Stored for copy/download
 
-/* ════════════════
-   SAFE DOM HELPERS
-════════════════ */
-const $       = id => document.getElementById(id);
-const val     = (id, fb = '') => { const e = $(id); return e ? e.value.trim() : fb; };
-const checked = id => { const e = $(id); return e ? e.checked : false; };
-const clr     = id => { const e = $(id); return (e && e.value) ? e.value : '#888888'; };
-const radio   = n  => { const e = document.querySelector(`input[name="${n}"]:checked`); return e ? e.value : 'modern'; };
-const nowTime = () => { const d = new Date(); return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`; };
+/* ════════════════════════════════════
+   2. DOM HELPERS
+════════════════════════════════════ */
+const $         = id => document.getElementById(id);
+const val       = (id, fb = '') => { const e = $(id); return e ? e.value.trim() : fb; };
+const isChecked = id => { const e = $(id); return e ? e.checked : false; };
+const clrVal    = id => { const e = $(id); return (e && e.value) ? e.value : '#888888'; };
+const radioVal  = n  => { const e = document.querySelector(`input[name="${n}"]:checked`); return e ? e.value : 'modern'; };
+const nowTime   = () => { const d = new Date(); return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`; };
 
-/* ════════════════
-   COLLECT STATE
-   Reads DOM → STATE once per generate.
-   After this, DOM is never read again.
-════════════════ */
+/* isValidURL — prevents broken href bindings */
+function isValidURL(str) {
+  if (!str || str.length < 8) return false;
+  try { new URL(str); return true; } catch { return false; }
+}
+
+/* ════════════════════════════════════
+   3. COLLECT — reads DOM into STATE
+      Called once per generate.
+      After this, DOM is never touched again.
+════════════════════════════════════ */
 function collectState() {
   STATE.brand = {
-    name:      val('i-name', ''),
-    tagline:   val('i-tag',  ''),
-    hero:      val('i-hero', ''),
-    instagram: val('i-insta',''),
+    name:      val('inp-name',    ''),
+    tagline:   val('inp-tagline', ''),
+    hero:      val('inp-hero',    ''),
+    instagram: val('inp-insta',   ''),
   };
 
   STATE.order = {
-    swiggy: val('i-swiggy', ''),
-    zomato: val('i-zomato', ''),
+    swiggy: val('inp-swiggy', ''),
+    zomato: val('inp-zomato', ''),
   };
 
   STATE.info = {
-    location: val('i-loc',   ''),
-    mapsUrl:  val('i-maps',  ''),
-    timings:  val('i-time',  ''),
+    location: val('inp-location', ''),
+    mapsUrl:  val('inp-maps',     ''),
+    timings:  val('inp-timings',  ''),
   };
 
-  /* Gallery — filter blank/too-short lines */
-  STATE.gallery = val('i-gallery')
+  // Gallery — skip blank/short lines
+  STATE.gallery = val('inp-gallery')
     .split('\n')
     .map(s => s.trim())
     .filter(s => s.length > 8);
 
-  /* Menu — safe parse: Category | Item | Price */
-  STATE.menu = val('i-menu')
+  // Menu — Category | Item | Price. NO descriptions stored.
+  STATE.menu = val('inp-menu')
     .split('\n')
     .map(s => s.trim())
     .filter(Boolean)
     .map(line => {
-      const p = line.split('|').map(x => x.trim());
-      return { cat: p[0] || 'Other', item: p[1] || p[0] || '', price: p[2] || '' };
+      const parts = line.split('|').map(x => x.trim());
+      return {
+        cat:   parts[0] || 'Other',
+        item:  parts[1] || parts[0] || '',
+        price: parts[2] || '',
+      };
     })
     .filter(m => m.item.length > 0);
 
-  /* Reviews — safe parse: Name | Stars | Text */
-  STATE.reviews = val('i-reviews')
+  // Reviews — Name | Stars | Text
+  STATE.reviews = val('inp-reviews')
     .split('\n')
     .map(s => s.trim())
     .filter(Boolean)
     .map(line => {
-      const p = line.split('|').map(x => x.trim());
-      const n = parseFloat(p[1]);
+      const parts = line.split('|').map(x => x.trim());
+      const n = parseFloat(parts[1]);
       return {
-        name:  p[0] || 'Guest',
+        name:  parts[0] || 'Guest',
         stars: isNaN(n) ? 5 : Math.min(5, Math.max(0.5, Math.round(n * 2) / 2)),
-        text:  p[2] || p[1] || '',
+        text:  parts[2] || parts[1] || '',
       };
     })
     .filter(r => r.text.length > 0);
 
   STATE.contact = {
-    callNum: val('i-call', ''),
-    waNum:   val('i-wa',   ''),
+    callNum: val('inp-call', ''),
+    waNum:   val('inp-wa',   ''),
   };
 
-  /* Loyalty — only collect fields if toggle is on */
-  const loyaltyOn = checked('i-loyalty-on');
+  const loyaltyOn = isChecked('inp-loyalty-toggle');
   STATE.loyalty = {
     enabled: loyaltyOn,
-    title:   val('i-loyalty-title', ''),
-    desc:    val('i-loyalty-desc',  ''),
-    api:     val('i-api', ''),
+    title:   val('inp-loyalty-title', ''),
+    desc:    val('inp-loyalty-desc',  ''),
+    api:     val('inp-loyalty-api',   ''),
   };
 
   STATE.colors = {
-    bg:      clr('c-bg'),
-    card:    clr('c-card'),
-    surface: clr('c-surf'),
-    accent:  clr('c-acc'),
-    text:    clr('c-tx'),
-    subtext: clr('c-sub'),
-    border:  clr('c-bdr'),
+    bg:      clrVal('c-bg'),
+    card:    clrVal('c-card'),
+    surface: clrVal('c-surf'),
+    accent:  clrVal('c-accent'),
+    text:    clrVal('c-text'),
+    subtext: clrVal('c-sub'),
+    border:  clrVal('c-bdr'),
   };
 
-  STATE.font = radio('qbfont');
+  STATE.font = radioVal('qb-font');
 }
 
-/* ════════════════════════════
-   PAGE-LEVEL UTILITIES
-════════════════════════════ */
+/* ════════════════════════════════════
+   4. PAGE UTILITIES
+════════════════════════════════════ */
 
-/* Safe HTML escape */
+// HTML entity escape
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;')
@@ -838,19 +1033,28 @@ function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
-/* Render star rating HTML (full / half / empty) */
-function starsHTML(r) {
-  const full = Math.floor(r);
-  const half = r % 1 >= 0.5 ? 1 : 0;
+// JS string escape (for inline script values)
+function escJS(s) {
+  return String(s == null ? '' : s)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n');
+}
+
+// Render star rating HTML
+function starsHTML(rating) {
+  const full  = Math.floor(rating);
+  const half  = rating % 1 >= 0.5 ? 1 : 0;
   const empty = 5 - full - half;
   return (
-    `<span class="sf">${'★'.repeat(full)}</span>` +
-    (half ? `<span class="sh">½</span>` : '') +
-    `<span class="se">${'☆'.repeat(empty)}</span>`
+    `<span class="s-f">${'★'.repeat(full)}</span>` +
+    (half ? `<span class="s-h">½</span>` : '') +
+    `<span class="s-e">${'☆'.repeat(empty)}</span>`
   );
 }
 
-/* Group flat menu array into [{cat, rows}] */
+// Group menu items by category
 function groupMenu(items) {
   const map = new Map();
   items.forEach(it => {
@@ -860,25 +1064,25 @@ function groupMenu(items) {
   return [...map.entries()].map(([cat, rows]) => ({ cat, rows }));
 }
 
-/* Darken hex color for CTA gradient */
-function darkenHex(hex, amt) {
+// Darken a hex color by amount (negative = darker)
+function darkenHex(hex, amount) {
   try {
-    const n = parseInt(hex.replace('#',''), 16);
-    const r = Math.max(0, (n >> 16) + amt);
-    const g = Math.max(0, ((n >> 8) & 0xff) + amt);
-    const b = Math.max(0, (n & 0xff) + amt);
-    return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6,'0');
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+    const g = Math.min(255, Math.max(0, ((num >> 8) & 0xff) + amount));
+    const b = Math.min(255, Math.max(0, (num & 0xff) + amount));
+    return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
   } catch { return hex; }
 }
 
-/* Get heading font CSS value from STATE.font */
+// Font heading CSS value
 function headingFont(f) {
   if (f === 'elegant') return "'Playfair Display', Georgia, serif";
   if (f === 'cute')    return "'Pacifico', cursive";
   return "'Poppins', sans-serif";
 }
 
-/* Google Fonts import URL from STATE.font */
+// Google Fonts URL
 function fontURL(f) {
   if (f === 'elegant') return 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap';
   if (f === 'cute')    return 'https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap';
@@ -886,31 +1090,31 @@ function fontURL(f) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   GENERATED PAGE CSS
-   Full premium design system. All values derived from STATE.
+   5. GENERATED PAGE CSS
    
-   Critical rules:
-   ✅ body: overflow-x:hidden ONLY — vertical scroll is free
-   ✅ .container: max-width 480px, centered
-   ✅ section spacing: 32px
-   ✅ card depth: shadow + glassmorphism inset
-   ✅ gallery/reviews: only x-scroll
-   ✅ images: object-fit:cover, no distortion
-   ✅ menu: category bold, items row-flex, price right-aligned
+   Premium design system. All values from STATE.
+   
+   Rules:
+   ✅ body: overflow-x:hidden ONLY — vertical scroll fully free
+   ✅ .container: max-width 480px centered
+   ✅ section gap: 32px
+   ✅ menu: category card → item rows, price right-aligned, NO descriptions
+   ✅ gallery/reviews: x-scroll only, images object-fit:cover
+   ✅ contact buttons: FIXED navy + green, NOT theme-dependent
+   ✅ shadows: cards=light, hover=medium, buttons=strong
 ════════════════════════════════════════════════════════════ */
 function buildCSS(s) {
   const c  = s.colors;
   const hf = headingFont(s.font);
-  const accentDark = darkenHex(c.accent, -22);
+  const accentDark = darkenHex(c.accent, -24);
 
   return `
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
-/* ── PAGE ──
-   ✅ overflow-x:hidden ONLY. Body NEVER gets overflow:hidden.
-   That would kill iframe vertical scroll. */
+/* ── BODY
+   ✅ overflow-x:hidden ONLY. overflow:hidden on body kills iframe scroll. */
 body {
   font-family: 'Poppins', sans-serif;
   background: ${c.bg};
@@ -924,289 +1128,314 @@ body {
 :root {
   --bg:      ${c.bg};
   --card:    ${c.card};
-  --surface: ${c.surface};
+  --surf:    ${c.surface};
   --accent:  ${c.accent};
-  --text:    ${c.text};
+  --txt:     ${c.text};
   --sub:     ${c.subtext};
   --bdr:     ${c.border};
-  --accent-10: ${c.accent}1a;
-  --accent-30: ${c.accent}4d;
-  --shadow-s: 0 2px 12px rgba(0,0,0,.06);
-  --shadow-m: 0 4px 22px rgba(0,0,0,.09);
-  --shadow-l: 0 8px 36px rgba(0,0,0,.13);
-  --r1: 10px; --r2: 14px; --r3: 18px; --r4: 22px;
+  --a10:     ${c.accent}1a;
+  --a30:     ${c.accent}4d;
+  --shadow-s: 0 2px 14px rgba(0,0,0,.06);
+  --shadow-m: 0 5px 24px rgba(0,0,0,.1);
+  --shadow-l: 0 10px 40px rgba(0,0,0,.14);
+  --r1:10px; --r2:14px; --r3:18px; --r4:24px;
 }
 
 /* ── CONTAINER ── */
 .container { max-width: 480px; margin: 0 auto; padding: 0 16px; }
 
-/* ── SECTION SPACING ── */
-.section { margin-bottom: 32px; }
-.section:last-child { margin-bottom: 0; }
+/* ── SECTION GAP ── */
+.page-section { margin-bottom: 32px; }
+.page-section:last-child { margin-bottom: 0; }
 
-/* ── ANIMATIONS ── */
+/* ── SCROLL REVEAL ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(22px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.reveal { opacity: 0; animation: fadeUp .52s cubic-bezier(.22,.61,.36,1) both; }
-.reveal:nth-child(1){animation-delay:.04s} .reveal:nth-child(2){animation-delay:.09s}
-.reveal:nth-child(3){animation-delay:.14s} .reveal:nth-child(4){animation-delay:.19s}
-.reveal:nth-child(5){animation-delay:.24s} .reveal:nth-child(6){animation-delay:.29s}
-.reveal:nth-child(7){animation-delay:.34s} .reveal:nth-child(8){animation-delay:.39s}
-.reveal:nth-child(9){animation-delay:.44s}
+.reveal {
+  opacity: 0;
+  animation: fadeUp .5s cubic-bezier(.22,.61,.36,1) both;
+}
+.reveal:nth-child(1)  { animation-delay: .04s; }
+.reveal:nth-child(2)  { animation-delay: .09s; }
+.reveal:nth-child(3)  { animation-delay: .14s; }
+.reveal:nth-child(4)  { animation-delay: .19s; }
+.reveal:nth-child(5)  { animation-delay: .24s; }
+.reveal:nth-child(6)  { animation-delay: .29s; }
+.reveal:nth-child(7)  { animation-delay: .34s; }
+.reveal:nth-child(8)  { animation-delay: .39s; }
+.reveal:nth-child(9)  { animation-delay: .44s; }
 
-/* ══════════════════════════════
-   HERO — full-width cover ~65vh
-══════════════════════════════ */
+/* ══════════════════════════════════════
+   HERO
+   Full-width cover, strong gradient overlay,
+   text always readable regardless of image.
+══════════════════════════════════════ */
 .hero { width: 100%; position: relative; display: block; }
 
-.hero-img-wrap { position: relative; width: 100%; }
+/* Hero with image */
+.hero-media { position: relative; width: 100%; }
 
-/* ✅ Image: width 100%, height auto. Never fixed height = never crops. */
-.hero-img-wrap img {
+/* ✅ Image: width 100%, height auto, object-fit cover = no distortion */
+.hero-img {
   width: 100%;
   height: auto;
   display: block;
-  min-height: 220px;
-  max-height: 420px;   /* ~65vh on a 375px wide mobile */
-  object-fit: cover;   /* ✅ cover with aspect ratio maintained */
+  min-height: 230px;
+  max-height: 420px;
+  object-fit: cover;
 }
 
+/* Strong gradient — text always readable */
 .hero-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top,
-    rgba(0,0,0,.80) 0%,
-    rgba(0,0,0,.30) 50%,
-    rgba(0,0,0,.04) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,.85) 0%,
+    rgba(0,0,0,.40) 45%,
+    rgba(0,0,0,.05) 100%
+  );
   pointer-events: none;
 }
 
 .hero-content {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 22px 18px 20px;
+  padding: 20px 18px 20px;
 }
 
 /* Hero without image */
 .hero-bare {
-  padding: 50px 18px 40px;
+  padding: 52px 18px 42px;
   background: linear-gradient(135deg, ${c.surface} 0%, ${c.card} 100%);
   position: relative; overflow: hidden;
 }
 .hero-bare::before {
   content: '☕'; font-size: 140px; opacity: .04;
-  position: absolute; right: -15px; top: -15px;
-  line-height: 1; pointer-events: none;
+  position: absolute; right: -16px; top: -16px;
+  line-height: 1; pointer-events: none; user-select: none;
 }
 .hero-bare .hero-name   { color: ${c.text}; text-shadow: none; }
 .hero-bare .hero-tag    { color: ${c.subtext}; text-shadow: none; }
 
 .hero-name {
   font-family: ${hf};
-  font-size: clamp(26px, 8vw, 36px);
+  font-size: clamp(26px, 8.5vw, 38px);
   font-weight: 700; color: #fff;
-  line-height: 1.12; letter-spacing: -.4px;
-  text-shadow: 0 2px 22px rgba(0,0,0,.55);
+  line-height: 1.1; letter-spacing: -.5px;
+  text-shadow: 0 2px 24px rgba(0,0,0,.55);
 }
-
 .hero-tag {
   margin-top: 8px; font-size: 13.5px;
   color: rgba(255,255,255,.88);
-  line-height: 1.55; max-width: 300px;
-  text-shadow: 0 1px 6px rgba(0,0,0,.3);
+  line-height: 1.6; max-width: 300px;
+  text-shadow: 0 1px 6px rgba(0,0,0,.35);
 }
 
-/* Order buttons (Swiggy/Zomato) */
-.hero-order-btns {
+/* Order buttons */
+.hero-order-row {
   display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;
 }
-
 .order-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 16px; border-radius: 22px;
+  padding: 9px 16px; border-radius: 24px;
   font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700;
-  text-decoration: none; border: 2px solid transparent;
-  cursor: pointer; letter-spacing: .2px;
-  backdrop-filter: blur(8px);
-  transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
-  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  text-decoration: none; cursor: pointer; border: 2px solid transparent;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px rgba(0,0,0,.28);
+  transition: transform .22s ease, box-shadow .22s ease;
 }
-.order-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+.order-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 28px rgba(0,0,0,.35); }
 .order-btn:active { transform: scale(1); }
-
 /* Fixed colors — NOT theme dependent ✅ */
-.btn-swiggy {
-  background: rgba(252,107,31,.92);
-  border-color: rgba(252,107,31,.5);
-  color: #fff;
-}
-.btn-zomato {
-  background: rgba(203,32,45,.92);
-  border-color: rgba(203,32,45,.5);
-  color: #fff;
-}
+.btn-swiggy { background: rgba(252,107,31,.92); border-color: rgba(252,107,31,.5); color: #fff; }
+.btn-zomato { background: rgba(203,32,45,.92);  border-color: rgba(203,32,45,.5);  color: #fff; }
 
-/* Instagram floating badge */
-.insta-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  margin-top: 12px; padding: 6px 12px; border-radius: 20px;
-  background: rgba(255,255,255,.15); backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,.25);
-  color: #fff; font-size: 11.5px; font-weight: 600;
-  text-decoration: none;
-  transition: background .2s ease, transform .2s ease;
+/* Instagram CTA — gradient styled ✅ */
+.insta-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin-top: 12px; padding: 8px 16px; border-radius: 22px;
+  /* Instagram gradient */
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #fff; font-family: 'Poppins', sans-serif;
+  font-size: 12px; font-weight: 700;
+  text-decoration: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(203,32,100,.35);
+  transition: transform .22s ease, box-shadow .22s ease, opacity .22s ease;
 }
-.insta-badge:hover { background: rgba(255,255,255,.22); transform: translateY(-1px); }
+.insta-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 24px rgba(203,32,100,.45); }
+.insta-btn:active { transform: scale(1); opacity: .9; }
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════
    LOCATION + TIMINGS
-══════════════════════════════ */
+══════════════════════════════════════ */
 .info-section {
-  padding: 24px 0;
   background: ${c.surface};
+  padding: 24px 0;
 }
 
-.info-grid {
+.info-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+.info-cards.single { grid-template-columns: 1fr; }
 
-/* Single column if only one card */
-.info-grid.single { grid-template-columns: 1fr; }
-
-/* CARD — shared depth system */
+/* ── BASE CARD ── */
 .card {
   background: ${c.card};
   border: 1px solid ${c.border};
   border-radius: var(--r2);
   box-shadow: var(--shadow-s),
-              inset 0 1px 0 rgba(255,255,255,.75),
+              inset 0 1px 0 rgba(255,255,255,.78),
               inset 0 -1px 0 rgba(0,0,0,.025);
   transition: transform .22s ease, box-shadow .22s ease;
 }
 
 .info-card {
-  padding: 15px 13px;
-  display: flex; align-items: flex-start; gap: 10px;
+  padding: 16px 14px;
+  display: flex; align-items: flex-start; gap: 11px;
   text-decoration: none; color: inherit;
 }
 .info-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-m), inset 0 1px 0 rgba(255,255,255,.75);
+  box-shadow: var(--shadow-m), inset 0 1px 0 rgba(255,255,255,.78);
 }
 
-.ic-icon { font-size: 19px; flex-shrink: 0; margin-top: 1px; }
+.ic-ico  { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
 .ic-body { flex: 1; min-width: 0; }
-.ic-label {
+.ic-lbl  {
   font-size: 9px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 1px;
   color: ${c.accent}; margin-bottom: 4px;
 }
-.ic-value { font-size: 12px; font-weight: 500; color: ${c.text}; line-height: 1.45; word-break: break-word; }
-.ic-arrow { font-size: 13px; font-weight: 700; color: ${c.accent}; flex-shrink: 0; align-self: center; }
+.ic-val  { font-size: 12.5px; font-weight: 500; color: ${c.text}; line-height: 1.45; word-break: break-word; }
+.ic-arrow { font-size: 14px; font-weight: 700; color: ${c.accent}; flex-shrink: 0; align-self: center; }
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════
    SECTION TITLE
-══════════════════════════════ */
+══════════════════════════════════════ */
 .sec-title {
   font-family: ${hf};
-  font-size: 20px; font-weight: 700; color: ${c.text};
-  padding-bottom: 10px; margin-bottom: 18px;
+  font-size: 21px; font-weight: 700; color: ${c.text};
+  padding-bottom: 10px; margin-bottom: 20px;
   border-bottom: 2px solid ${c.border};
   position: relative;
 }
 .sec-title::after {
-  content: ''; position: absolute;
-  bottom: -2px; left: 0;
-  width: 36px; height: 2px;
+  content: '';
+  position: absolute; bottom: -2px; left: 0;
+  width: 38px; height: 2px;
   background: ${c.accent}; border-radius: 2px;
 }
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════
    MENU
-   ✅ Category: bold heading
-   ✅ Items: flex row, price right-aligned
-   ✅ Clean spacing, no buttons inside
-══════════════════════════════ */
+   ✅ Category = boxed card header
+   ✅ Items = name (flex-1) + price (right-aligned)
+   ✅ NO descriptions anywhere
+   ✅ Hover: slight right shift
+══════════════════════════════════════ */
 .menu-section {
   padding: 28px 0;
   background: ${c.surface};
 }
 
-.menu-category { margin-bottom: 24px; }
-.menu-category:last-child { margin-bottom: 0; }
+.menu-category-wrap { margin-bottom: 20px; }
+.menu-category-wrap:last-of-type { margin-bottom: 0; }
 
-.menu-cat-name {
+/* Category card header */
+.menu-cat-header {
   font-family: ${hf};
-  font-size: 13px; font-weight: 700;
-  color: ${c.accent}; text-transform: uppercase; letter-spacing: 1px;
-  padding-bottom: 8px; margin-bottom: 4px;
-  border-bottom: 1.5px solid ${c.border};
+  font-size: 12.5px; font-weight: 700;
+  color: #fff;
+  background: ${c.accent};
+  padding: 8px 14px;
+  border-radius: var(--r1) var(--r1) 0 0;
   display: flex; align-items: center; gap: 8px;
-}
-.menu-cat-name::before {
-  content: ''; width: 4px; height: 14px;
-  background: ${c.accent}; border-radius: 2px; flex-shrink: 0;
+  text-transform: uppercase; letter-spacing: .8px;
 }
 
+.menu-items-box {
+  background: ${c.card};
+  border: 1px solid ${c.border};
+  border-top: none;
+  border-radius: 0 0 var(--r1) var(--r1);
+  overflow: hidden;
+  box-shadow: var(--shadow-s);
+}
+
+/* ✅ Menu item: flex row, name takes space, price right */
 .menu-item {
-  display: flex; justify-content: space-between; align-items: baseline;
-  gap: 8px; padding: 10px 6px; border-radius: 8px;
-  border-bottom: 1px dashed ${c.border};
-  transition: background .18s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-bottom: 1px solid ${c.border};
+  transition: background .18s ease, transform .18s ease, padding-left .18s ease;
+  cursor: default;
 }
 .menu-item:last-child { border-bottom: none; }
-.menu-item:hover { background: rgba(0,0,0,.025); }
+.menu-item:hover {
+  background: ${c.surface};
+  padding-left: 20px; /* slight right shift on hover */
+}
 .menu-item.hidden { display: none !important; }
 
-.mi-name { font-size: 13px; font-weight: 500; color: ${c.text}; line-height: 1.4; flex: 1; }
+.mi-name {
+  font-size: 13.5px; font-weight: 500; color: ${c.text};
+  flex: 1; line-height: 1.35;
+  /* NO description — name only */
+}
 .mi-price {
   font-size: 13px; font-weight: 700; color: ${c.accent};
   white-space: nowrap; flex-shrink: 0;
-  background: ${c.bg}; border-radius: 6px;
-  padding: 2px 8px; border: 1px solid ${c.border};
+  background: ${c.bg};
+  border: 1px solid ${c.border};
+  border-radius: 6px; padding: 2px 9px;
 }
 
-/* Show More toggle */
-.menu-toggle {
+/* Show More button */
+.menu-more-btn {
   display: block; margin: 16px auto 0;
   background: transparent;
   border: 2px solid ${c.accent}; border-radius: 12px;
-  color: ${c.accent}; font-family: 'Poppins', sans-serif;
-  font-size: 12px; font-weight: 600; padding: 9px 22px;
-  cursor: pointer; letter-spacing: .2px;
-  transition: background .22s ease, color .22s ease, transform .22s ease, box-shadow .22s ease;
+  color: ${c.accent};
+  font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600;
+  padding: 9px 24px; cursor: pointer; letter-spacing: .2px;
+  transition: background .22s, color .22s, transform .22s, box-shadow .22s;
 }
-.menu-toggle:hover {
+.menu-more-btn:hover {
   background: ${c.accent}; color: #fff;
   transform: scale(1.04);
-  box-shadow: 0 6px 20px ${c.accent}44;
+  box-shadow: 0 6px 22px ${c.accent}44;
 }
-.menu-toggle:active { transform: scale(1); }
+.menu-more-btn:active { transform: scale(1); }
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════
    GALLERY
-   ✅ Horizontal scroll (x only)
+   ✅ x-scroll only (page handles y)
    ✅ 1 full + partial next visible
-   ✅ object-fit: cover, no distortion
+   ✅ Edge fade hint
+   ✅ object-fit:cover, no distortion
    ✅ Hidden if no images
-══════════════════════════════ */
+══════════════════════════════════════ */
 .gallery-section {
   padding: 28px 0;
   background: ${c.bg};
 }
 
-.gallery-section .container { padding-left: 16px; padding-right: 0; }
+.gallery-section .g-header { padding: 0 16px; }
 
-/* ✅ x-scroll only. Page scroll = y direction = untouched. */
+/* ✅ x-scroll ONLY — page scrolls y naturally */
 .gallery-track {
   display: flex; gap: 12px;
   overflow-x: auto; overflow-y: visible;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 4px 16px 8px 16px;
+  padding: 6px 16px 10px;
   cursor: grab;
 }
 .gallery-track:active { cursor: grabbing; }
@@ -1221,28 +1450,32 @@ body {
   box-shadow: var(--shadow-m);
   transition: transform .28s ease, box-shadow .28s ease;
 }
-.gallery-item:hover { transform: translateY(-4px) scale(1.01); box-shadow: var(--shadow-l); }
+.gallery-item:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-l);
+}
 
-/* ✅ Gallery image: width 100%, height auto, object-fit:cover, NO fixed height */
+/* ✅ Gallery img: natural height, object-fit:cover, NO distortion */
 .gallery-item img {
   width: 100%; height: auto; display: block;
-  min-height: 160px; max-height: 230px;
-  object-fit: cover;   /* ✅ covers without distortion */
+  min-height: 160px; max-height: 240px;
+  object-fit: cover;
   transition: transform .3s ease;
 }
 .gallery-item:hover img { transform: scale(1.04); }
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════
    REVIEWS
-   ✅ Horizontal swipe, card layout
+   ✅ Horizontal swipe cards
+   ✅ 1 full + partial next
    ✅ Hidden if no reviews
-══════════════════════════════ */
+══════════════════════════════════════ */
 .reviews-section {
   padding: 28px 0;
   background: ${c.bg};
 }
 
-.reviews-section .container { padding-left: 16px; padding-right: 0; }
+.reviews-section .r-header { padding: 0 16px; }
 
 /* ✅ x-scroll only */
 .reviews-track {
@@ -1251,7 +1484,7 @@ body {
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 4px 16px 8px 16px;
+  padding: 6px 16px 10px;
   cursor: grab;
 }
 .reviews-track:active { cursor: grabbing; }
@@ -1264,262 +1497,295 @@ body {
   background: ${c.card};
   border: 1px solid ${c.border};
   box-shadow: var(--shadow-s),
-              inset 0 1px 0 rgba(255,255,255,.75),
+              inset 0 1px 0 rgba(255,255,255,.78),
               inset 0 -1px 0 rgba(0,0,0,.02);
   transition: transform .25s ease, box-shadow .25s ease;
 }
-.review-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-l), inset 0 1px 0 rgba(255,255,255,.75); }
+.review-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-l); }
 
-.review-stars  { font-size: 15px; margin-bottom: 10px; letter-spacing: 1.5px; }
-.sf  { color: ${c.accent}; }
-.sh  { color: ${c.accent}; opacity: .65; }
-.se  { color: ${c.border}; }
-.review-text   { font-size: 13px; color: ${c.subtext}; line-height: 1.65; margin-bottom: 12px; }
+.review-stars { font-size: 15px; margin-bottom: 10px; letter-spacing: 1.5px; }
+.s-f { color: ${c.accent}; }
+.s-h { color: ${c.accent}; opacity: .65; }
+.s-e { color: ${c.border}; }
+
+.review-text {
+  font-size: 13.5px; color: ${c.subtext}; line-height: 1.65;
+  margin-bottom: 13px;
+  /* Max 3 lines of text */
+  display: -webkit-box; -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
 .review-author {
-  font-size: 11.5px; font-weight: 700; color: ${c.text};
+  font-size: 12px; font-weight: 700; color: ${c.text};
   display: flex; align-items: center; gap: 6px;
 }
 .review-author::before { content: '—'; color: ${c.accent}; font-weight: 300; }
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════
    LOYALTY SYSTEM
-   ✅ Only rendered if enabled AND api set
-   ✅ API key baked as const — not read from DOM
-══════════════════════════════ */
+   ✅ Rendered ONLY when enabled AND api present
+   ✅ API baked as const — NOT read from DOM
+   ✅ UX: 0–4 / 5–9 / 10+ messaging
+══════════════════════════════════════ */
 .loyalty-section {
   padding: 28px 0;
   background: ${c.surface};
 }
 
 .loyalty-card {
-  padding: 22px 18px; border-radius: var(--r3);
+  padding: 24px 18px; border-radius: var(--r3);
   background: ${c.card};
   border: 1px solid ${c.border};
-  box-shadow: var(--shadow-m),
-              inset 0 1px 0 rgba(255,255,255,.7);
+  box-shadow: var(--shadow-m), inset 0 1px 0 rgba(255,255,255,.75);
   text-align: center;
 }
 
-.loyalty-icon { font-size: 36px; margin-bottom: 10px; display: block; }
-
+.loyalty-ico { font-size: 38px; margin-bottom: 10px; display: block; }
 .loyalty-title {
   font-family: ${hf};
-  font-size: 18px; font-weight: 700; color: ${c.text};
-  margin-bottom: 6px;
+  font-size: 19px; font-weight: 700; color: ${c.text}; margin-bottom: 7px;
 }
-
-.loyalty-desc { font-size: 13px; color: ${c.subtext}; line-height: 1.6; margin-bottom: 20px; }
+.loyalty-desc { font-size: 13.5px; color: ${c.subtext}; line-height: 1.65; margin-bottom: 22px; }
 
 .loyalty-form {
   display: flex; gap: 8px; max-width: 320px; margin: 0 auto;
 }
-
 .loyalty-input {
   flex: 1; padding: 11px 14px;
   border: 1.5px solid ${c.border}; border-radius: 10px;
   background: ${c.bg}; color: ${c.text};
   font-family: 'Poppins', sans-serif; font-size: 13px;
-  outline: none; transition: border-color .16s ease, box-shadow .16s ease;
+  outline: none; transition: border-color .16s, box-shadow .16s;
 }
-.loyalty-input:focus {
-  border-color: ${c.accent};
-  box-shadow: 0 0 0 3px ${c.accent}22;
-}
+.loyalty-input:focus { border-color: ${c.accent}; box-shadow: 0 0 0 3px ${c.accent}22; }
 .loyalty-input::placeholder { color: ${c.border}; }
 
-/* ✅ Fixed color button — NOT theme dependent */
+/* ✅ Loyalty button — accent color (tied to theme but not fixed) */
 .loyalty-btn {
   padding: 11px 18px; border-radius: 10px;
   background: ${c.accent}; color: #fff;
   font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700;
-  border: none; cursor: pointer;
-  transition: opacity .18s ease, transform .18s ease, box-shadow .18s ease;
+  border: none; cursor: pointer; flex-shrink: 0;
   box-shadow: 0 4px 14px ${c.accent}44;
-  flex-shrink: 0;
+  transition: opacity .18s, transform .18s, box-shadow .18s;
 }
-.loyalty-btn:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 6px 20px ${c.accent}55; }
+.loyalty-btn:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 6px 22px ${c.accent}55; }
 .loyalty-btn:active { transform: translateY(0); }
+.loyalty-btn:disabled { opacity: .6; cursor: wait; transform: none; }
 
 .loyalty-result {
-  margin-top: 14px; padding: 12px 16px;
-  border-radius: 10px; font-size: 13px; font-weight: 600;
-  display: none; text-align: center;
+  margin-top: 16px; padding: 14px 18px;
+  border-radius: 12px; font-size: 14px; font-weight: 600;
+  display: none; text-align: center; line-height: 1.5;
 }
-.loyalty-result.ok  { background: rgba(74,222,128,.12); color: #16a34a; border: 1px solid rgba(74,222,128,.3); }
-.loyalty-result.err { background: rgba(248,113,113,.12); color: #dc2626; border: 1px solid rgba(248,113,113,.3); }
+.loyalty-result.ok  { background: rgba(74,222,128,.1);  color: #15803d; border: 1px solid rgba(74,222,128,.3); display: block; }
+.loyalty-result.err { background: rgba(248,113,113,.1); color: #dc2626; border: 1px solid rgba(248,113,113,.3); display: block; }
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════
    CONTACT BUTTONS
-   ✅ Fixed color system — NOT theme dependent
-   ✅ Always last section
-══════════════════════════════ */
+   ✅ FIXED colors — NEVER theme dependent
+   ✅ Always last section, full width
+   ✅ Lift + shadow increase on hover
+══════════════════════════════════════ */
 .contact-section {
-  padding: 24px 0 48px;
+  padding: 22px 0 52px;
   background: ${c.bg};
 }
 
 .contact-row { display: flex; gap: 12px; }
 
-/* ✅ FIXED COLORS — call=dark navy, whatsapp=green. Non-negotiable. */
 .contact-btn {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  flex: 1; display: flex; align-items: center;
+  justify-content: center; gap: 8px;
   padding: 16px 12px; border-radius: 14px;
   font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700;
   text-decoration: none; cursor: pointer;
   border: 2px solid transparent;
   position: relative; overflow: hidden;
-  box-shadow: 0 4px 18px rgba(0,0,0,.16);
   transition: transform .22s ease, box-shadow .22s ease, opacity .22s ease;
 }
 .contact-btn::before {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,.13), transparent);
+  background: linear-gradient(to bottom, rgba(255,255,255,.14), transparent);
   pointer-events: none;
 }
-.contact-btn:hover { transform: scale(1.04); box-shadow: 0 8px 26px rgba(0,0,0,.22); }
-.contact-btn:active { transform: scale(1); opacity: .9; }
+/* ✅ Hover: lift + strong shadow */
+.contact-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+.contact-btn:active { transform: scale(1); opacity: .88; }
 
-/* ✅ Call button — FIXED dark navy */
+/* ✅ FIXED: dark navy call */
 .btn-call {
   background: #1a1a2e;
-  border-color: #252540;
+  border-color: #252545;
   color: #ffffff;
+  box-shadow: 0 4px 18px rgba(26,26,46,.35);
 }
-/* ✅ WhatsApp button — FIXED WhatsApp green */
-.btn-whatsapp {
+/* ✅ FIXED: WhatsApp green */
+.btn-wa {
   background: #25D366;
   border-color: #20b958;
   color: #ffffff;
+  box-shadow: 0 4px 18px rgba(37,211,102,.3);
 }
 
-/* ── SCROLLBAR ── */
+/* ── GLOBAL SCROLLBAR ── */
 ::-webkit-scrollbar { width: 0; height: 0; }
 `;
 }
 
 /* ════════════════════════════════════════════════════════════
-   GENERATED PAGE INLINE JS
+   6. GENERATED PAGE INLINE JAVASCRIPT
    
-   ✅ menuToggle: controlled expand/collapse
-   ✅ handleCheck: loyalty API call — uses const API baked at build time
-   ✅ Image fallback: onerror on all images
+   ✅ API baked in: const API = "..." — NOT from DOM
+   ✅ handleCheck via onclick in HTML
+   ✅ Loyalty UX: 0–4 / 5–9 / 10+ messages
+   ✅ Image fallback onerror
    ✅ Drag scroll on tracks
-   ✅ Touch active feedback on cards
+   ✅ Touch active feedback
    ✅ IntersectionObserver reveal
 ════════════════════════════════════════════════════════════ */
 function buildPageJS(s) {
-  /* ✅ API KEY IS BAKED IN at generation time — never reads DOM */
-  const apiUrl = esc(s.loyalty.api || '');
+  /* ✅ API URL baked in at generation — NEVER read from DOM */
+  const apiUrl = escJS(s.loyalty.api || '');
 
   return `
-(function() {
+(function () {
   'use strict';
 
-  /* ── MENU TOGGLE ── */
-  window.menuToggle = function(btn) {
-    var rows = document.querySelectorAll('.menu-item');
-    var isExpanded = btn.getAttribute('data-exp') === '1';
-    if (!isExpanded) {
-      rows.forEach(function(r) { r.classList.remove('hidden'); });
-      btn.textContent = 'Show less ↑';
-      btn.setAttribute('data-exp', '1');
-    } else {
-      var i = 0;
-      rows.forEach(function(r) { i++; if (i > 6) r.classList.add('hidden'); });
-      btn.textContent = 'Show more →';
-      btn.setAttribute('data-exp', '0');
-      var sec = document.querySelector('.menu-section');
-      if (sec) window.scrollTo({ top: sec.offsetTop - 16, behavior: 'smooth' });
-    }
-  };
-
-  /* ── LOYALTY CHECK
-     ✅ API URL baked in at page generation — NOT read from DOM ── */
+  /* ══ LOYALTY API — baked in at generation time ══
+     ✅ Fix: buildPageJS(s) receives full STATE
+     ✅ Fix: const API = "..." not document.getElementById */
   var API = "${apiUrl}";
 
-  window.handleCheck = async function() {
-    var phone = document.getElementById('loyal-phone').value.trim();
+  /* Loyalty UX messaging by visit count ✅ */
+  function getVisitMessage(v) {
+    if (v <= 0)  return "Start visiting to earn rewards! 🌱";
+    if (v <= 4)  return "You've visited " + v + " time" + (v === 1 ? '' : 's') + ". Keep going! ☕";
+    if (v <= 9)  return "🔥 " + v + " visits — your reward is getting close!";
+    return "🎉 " + v + " visits — Reward unlocked! Claim on your next visit.";
+  }
+
+  /* ✅ handleCheck — bound via onclick in HTML (no addEventListener miss) */
+  window.handleCheck = async function () {
+    var phone  = document.getElementById('loyal-phone').value.trim();
     var result = document.getElementById('loyal-result');
-    var btn = document.getElementById('loyal-btn');
+    var btn    = document.getElementById('loyal-btn');
+
+    /* Clear previous result */
+    result.className = 'loyalty-result';
+    result.style.display = 'none';
 
     if (!phone) {
+      result.innerHTML = '⚠ Please enter your phone number.';
       result.className = 'loyalty-result err';
-      result.style.display = 'block';
-      result.textContent = 'Please enter your phone number.';
       return;
     }
 
     if (!API) {
+      result.innerHTML = '⚠ Loyalty system not configured.';
       result.className = 'loyalty-result err';
-      result.style.display = 'block';
-      result.textContent = 'Loyalty system not configured.';
       return;
     }
 
-    btn.textContent = 'Checking...';
+    /* Loading state */
     btn.disabled = true;
+    btn.textContent = 'Checking…';
 
     try {
       var res = await fetch(API + '?phone=' + encodeURIComponent(phone));
       if (!res.ok) throw new Error('HTTP ' + res.status);
       var data = await res.json();
+      var visits = parseInt(data.visits) || 0;
+      result.innerHTML = getVisitMessage(visits);
       result.className = 'loyalty-result ok';
-      result.style.display = 'block';
-      result.textContent = '🎉 You have ' + (data.visits || 0) + ' visit' + (data.visits === 1 ? '' : 's') + '!';
-    } catch(e) {
+    } catch (err) {
+      result.innerHTML = '⚠ Could not connect. Please try again later.';
       result.className = 'loyalty-result err';
-      result.style.display = 'block';
-      result.textContent = 'Could not connect. Please try again.';
     } finally {
-      btn.textContent = 'Check';
       btn.disabled = false;
+      btn.textContent = 'Check';
     }
   };
 
-  /* ── IMAGE FALLBACK ── */
-  document.querySelectorAll('img[data-fb]').forEach(function(img) {
-    img.onerror = function() {
+  /* ══ MENU TOGGLE ══ */
+  window.menuToggle = function (btn) {
+    var rows = document.querySelectorAll('.menu-item');
+    var expanded = btn.getAttribute('data-exp') === '1';
+    if (!expanded) {
+      rows.forEach(function (r) { r.classList.remove('hidden'); });
+      btn.textContent = 'Show less ↑';
+      btn.setAttribute('data-exp', '1');
+    } else {
+      var i = 0;
+      rows.forEach(function (r) {
+        i++;
+        if (i > 6) r.classList.add('hidden');
+      });
+      btn.textContent = 'Show more →';
+      btn.setAttribute('data-exp', '0');
+      var sec = document.querySelector('.menu-section');
+      if (sec) window.scrollTo({ top: sec.offsetTop - 12, behavior: 'smooth' });
+    }
+  };
+
+  /* ══ IMAGE FALLBACK ══ */
+  document.querySelectorAll('img[data-fb]').forEach(function (img) {
+    img.onerror = function () {
+      this.onerror = null; /* Prevent infinite loop */
       this.src = 'data:image/svg+xml,' + encodeURIComponent(
         '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="220">' +
         '<rect width="400" height="220" fill="#f0e8dc"/>' +
-        '<text x="50%" y="50%" text-anchor="middle" dy=".35em" font-size="28" fill="#c8813a" font-family="sans-serif">🖼</text>' +
+        '<text x="50%" y="50%" text-anchor="middle" dy=".35em" ' +
+        'font-size="28" fill="#c8813a" font-family="sans-serif">🖼 Image</text>' +
         '</svg>'
       );
     };
   });
 
-  /* ── DRAG-TO-SCROLL ── */
-  document.querySelectorAll('.gallery-track, .reviews-track').forEach(function(track) {
-    var down = false, startX, sl;
-    track.addEventListener('mousedown', function(e) { down = true; startX = e.pageX - track.offsetLeft; sl = track.scrollLeft; });
-    document.addEventListener('mouseup', function() { down = false; });
-    track.addEventListener('mousemove', function(e) {
-      if (!down) return;
+  /* ══ DRAG-TO-SCROLL on gallery + reviews ══ */
+  document.querySelectorAll('.gallery-track, .reviews-track').forEach(function (el) {
+    var isDown = false, startX, scrollLeft;
+    el.addEventListener('mousedown', function (e) {
+      isDown = true; startX = e.pageX - el.offsetLeft; scrollLeft = el.scrollLeft;
+    });
+    document.addEventListener('mouseup', function () { isDown = false; });
+    el.addEventListener('mousemove', function (e) {
+      if (!isDown) return;
       e.preventDefault();
-      track.scrollLeft = sl - (e.pageX - track.offsetLeft - startX) * 1.4;
+      el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX) * 1.4;
     });
   });
 
-  /* ── TOUCH ACTIVE FEEDBACK ── */
-  document.querySelectorAll('.review-card, .gallery-item').forEach(function(el) {
-    el.addEventListener('touchstart', function() { el.style.transform = 'scale(.98)'; }, { passive: true });
-    el.addEventListener('touchend',   function() { el.style.transform = ''; });
+  /* ══ TOUCH ACTIVE on cards ══ */
+  document.querySelectorAll('.review-card, .gallery-item').forEach(function (el) {
+    el.addEventListener('touchstart', function () {
+      el.style.transform = 'scale(.97)';
+    }, { passive: true });
+    el.addEventListener('touchend', function () {
+      el.style.transform = '';
+    });
   });
 
-  /* ── INTERSECTION OBSERVER REVEAL ── */
+  /* ══ INTERSECTION OBSERVER REVEAL ══ */
   var reveals = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          entry.target.style.animationPlayState = 'running';
-          io.unobserve(entry.target);
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.style.animationPlayState = 'running';
+          io.unobserve(e.target);
         }
       });
     }, { threshold: 0.06 });
-    reveals.forEach(function(el) { el.style.animationPlayState = 'paused'; io.observe(el); });
+    reveals.forEach(function (el) {
+      el.style.animationPlayState = 'paused';
+      io.observe(el);
+    });
   } else {
-    reveals.forEach(function(el) { el.style.opacity = '1'; });
+    reveals.forEach(function (el) { el.style.opacity = '1'; });
   }
 
 })();
@@ -1527,56 +1793,57 @@ function buildPageJS(s) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   SECTION BUILDERS
+   7. SECTION BUILDERS
    
-   Strict rule: if no data → return '' (never render empty wrapper)
-   Final order: Hero → Info → Menu → Gallery → Reviews → Loyalty → Contact
+   STRICT RULE: if no data → return "" (no HTML emitted at all)
+   
+   Order: Hero → Info → Menu → Gallery → Reviews → Loyalty → Contact
 ════════════════════════════════════════════════════════════ */
 
 /* ── HERO ── */
 function buildHero(s) {
-  /* Always rendered — fallback to placeholder name */
   const name = esc(s.brand.name || 'Your Cafe');
   const tag  = esc(s.brand.tagline || '');
 
-  /* ✅ Order buttons — only rendered if URL exists */
-  let orderBtns = '';
+  /* ✅ Swiggy/Zomato: only rendered if URL exists */
   const hasSwiggy = s.order.swiggy.length > 0;
   const hasZomato = s.order.zomato.length > 0;
+  let orderRow = '';
   if (hasSwiggy || hasZomato) {
-    const sw = hasSwiggy ? `<a class="order-btn btn-swiggy" href="${esc(s.order.swiggy)}" target="_blank" rel="noopener">🛵 Order on Swiggy</a>` : '';
-    const zm = hasZomato ? `<a class="order-btn btn-zomato" href="${esc(s.order.zomato)}" target="_blank" rel="noopener">🍽 Order on Zomato</a>` : '';
-    orderBtns = `<div class="hero-order-btns">${sw}${zm}</div>`;
+    const sw = hasSwiggy ? `<a class="order-btn btn-swiggy" href="${esc(s.order.swiggy)}" target="_blank" rel="noopener noreferrer">🛵 Swiggy</a>` : '';
+    const zm = hasZomato ? `<a class="order-btn btn-zomato" href="${esc(s.order.zomato)}" target="_blank" rel="noopener noreferrer">🍽 Zomato</a>` : '';
+    orderRow = `<div class="hero-order-row">${sw}${zm}</div>`;
   }
 
-  /* ✅ Instagram — only if URL exists */
-  const insta = s.brand.instagram
-    ? `<a class="insta-badge" href="${esc(s.brand.instagram)}" target="_blank" rel="noopener">📸 Follow us</a>`
+  /* ✅ Instagram: gradient CTA, only if URL provided */
+  const instaBtn = (s.brand.instagram && isValidURL(s.brand.instagram))
+    ? `<a class="insta-btn" href="${esc(s.brand.instagram)}" target="_blank" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Follow on Instagram
+      </a>`
     : '';
 
-  if (s.brand.hero) {
+  const innerContent = `
+    <h1 class="hero-name">${name}</h1>
+    ${tag ? `<p class="hero-tag">${tag}</p>` : ''}
+    ${orderRow}
+    ${instaBtn}
+  `;
+
+  if (s.brand.hero && isValidURL(s.brand.hero)) {
     return `
-<section class="hero section reveal" data-section="hero">
-  <div class="hero-img-wrap">
-    <img src="${esc(s.brand.hero)}" alt="${name}" data-fb="1"
-      onerror="this.src='data:image/svg+xml,'+encodeURIComponent('<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'280\\'><rect width=\\'400\\' height=\\'280\\' fill=\\'#f0e8dc\\'/><text x=\\'50%\\' y=\\'50%\\' text-anchor=\\'middle\\' dy=\\'.35em\\' font-size=\\'32\\' fill=\\'#c8813a\\' font-family=\\'sans-serif\\'>☕ ${name}</text></svg>')" />
+<section class="hero page-section reveal" data-section="hero">
+  <div class="hero-media">
+    <img class="hero-img" src="${esc(s.brand.hero)}" alt="${name}" data-fb="1" />
     <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <h1 class="hero-name">${name}</h1>
-      ${tag ? `<p class="hero-tag">${tag}</p>` : ''}
-      ${orderBtns}
-      ${insta}
-    </div>
+    <div class="hero-content">${innerContent}</div>
   </div>
 </section>`;
   }
 
   return `
-<section class="hero hero-bare section reveal" data-section="hero">
-  <h1 class="hero-name">${name}</h1>
-  ${tag ? `<p class="hero-tag">${tag}</p>` : ''}
-  ${orderBtns}
-  ${insta}
+<section class="hero hero-bare page-section reveal" data-section="hero">
+  ${innerContent}
 </section>`;
 }
 
@@ -1584,34 +1851,36 @@ function buildHero(s) {
 function buildInfo(s) {
   const hasLoc  = s.info.location.length > 0;
   const hasTime = s.info.timings.length > 0;
-  if (!hasLoc && !hasTime) return ''; /* ✅ strict: no data → no section */
+  if (!hasLoc && !hasTime) return ''; /* ✅ strict empty check */
 
-  const locCard = hasLoc
-    ? (s.info.mapsUrl
-        ? `<a class="info-card card" href="${esc(s.info.mapsUrl)}" target="_blank" rel="noopener">
-    <span class="ic-icon">📍</span>
-    <div class="ic-body"><div class="ic-label">Location</div><div class="ic-value">${esc(s.info.location)}</div></div>
+  /* ✅ Maps URL validated — broken link = static div */
+  const mapsValid = isValidURL(s.info.mapsUrl);
+
+  const locCard = hasLoc ? (
+    mapsValid
+      ? `<a class="info-card card" href="${esc(s.info.mapsUrl)}" target="_blank" rel="noopener noreferrer">
+    <span class="ic-ico">📍</span>
+    <div class="ic-body"><div class="ic-lbl">Location</div><div class="ic-val">${esc(s.info.location)}</div></div>
     <span class="ic-arrow">→</span>
   </a>`
-        : `<div class="info-card card">
-    <span class="ic-icon">📍</span>
-    <div class="ic-body"><div class="ic-label">Location</div><div class="ic-value">${esc(s.info.location)}</div></div>
-  </div>`)
-    : '';
-
-  const timeCard = hasTime
-    ? `<div class="info-card card">
-    <span class="ic-icon">🕐</span>
-    <div class="ic-body"><div class="ic-label">Opening Hours</div><div class="ic-value">${esc(s.info.timings)}</div></div>
+      : `<div class="info-card card">
+    <span class="ic-ico">📍</span>
+    <div class="ic-body"><div class="ic-lbl">Location</div><div class="ic-val">${esc(s.info.location)}</div></div>
   </div>`
-    : '';
+  ) : '';
 
-  const gridClass = (hasLoc && hasTime) ? 'info-grid' : 'info-grid single';
+  const timeCard = hasTime ? `
+  <div class="info-card card">
+    <span class="ic-ico">🕐</span>
+    <div class="ic-body"><div class="ic-lbl">Opening Hours</div><div class="ic-val">${esc(s.info.timings)}</div></div>
+  </div>` : '';
+
+  const cols = (hasLoc && hasTime) ? 'info-cards' : 'info-cards single';
 
   return `
-<section class="info-section section reveal" data-section="info">
+<section class="info-section page-section reveal" data-section="info">
   <div class="container">
-    <div class="${gridClass}">
+    <div class="${cols}">
       ${locCard}
       ${timeCard}
     </div>
@@ -1623,39 +1892,41 @@ function buildInfo(s) {
 function buildMenu(s) {
   if (s.menu.length === 0) return ''; /* ✅ strict empty check */
 
-  const LIMIT    = 6;
-  const needMore = s.menu.length > LIMIT;
-  const groups   = groupMenu(s.menu);
+  const LIMIT     = 6;
+  const needsMore = s.menu.length > LIMIT;
+  const groups    = groupMenu(s.menu);
 
-  let idx = 0;
-  let catsHTML = '';
+  let rowIndex = 0;
+  let groupsHTML = '';
 
   for (const g of groups) {
-    const rowsHTML = g.rows.map(row => {
-      idx++;
-      const hidden = needMore && idx > LIMIT ? ' hidden' : '';
-      return `<div class="menu-item${hidden}">
+    const itemsHTML = g.rows.map(row => {
+      rowIndex++;
+      const hiddenClass = (needsMore && rowIndex > LIMIT) ? ' hidden' : '';
+      /* ✅ NO description — name and price only */
+      return `<div class="menu-item${hiddenClass}">
       <span class="mi-name">${esc(row.item)}</span>
       <span class="mi-price">${esc(row.price)}</span>
     </div>`;
     }).join('');
 
-    catsHTML += `<div class="menu-category" data-category="${esc(g.cat.toLowerCase().replace(/\s+/g,'-'))}">
-    <div class="menu-cat-name">${esc(g.cat)}</div>
-    ${rowsHTML}
+    groupsHTML += `
+  <div class="menu-category-wrap">
+    <div class="menu-cat-header">${esc(g.cat)}</div>
+    <div class="menu-items-box">${itemsHTML}</div>
   </div>`;
   }
 
-  const toggleBtn = needMore
-    ? `<button class="menu-toggle" data-exp="0" type="button" onclick="menuToggle(this)">Show more →</button>`
+  const moreBtn = needsMore
+    ? `<button class="menu-more-btn" data-exp="0" type="button" onclick="menuToggle(this)">Show more →</button>`
     : '';
 
   return `
-<section class="menu-section section reveal" data-section="menu">
+<section class="menu-section page-section reveal" data-section="menu">
   <div class="container">
     <h2 class="sec-title">Menu</h2>
-    ${catsHTML}
-    ${toggleBtn}
+    ${groupsHTML}
+    ${moreBtn}
   </div>
 </section>`;
 }
@@ -1664,15 +1935,14 @@ function buildMenu(s) {
 function buildGallery(s) {
   if (s.gallery.length === 0) return ''; /* ✅ strict empty check */
 
-  const items = s.gallery.map(url =>
-    `<div class="gallery-item">
+  const items = s.gallery.map(url => `
+  <div class="gallery-item">
     <img src="${esc(url)}" alt="Cafe photo" loading="lazy" data-fb="1" />
-  </div>`
-  ).join('');
+  </div>`).join('');
 
   return `
-<section class="gallery-section section reveal" data-section="gallery">
-  <div class="container">
+<section class="gallery-section page-section reveal" data-section="gallery">
+  <div class="container g-header">
     <h2 class="sec-title">Gallery</h2>
   </div>
   <div class="gallery-track">${items}</div>
@@ -1683,17 +1953,16 @@ function buildGallery(s) {
 function buildReviews(s) {
   if (s.reviews.length === 0) return ''; /* ✅ strict empty check */
 
-  const cards = s.reviews.map(r =>
-    `<article class="review-card card">
+  const cards = s.reviews.map(r => `
+  <article class="review-card">
     <div class="review-stars">${starsHTML(r.stars)}</div>
     <p class="review-text">${esc(r.text)}</p>
     <div class="review-author">${esc(r.name)}</div>
-  </article>`
-  ).join('');
+  </article>`).join('');
 
   return `
-<section class="reviews-section section reveal" data-section="reviews">
-  <div class="container">
+<section class="reviews-section page-section reveal" data-section="reviews">
+  <div class="container r-header">
     <h2 class="sec-title">Reviews</h2>
   </div>
   <div class="reviews-track">${cards}</div>
@@ -1702,17 +1971,17 @@ function buildReviews(s) {
 
 /* ── LOYALTY ── */
 function buildLoyalty(s) {
-  /* ✅ Only show if BOTH toggle is on AND API URL is provided */
-  if (!s.loyalty.enabled || !s.loyalty.api) return '';
+  /* ✅ ONLY render if toggle ON and valid API URL */
+  if (!s.loyalty.enabled || !isValidURL(s.loyalty.api)) return '';
 
   const title = esc(s.loyalty.title || 'Loyalty Rewards');
-  const desc  = esc(s.loyalty.desc  || 'Check your visit count and earn rewards!');
+  const desc  = esc(s.loyalty.desc  || 'Check your visits and earn exclusive rewards!');
 
   return `
-<section class="loyalty-section section reveal" data-section="loyalty">
+<section class="loyalty-section page-section reveal" data-section="loyalty">
   <div class="container">
-    <div class="loyalty-card card">
-      <span class="loyalty-icon">🎁</span>
+    <div class="loyalty-card">
+      <span class="loyalty-ico">🎁</span>
       <h2 class="loyalty-title">${title}</h2>
       <p class="loyalty-desc">${desc}</p>
       <div class="loyalty-form">
@@ -1720,10 +1989,12 @@ function buildLoyalty(s) {
           type="tel"
           id="loyal-phone"
           class="loyalty-input"
-          placeholder="Enter your phone number"
+          placeholder="Your phone number"
         />
-        <!-- ✅ onclick calls window.handleCheck — explicitly bound -->
-        <button id="loyal-btn" class="loyalty-btn" type="button" onclick="handleCheck()">Check</button>
+        <!-- ✅ onclick="handleCheck()" — explicitly bound, never misses -->
+        <button id="loyal-btn" class="loyalty-btn" type="button" onclick="handleCheck()">
+          Check
+        </button>
       </div>
       <div id="loyal-result" class="loyalty-result"></div>
     </div>
@@ -1742,11 +2013,11 @@ function buildContact(s) {
     : '';
 
   const waBtn = hasWA
-    ? `<a class="contact-btn btn-whatsapp" href="https://wa.me/${s.contact.waNum.replace(/[^0-9]/g,'')}" target="_blank" rel="noopener">💬 WhatsApp</a>`
+    ? `<a class="contact-btn btn-wa" href="https://wa.me/${s.contact.waNum.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>`
     : '';
 
   return `
-<section class="contact-section section reveal" data-section="contact">
+<section class="contact-section page-section reveal" data-section="contact">
   <div class="container">
     <div class="contact-row">
       ${callBtn}
@@ -1757,17 +2028,16 @@ function buildContact(s) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   PAGE ASSEMBLER
-   Strict section order:
-   Hero → Info → Menu → Gallery → Reviews → Loyalty → Contact
+   8. PAGE ASSEMBLER
+   Strict order: Hero→Info→Menu→Gallery→Reviews→Loyalty→Contact
+   Empty sections return "" — never rendered
 ════════════════════════════════════════════════════════════ */
 function buildPage(s) {
-  const css     = buildCSS(s);
-  const pageJS  = buildPageJS(s);
-  const fURL    = fontURL(s.font);
-  const title   = esc(s.brand.name || 'Cafe');
+  const css    = buildCSS(s);
+  const pageJS = buildPageJS(s); /* ✅ Full STATE passed — API baked in */
+  const fURL   = fontURL(s.font);
+  const title  = esc(s.brand.name || 'Cafe');
 
-  /* Build all sections — empty sections return '' */
   const body = [
     buildHero(s),
     buildInfo(s),
@@ -1797,30 +2067,32 @@ ${body}
 }
 
 /* ════════════════════════════════════════════════════════════
-   RENDER — collect → build → inject into iframe
+   9. RENDER ENGINE
+   collect → build → inject (srcdoc) → patch scroll
 ════════════════════════════════════════════════════════════ */
 function renderPage() {
   /* 1. Read all inputs into STATE once */
   collectState();
 
-  /* 2. Build full HTML from STATE — DOM never touched again */
+  /* 2. Build complete HTML from STATE (DOM never touched again) */
   _lastHTML = buildPage(STATE);
 
-  /* 3. ✅ Inject via srcdoc — full replace, NEVER innerHTML += */
+  /* 3. ✅ Inject via srcdoc — single assignment, NEVER innerHTML += */
   const frame = $('preview-frame');
   if (!frame) return;
   frame.srcdoc = _lastHTML;
 
-  /* 4. ✅ SCROLL FIX — onload patches inner doc's html+body overflow */
+  /* 4. ✅ SCROLL FIX — patch inner doc on load
+        Complements scrolling="yes" + overflow:auto in CSS */
   frame.onload = function () {
     try {
       const doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
       if (doc) {
-        doc.documentElement.style.cssText = 'overflow-y: auto !important; height: auto !important;';
-        doc.body.style.cssText = 'overflow-y: visible !important; overflow-x: hidden !important; height: auto !important; min-height: 100% !important;';
+        doc.documentElement.style.cssText = 'overflow-y:auto!important;height:auto!important;';
+        doc.body.style.cssText = 'overflow-y:visible!important;overflow-x:hidden!important;height:auto!important;min-height:100%!important;';
       }
-    } catch (e) { /* sandboxed — safe */ }
-    const clk = $('device-clock');
+    } catch (e) { /* sandboxed cross-origin — safe to ignore */ }
+    const clk = $('dev-clock');
     if (clk) clk.textContent = nowTime();
   };
 
@@ -1828,58 +2100,20 @@ function renderPage() {
   const empty = $('empty-state');
   if (empty) empty.classList.add('gone');
 
-  /* 6. Gold pulse on device */
+  /* 6. Gold pulse on device frame */
   const dev = $('device');
   if (dev) {
-    dev.style.transition = 'box-shadow .28s ease';
-    dev.style.boxShadow += ', 0 0 0 3px rgba(212,168,75,.5)';
+    dev.style.transition = 'box-shadow .3s ease';
+    dev.style.boxShadow += ', 0 0 0 3px rgba(212,168,75,.55)';
     setTimeout(() => {
-      dev.style.boxShadow = '';
-      setTimeout(() => { dev.style.transition = ''; }, 320);
-    }, 450);
+      dev.style.boxShadow = dev.style.boxShadow.replace(/, 0 0 0 3px rgba\(212,168,75,\.55\)/, '');
+      setTimeout(() => { dev.style.transition = ''; }, 350);
+    }, 480);
   }
 }
 
 /* ════════════════════════════════════════════════════════════
-   COPY HTML
-════════════════════════════════════════════════════════════ */
-function copyHTML() {
-  if (!_lastHTML) { showToast('Generate a page first', 'err'); return; }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(_lastHTML)
-      .then(() => showToast('✅ HTML copied to clipboard!'))
-      .catch(copyFallback);
-  } else {
-    copyFallback();
-  }
-}
-function copyFallback() {
-  const ta = document.createElement('textarea');
-  ta.value = _lastHTML;
-  ta.style.cssText = 'position:fixed;opacity:0;left:-9999px;top:-9999px;';
-  document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); showToast('✅ HTML copied!'); }
-  catch { showToast('Copy failed — use Download instead', 'err'); }
-  document.body.removeChild(ta);
-}
-
-/* ════════════════════════════════════════════════════════════
-   DOWNLOAD HTML
-════════════════════════════════════════════════════════════ */
-function downloadHTML() {
-  if (!_lastHTML) { showToast('Generate a page first', 'err'); return; }
-  const slug = (STATE.brand.name || 'cafe')
-    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'cafe';
-  const a = document.createElement('a');
-  a.href     = URL.createObjectURL(new Blob([_lastHTML], { type: 'text/html;charset=utf-8' }));
-  a.download = `${slug}-landing.html`;
-  document.body.appendChild(a); a.click();
-  setTimeout(() => { URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 400);
-  showToast(`⬇ Saved as ${slug}-landing.html`);
-}
-
-/* ════════════════════════════════════════════════════════════
-   TOAST
+   10. COPY + DOWNLOAD
 ════════════════════════════════════════════════════════════ */
 function showToast(msg, type) {
   const t = $('toast');
@@ -1890,74 +2124,105 @@ function showToast(msg, type) {
   t._tid = setTimeout(() => { t.className = ''; }, 2800);
 }
 
-/* ════════════════════════════════════════════════════════════
-   LOYALTY TOGGLE — show/hide loyalty fields in panel
-════════════════════════════════════════════════════════════ */
-function toggleLoyaltyFields() {
-  const on     = checked('i-loyalty-on');
-  const fields = $('loyalty-fields');
-  if (fields) {
-    if (on) fields.classList.remove('hidden');
-    else    fields.classList.add('hidden');
+function copyHTML() {
+  if (!_lastHTML) { showToast('Generate a page first', 'err'); return; }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(_lastHTML)
+      .then(() => showToast('✅ HTML copied to clipboard!'))
+      .catch(copyFallback);
+  } else {
+    copyFallback();
   }
 }
 
+function copyFallback() {
+  const ta = document.createElement('textarea');
+  ta.value = _lastHTML;
+  ta.style.cssText = 'position:fixed;opacity:0;left:-9999px;top:-9999px;';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast('✅ HTML copied!'); }
+  catch { showToast('Copy failed — use Download', 'err'); }
+  document.body.removeChild(ta);
+}
+
+function downloadHTML() {
+  if (!_lastHTML) { showToast('Generate a page first', 'err'); return; }
+  const slug = (STATE.brand.name || 'cafe')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'cafe';
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(new Blob([_lastHTML], { type: 'text/html;charset=utf-8' }));
+  a.download = `${slug}-page.html`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 400);
+  showToast(`⬇ Saved as ${slug}-page.html`);
+}
+
 /* ════════════════════════════════════════════════════════════
-   DEVICE SWITCHER
+   11. LOYALTY TOGGLE — panel show/hide
+════════════════════════════════════════════════════════════ */
+function toggleLoyalty() {
+  const on     = isChecked('inp-loyalty-toggle');
+  const fields = $('loyalty-fields');
+  if (!fields) return;
+  if (on) fields.classList.add('open');
+  else    fields.classList.remove('open');
+}
+
+/* ════════════════════════════════════════════════════════════
+   12. DEVICE SWITCHER
 ════════════════════════════════════════════════════════════ */
 function switchDevice(mode) {
-  const dev = $('device');
+  const dev  = $('device');
   const btnM = $('dev-m');
   const btnT = $('dev-t');
   if (!dev) return;
-  if (mode === 'mobile') {
-    dev.className = 'mobile';
-    btnM.classList.add('active');
-    btnT.classList.remove('active');
-  } else {
-    dev.className = 'tablet';
-    btnT.classList.add('active');
-    btnM.classList.remove('active');
-  }
+  dev.className = mode;
+  btnM.classList.toggle('active', mode === 'mobile');
+  btnT.classList.toggle('active', mode === 'tablet');
 }
 
 /* ════════════════════════════════════════════════════════════
-   COLOR SYNC — picker ↔ hex text
+   13. COLOR SYNC — picker ↔ hex text field
 ════════════════════════════════════════════════════════════ */
-function syncColor(pickId, txtId) {
+function syncColor(pickId, hexId) {
   const pick = $(pickId);
-  const txt  = $(txtId);
-  if (!pick || !txt) return;
-  pick.addEventListener('input', () => { txt.value = pick.value; });
-  txt.addEventListener('input', () => {
-    const v = txt.value.trim();
+  const hex  = $(hexId);
+  if (!pick || !hex) return;
+  pick.addEventListener('input', () => { hex.value = pick.value; });
+  hex.addEventListener('input', () => {
+    const v = hex.value.trim();
     if (/^#[0-9a-fA-F]{3,6}$/.test(v)) pick.value = v;
   });
 }
 
 /* ════════════════════════════════════════════════════════════
-   INIT — called on DOMContentLoaded
-   All button bindings are in HTML onclick="" for reliability.
-   Here we just set up color sync, live clock, Enter key.
+   14. INIT — wires up color sync + clock + Enter key
+   Note: all generate/copy/download buttons use onclick="" in HTML
+   for guaranteed binding — no missed addEventListener.
 ════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* Color pair syncs */
+  /* Color pairs */
   [
-    ['c-bg',   'c-bg-t'],   ['c-card',  'c-card-t'],
-    ['c-surf', 'c-surf-t'], ['c-acc',   'c-acc-t'],
-    ['c-tx',   'c-tx-t'],   ['c-sub',   'c-sub-t'],
-    ['c-bdr',  'c-bdr-t'],
-  ].forEach(([p, t]) => syncColor(p, t));
+    ['c-bg',     'c-bg-t'],
+    ['c-card',   'c-card-t'],
+    ['c-surf',   'c-surf-t'],
+    ['c-accent', 'c-accent-t'],
+    ['c-text',   'c-text-t'],
+    ['c-sub',    'c-sub-t'],
+    ['c-bdr',    'c-bdr-t'],
+  ].forEach(([p, h]) => syncColor(p, h));
 
   /* Live clock */
-  const clk = $('device-clock');
+  const clk = $('dev-clock');
   if (clk) {
     clk.textContent = nowTime();
     setInterval(() => { clk.textContent = nowTime(); }, 30000);
   }
 
-  /* Enter key on inputs → generate */
+  /* Enter key on any text/url/tel input → generate */
   document.querySelectorAll('input[type=text], input[type=url], input[type=tel]')
     .forEach(inp => inp.addEventListener('keydown', e => {
       if (e.key === 'Enter') renderPage();
